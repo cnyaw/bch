@@ -1,0 +1,128 @@
+[good]
+version=0.3
+name=Battle Chess
+window=400 640
+texs=13 17 18 21 3 19 15 26
+sprites=20
+levels=14 0 22
+
+[scripts]
+6=./herodata.lua
+7=./skilldata.lua
+8=./buffdata.lua
+9=./effectdata.lua
+10=../good/samples/Util.lua
+11=../good/samples/ar.lua
+27=./helper.lua
+4=./game.lua
+5=./hero.lua
+12=./anim.lua
+16=./stage.lua
+
+[tex13]
+name=coin
+fileName=./res/coin.png
+
+[tex17]
+name=sandglass
+fileName=./res/sandglass.png
+
+[tex18]
+name=chess
+fileName=./res/chess.png
+
+[tex21]
+name=board
+fileName=./res/board.png
+
+[tex3]
+name=button
+fileName=./res/button.png
+
+[tex19]
+name=energy
+fileName=./res/energy.png
+
+[tex15]
+name=combat
+fileName=./res/combat.png
+
+[tex26]
+name=castle
+fileName=./res/castle.png
+
+[sprite20]
+name=energy
+texture=19
+tileWidth=32
+tileHeight=32
+cxTile=6
+cyTile=2
+data=0 12 1 12 2 12 3 12 4 12 5 12 6 12 7 12 8 12 9 12 10 12 11 12
+loop=1
+
+[level14]
+name=stage
+bgColor=0 64 64
+script=Stage
+
+[object2]
+texture=21
+x=17
+y=112
+
+[level0]
+name=game
+bgColor=0 64 64
+script=Game
+objects=2
+snapWidth=24
+snapHeight=24
+
+[object23]
+name=fireball
+bgColor=255 0 0
+sprite=20
+x=16
+y=16
+
+[object24]
+name=iceball
+bgColor=0 255 255
+sprite=20
+x=64
+y=16
+
+[object25]
+name=paralysis
+bgColor=255 255 0
+sprite=20
+x=112
+y=16
+
+[object29]
+name=quit game
+bgColor=5 142 5
+x=16
+y=96
+dim=0 0 120 40
+
+[object30]
+name=reset game
+bgColor=199 26 59
+x=160
+y=96
+dim=0 0 120 40
+
+[object28]
+name=game menu
+bgColor=2 106 136
+x=16
+y=64
+dim=0 0 300 420
+objects=29 30
+
+[level22]
+name=assets
+objects=23 24 25 28
+
