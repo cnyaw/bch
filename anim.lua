@@ -4,46 +4,46 @@ local HERO_MOVE_SPEED = 0.6             -- Cell/sec
 -- Animator callback.
 --
 
-function ArAddCoin(param)
+function AcAddCoin(param)
   if (not IsGameOver()) then
     AddCoin(param.coin)
   end
   Good.KillObj(param._id)
 end
 
-function ArApplyBuffEffect(param)
+function AcApplyBuffEffect(param)
   if (IsHeroAlive(param.target_id)) then
     ApplyBuffEffect(param.lv, param.hero_id, param.target_id, param.skill_id, param.effect_id)
   end
   Good.KillObj(param._id)
 end
 
-function ArEndDamageBounce(param)
+function AcEndDamageBounce(param)
   param.k = nil
   Good.SetScript(param._id, '')
 end
 
-function ArEndGameOver(param)
+function AcEndGameOver(param)
   Good.SetScript(param._id, '')
   param.lvl_param.step = OnGameOver
 end
 
-function ArKillAnimObj(param)
+function AcKillAnimObj(param)
   Good.KillObj(param._id)
 end
 
-function ArAnimKillHero(param)
+function AcAnimKillHero(param)
   local dummy = Good.GetParent(param._id)
   Good.KillObj(dummy)
 end
 
-function ArSetNextWave(param)
+function AcSetNextWave(param)
   UpdateStage()
   Good.KillObj(param.time_obj)
   Good.KillObj(param._id)
 end
 
-function ArUpdateTimeLabel(param)
+function AcUpdateTimeLabel(param)
   param.wave = param.wave - 1
   if (nil ~= param.time_obj) then
     Good.KillObj(param.time_obj)
@@ -78,7 +78,7 @@ AnimFlyBuffEffect.OnStep = function(param)
       local l,t,w,h = Good.GetDim(o)
       param.MoveToAr = ArAddMoveTo(loop1, 'Pos', dist_cell * effect.Speed / 60, x2 + (TILE_W - w)/2, y2 + (TILE_H - h)/2)
     end
-    ArAddCall(loop1, 'ArApplyBuffEffect', 0)
+    ArAddCall(loop1, 'AcApplyBuffEffect', 0)
     param.k = ArAddAnimator({loop1})
   else
     -- Adjust target pos of MoveTo ar.
@@ -100,7 +100,7 @@ AnimDamageHpObj.OnStep = function(param)
     local loop1 = ArAddLoop(nil)
     ArAddMoveBy(loop1, 'Pos', 0.2, dx, -TILE_H/2).ease = ArEaseOut
     ArAddMoveBy(loop1, 'Pos', 0.35, 0, TILE_H).ease = ArEaseOutBounce
-    ArAddCall(loop1, 'ArKillAnimObj', 0.2)
+    ArAddCall(loop1, 'AcKillAnimObj', 0.2)
     param.k = ArAddAnimator({loop1})
   else
     ArStepAnimator(param, param.k)
@@ -113,7 +113,7 @@ AnimHealHpObj.OnStep = function(param)
   if (nil == param.k) then
     local loop1 = ArAddLoop(nil)
     ArAddMoveBy(loop1, 'Pos', 0.2, 0, -20).ease = ArEaseOut
-    ArAddCall(loop1, 'ArKillAnimObj', 0.2)
+    ArAddCall(loop1, 'AcKillAnimObj', 0.2)
     param.k = ArAddAnimator({loop1})
   else
     ArStepAnimator(param, param.k)
@@ -126,7 +126,7 @@ AnimFlyCoinObj.OnStep = function(param)
   if (nil == param.k) then
     local loop1 = ArAddLoop(nil)
     ArAddMoveTo(loop1, 'Pos', 0.8, 0, 0).ease = ArEaseOut
-    ArAddCall(loop1, 'ArAddCoin', 0)
+    ArAddCall(loop1, 'AcAddCoin', 0)
     param.k = ArAddAnimator({loop1})
   else
     ArStepAnimator(param, param.k)
@@ -155,8 +155,8 @@ AnimSandGlass.OnStep = function(param)
     local loop2 = ArAddLoop(loop1, param.wave)
     param.ArRot = ArAddMoveTo(loop2, 'Rot', 1/glass_speed, 360)
     param.ArRot.ease = ArEaseOut
-    ArAddCall(loop2, 'ArUpdateTimeLabel', 0)
-    ArAddCall(loop1, 'ArSetNextWave', 0)
+    ArAddCall(loop2, 'AcUpdateTimeLabel', 0)
+    ArAddCall(loop1, 'AcSetNextWave', 0)
     param.k = ArAddAnimator({loop1})
   elseif (not IsGameOver()) then
     ArStepAnimator(param, param.k)
@@ -169,7 +169,7 @@ AnimKillHero.OnStep = function(param)
   if (nil == param.k) then
     local loop1 = ArAddLoop(nil)
     ArAddMoveTo(loop1, 'Alpha', 0.25, 0).ease = ArEaseOut
-    ArAddCall(loop1, 'ArAnimKillHero', 0)
+    ArAddCall(loop1, 'AcAnimKillHero', 0)
     param.k = ArAddAnimator({loop1})
   else
     ArStepAnimator(param, param.k)
@@ -225,7 +225,7 @@ AnimDamageBounce.OnStep = function(param)
     local loop1 = ArAddLoop(nil)
     ArAddMoveBy(loop1, 'Pos', 0.1, 0, -TILE_H/4).ease = ArEaseOut
     ArAddMoveBy(loop1, 'Pos', 0.25, 0, TILE_H/4).ease = ArEaseOutBounce
-    ArAddCall(loop1, 'ArEndDamageBounce', 0)
+    ArAddCall(loop1, 'AcEndDamageBounce', 0)
     param.k = ArAddAnimator({loop1})
   else
     ArStepAnimator(param, param.k)
@@ -238,7 +238,7 @@ AnimWarnPutHero.OnStep = function(param)
   if (nil == param.k) then
     local loop1 = ArAddLoop(nil)
     ArAddMoveTo(loop1, 'Alpha', 0.4, 0)
-    ArAddCall(loop1, 'ArKillAnimObj', 0)
+    ArAddCall(loop1, 'AcKillAnimObj', 0)
     param.k = ArAddAnimator({loop1})
   else
     ArStepAnimator(param, param.k)
@@ -251,7 +251,7 @@ AnimGameOver.OnStep = function(param)
   if (nil == param.k) then
     local loop1 = ArAddLoop(nil)
     ArAddMoveTo(loop1, 'Pos', 1.2, 0, 0).ease = ArEaseOutBounce
-    ArAddCall(loop1, 'ArEndGameOver', 0)
+    ArAddCall(loop1, 'AcEndGameOver', 0)
     param.k = ArAddAnimator({loop1})
   else
     ArStepAnimator(param, param.k)
