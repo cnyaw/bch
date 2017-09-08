@@ -318,8 +318,13 @@ function InitNextWave()
     Good.SetScale(o, 0.5, 0.5)
     Good.SetPos(o, TILE_W/2 * offset, TILE_H/2)
     offset = offset + 1
-    local o2 = Good.GenTextObj(stage_heroes_obj, string.format('%d', hero_count), TILE_W/2)
-    Good.SetPos(o2, TILE_W/2 * offset, TILE_H/2)
+    if (0 < hero_count) then
+      Good.SetAlpha(o, 255)
+      local o2 = Good.GenTextObj(stage_heroes_obj, string.format('%d', hero_count), TILE_W/2)
+      Good.SetPos(o2, TILE_W/2 * offset, TILE_H/2)
+    else
+      Good.SetAlpha(o, 128)
+    end
     offset = offset + 1.2
   end
   -- Add sand glass obj.
