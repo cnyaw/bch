@@ -100,8 +100,11 @@ AnimDamageHpObj.OnStep = function(param)
     local loop1 = ArAddLoop(nil)
     ArAddMoveBy(loop1, 'Pos', 0.2, dx, -TILE_H/2).ease = ArEaseOut
     ArAddMoveBy(loop1, 'Pos', 0.35, 0, TILE_H).ease = ArEaseOutBounce
-    ArAddCall(loop1, 'AcKillAnimObj', 0.2)
-    param.k = ArAddAnimator({loop1})
+    ArAddCall(loop1, 'AcKillAnimObj', 0.3)
+    local loop2 = ArAddLoop(nil)
+    ArAddDelay(loop2, 0.75)
+    ArAddMoveTo(loop2, 'Scale', 0.1, 0, 0)
+    param.k = ArAddAnimator({loop1, loop2})
   else
     ArStepAnimator(param, param.k)
   end
@@ -114,7 +117,10 @@ AnimHealHpObj.OnStep = function(param)
     local loop1 = ArAddLoop(nil)
     ArAddMoveBy(loop1, 'Pos', 0.2, 0, -20).ease = ArEaseOut
     ArAddCall(loop1, 'AcKillAnimObj', 0.2)
-    param.k = ArAddAnimator({loop1})
+    local loop2 = ArAddLoop(nil)
+    ArAddDelay(loop2, 0.3)
+    ArAddMoveTo(loop2, 'Scale', 0.1, 0, 0)
+    param.k = ArAddAnimator({loop1, loop2})
   else
     ArStepAnimator(param, param.k)
   end
