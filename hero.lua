@@ -98,14 +98,29 @@ end
 
 -- Func.
 
+function CenterTextAnchor(s)
+  local c = Good.GetChildCount(s)
+  local half = math.floor(c / 2)
+  for  i = 0, half do
+    local o = Good.GetChild(s, i)
+    Good.SetAnchor(o, 1, 0.5)
+  end
+  for  i = half, c do
+    local o = Good.GetChild(s, i)
+    Good.SetAnchor(o, 0, 0.5)
+  end
+end
+
 function AddAnimHpObj(o, str, color, bgcolor, script)
   local x, y = Good.GetPos(o)
   local s = Good.GenTextObj(map_id, str, TILE_W/2, script)
+  CenterTextAnchor(s)
   local w = GetTextObjWidth(s)
   Good.SetPos(s, x + (TILE_W - w)/2, y)
   if (nil ~= bgcolor) then
     SetTextObjColor(s, bgcolor)
     s = Good.GenTextObj(s, str, TILE_W/2)
+    CenterTextAnchor(s)
     Good.SetPos(s, -1, -1)
   end
   SetTextObjColor(s, color)
