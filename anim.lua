@@ -75,7 +75,8 @@ AnimFlyBuffEffect.OnStep = function(param)
       local dist = math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
       local dist_cell = dist / TILE_W
       local effect = EffectData[param.effect_id]
-      local l,t,w,h = Good.GetDim(o)
+      local c = Good.GetChild(o, 0)
+      local l,t,w,h = Good.GetDim(c)
       param.MoveToAr = ArAddMoveTo(loop1, 'Pos', dist_cell * effect.Speed / 60, x2 + (TILE_W - w)/2, y2 + (TILE_H - h)/2)
     end
     ArAddCall(loop1, 'AcApplyBuffEffect', 0)
@@ -83,7 +84,8 @@ AnimFlyBuffEffect.OnStep = function(param)
   else
     -- Adjust target pos of MoveTo ar.
     if (IsHeroAlive(target_id)) then
-      local l,t,w,h = Good.GetDim(o)
+      local c = Good.GetChild(o, 0)
+      local l,t,w,h = Good.GetDim(c)
       local x, y = Good.GetPos(target_id)
       param.MoveToAr.v1 = x + (TILE_W - w)/2
       param.MoveToAr.v2 = y + (TILE_H - h)/2
@@ -258,6 +260,18 @@ AnimGameOver.OnStep = function(param)
     local loop1 = ArAddLoop(nil)
     ArAddMoveTo(loop1, 'Pos', 1.2, 0, 0).ease = ArEaseOutBounce
     ArAddCall(loop1, 'AcEndGameOver', 0)
+    param.k = ArAddAnimator({loop1})
+  else
+    ArStepAnimator(param, param.k)
+  end
+end
+
+AnimRotate = {}
+
+AnimRotate.OnStep = function(param)
+  if (nil == param.k) then
+    local loop1 = ArAddLoop(nil)
+    ArAddMoveBy(loop1, 'Rot', 0.01, 10)
     param.k = ArAddAnimator({loop1})
   else
     ArStepAnimator(param, param.k)

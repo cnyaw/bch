@@ -492,8 +492,10 @@ function UpdateHeroSkill(param)
         if (EFFECT_TYPE_STRIKE == effect.Type) then
           ApplyBuffEffect(param.lv, param.hero_id, skill_inst.target_id, skill_inst.skill_id, effect_id)
         elseif (EFFECT_TYPE_FLY == effect.Type) then
-          local o = Good.GenObj(map_id, effect.FlyObj, 'AnimFlyBuffEffect')
-          local l,t,w,h = Good.GetDim(o)
+          local o = Good.GenDummy(map_id, 'AnimFlyBuffEffect')
+          local c = Good.GenObj(o, effect.FlyObj)
+          Good.SetPos(c, 0, 0)
+          local l,t,w,h = Good.GetDim(c)
           local x, y = GetXyFromPos(param.pos)
           Good.SetPos(o, x + (TILE_W - w)/2, y + (TILE_H - h)/2)
           local p = Good.GetParam(o)

@@ -2,8 +2,7 @@
 version=0.3
 name=Battle Chess
 window=400 640
-texs=13 17 18 21 3 19 15 26
-sprites=20
+texs=13 17 18 21 3 15 26 1 31 32
 levels=14 0 22
 
 [scripts]
@@ -39,10 +38,6 @@ fileName=./res/board.png
 name=button
 fileName=./res/button.png
 
-[tex19]
-name=energy
-fileName=./res/energy.png
-
 [tex15]
 name=combat
 fileName=./res/combat.png
@@ -51,15 +46,17 @@ fileName=./res/combat.png
 name=castle
 fileName=./res/castle.png
 
-[sprite20]
-name=energy
-texture=19
-tileWidth=32
-tileHeight=32
-cxTile=6
-cyTile=2
-data=0 12 1 12 2 12 3 12 4 12 5 12 6 12 7 12 8 12 9 12 10 12 11 12
-loop=1
+[tex1]
+name=fireball
+fileName=./res/fireball.png
+
+[tex31]
+name=paralysis
+fileName=./res/paralysis.png
+
+[tex32]
+name=ice
+fileName=./res/ice.png
 
 [level14]
 name=stage
@@ -81,24 +78,22 @@ snapHeight=24
 
 [object23]
 name=fireball
-bgColor=255 0 0
-sprite=20
+texture=1
 x=16
 y=16
 
 [object24]
 name=iceball
-bgColor=0 255 255
-sprite=20
+texture=32
 x=64
 y=16
 
 [object25]
 name=paralysis
-bgColor=255 255 0
-sprite=20
+texture=31
 x=112
 y=16
+script=AnimRotate
 
 [object29]
 name=quit game
