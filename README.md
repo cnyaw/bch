@@ -9,4 +9,4 @@ Android download https://play.google.com/store/apps/details?id=weilican.bch
 * 每一兵種有二種技能
 * 無限關卡可以挑戰
 
-![image](Screenshot_2017-04-29-12-04-22.png)
+![image](Screenshot.png)
