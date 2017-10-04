@@ -34,6 +34,7 @@ Hero.OnStep = function(param)
     param.paralysis_time = param.paralysis_time - 1
     if (0 >= param.paralysis_time) then
       Good.SetBgColor(param._id, 0xffffffff)
+      Good.KillObj(Good.FindChild(param._id, 'paralysis'))
     end
   else
     param.step(param)
@@ -180,6 +181,12 @@ function ApplyBuffEffect(lv, hero_id, target_id, skill_id, effect_id)
   elseif (EFFECT_PARALYSIS == effect.Effect) then
     target.paralysis_time = target.paralysis_time + effect.Duration + 3 * math.min(40, target.lv)
     Good.SetBgColor(target_id, 0xffffd800)
+    if (-1 == Good.FindChild(target_id, 'paralysis')) then
+      local o = Good.GenObj(target_id, 25) -- Attach a paralysis effect obj to target.
+      Good.SetAnchor(o, 0.5, 0.5)
+      local l,t,w,h = Good.GetDim(o)
+      Good.SetPos(o, (TILE_W - w)/2, (TILE_H - h)/2)
+    end
   end
 end
 
