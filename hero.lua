@@ -155,6 +155,40 @@ function AddMyHero(hero_id, pos, lv)
   return o
 end
 
+function ApplyDamageBuffEffect(target, damage)
+  local target_id = target._id
+  target.hp = math.max(target.hp - damage, 0)
+  AddDamageObj(target_id, damage)
+  UpdateHeroHpObj(target)
+  if (0 >= target.hp) then
+    KillHero(target)
+  else
+    local dummy = Good.GetParent(target_id)
+    local param = Good.GetParam(dummy)
+    if (nil == param.k) then
+      Good.SetScript(dummy, 'AnimDamageBounce')
+    end
+  end
+end
+
+function ApplyHealBuffEffect(target, amount)
+  target.hp = math.min(target.hp + amount, target.max_hp)
+  AddHealObj(target._id, amount)
+  UpdateHeroHpObj(target)
+end
+
+function ApplyParalysisBuffEffect(target, effect)
+  local target_id = target._id
+  target.paralysis_time = target.paralysis_time + effect.Duration + 3 * math.min(40, target.lv)
+  Good.SetBgColor(target_id, 0xffffd800)
+  if (-1 == Good.FindChild(target_id, 'paralysis')) then
+    local o = Good.GenObj(target_id, 25) -- Attach a paralysis effect obj to target.
+    Good.SetAnchor(o, 0.5, 0.5)
+    local l,t,w,h = Good.GetDim(o)
+    Good.SetPos(o, (TILE_W - w)/2, (TILE_H - h)/2)
+  end
+end
+
 function ApplyBuffEffect(lv, hero_id, target_id, skill_id, effect_id)
   local target = Good.GetParam(target_id)
   local hero = HeroData[hero_id]
@@ -162,31 +196,11 @@ function ApplyBuffEffect(lv, hero_id, target_id, skill_id, effect_id)
   local effect = EffectData[effect_id]
   local damage = GetLevelValue(lv, hero.Atk + skill.Atk)
   if (EFFECT_DAMAGE == effect.Effect) then
-    target.hp = math.max(target.hp - damage, 0)
-    AddDamageObj(target_id, damage)
-    UpdateHeroHpObj(target)
-    if (0 >= target.hp) then
-      KillHero(target)
-    else
-      local dummy = Good.GetParent(target_id)
-      local param = Good.GetParam(dummy)
-      if (nil == param.k) then
-        Good.SetScript(dummy, 'AnimDamageBounce')
-      end
-    end
+    ApplyDamageBuffEffect(target, damage)
   elseif (EFFECT_HEAL == effect.Effect) then
-    target.hp = math.min(target.hp + damage, target.max_hp)
-    AddHealObj(target_id, damage)
-    UpdateHeroHpObj(target)
+    ApplyHealBuffEffect(target, damage)
   elseif (EFFECT_PARALYSIS == effect.Effect) then
-    target.paralysis_time = target.paralysis_time + effect.Duration + 3 * math.min(40, target.lv)
-    Good.SetBgColor(target_id, 0xffffd800)
-    if (-1 == Good.FindChild(target_id, 'paralysis')) then
-      local o = Good.GenObj(target_id, 25) -- Attach a paralysis effect obj to target.
-      Good.SetAnchor(o, 0.5, 0.5)
-      local l,t,w,h = Good.GetDim(o)
-      Good.SetPos(o, (TILE_W - w)/2, (TILE_H - h)/2)
-    end
+    ApplyParalysisBuffEffect(target, effect)
   end
 end
 
@@ -486,6 +500,22 @@ function RemoveTableItem(t, id)
   end
 end
 
+function ApplyFlyBuffEffect(param, skill_inst, effect_id, effect)
+  local o = Good.GenDummy(map_id, 'AnimFlyBuffEffect')
+  local c = Good.GenObj(o, effect.FlyObj)
+  Good.SetPos(c, 0, 0)
+  local l,t,w,h = Good.GetDim(c)
+  local x, y = GetXyFromPos(param.pos)
+  Good.SetPos(o, x + (TILE_W - w)/2, y + (TILE_H - h)/2)
+  local p = Good.GetParam(o)
+  p.lv = param.lv
+  p.hero_id = param.hero_id
+  p.target_id = skill_inst.target_id
+  p.skill_id = skill_inst.skill_id
+  p.effect_id = effect_id
+  p.pos = param.pos
+end
+
 function UpdateHeroSkill(param)
   local NewSkillInst = {}
   for skill_id, skill_inst in pairs(param.skill_inst) do
@@ -499,19 +529,7 @@ function UpdateHeroSkill(param)
         if (EFFECT_TYPE_STRIKE == effect.Type) then
           ApplyBuffEffect(param.lv, param.hero_id, skill_inst.target_id, skill_inst.skill_id, effect_id)
         elseif (EFFECT_TYPE_FLY == effect.Type) then
-          local o = Good.GenDummy(map_id, 'AnimFlyBuffEffect')
-          local c = Good.GenObj(o, effect.FlyObj)
-          Good.SetPos(c, 0, 0)
-          local l,t,w,h = Good.GetDim(c)
-          local x, y = GetXyFromPos(param.pos)
-          Good.SetPos(o, x + (TILE_W - w)/2, y + (TILE_H - h)/2)
-          local p = Good.GetParam(o)
-          p.lv = param.lv
-          p.hero_id = param.hero_id
-          p.target_id = skill_inst.target_id
-          p.skill_id = skill_inst.skill_id
-          p.effect_id = effect_id
-          p.pos = param.pos
+          ApplyFlyBuffEffect(param, skill_inst, effect_id, effect)
         end
         skill_inst.cd = math.floor(buff.Time / buff.Hits)
         skill_inst.hits = skill_inst.hits - 1
