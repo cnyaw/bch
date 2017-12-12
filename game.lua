@@ -29,6 +29,7 @@ local castle_id = 26
 local menu_id = 28
 local king_hero_id = 50
 
+local hud_obj = nil
 local coin_obj = nil
 
 local init_game = false
@@ -57,6 +58,7 @@ Game = {}
 Game.OnCreate = function(param)
   MAP_X, MAP_Y = Good.GetPos(map_id)
   init_game = true
+  hud_obj = nil
   coin_obj = nil
   reset_timeout = nil
   glass_speed = 1
@@ -502,7 +504,10 @@ function UpdateCoinCountObj(ShowStage)
   if (nil ~= coin_obj) then
     Good.KillObj(coin_obj)
   end
-  coin_obj = Good.GenDummy(-1)
+  if (nil == hud_obj) then
+    hud_obj = Good.GenDummy(-1)
+  end
+  coin_obj = Good.GenDummy(hud_obj)
   local scale = (TILE_W/2) / 32
   local o = Good.GenObj(coin_obj, coin_id)
   Good.SetScale(o, scale, scale)
