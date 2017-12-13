@@ -312,7 +312,10 @@ function InitNextWave()
     end
   end
   -- Gen stage heroes info.
-  stage_heroes_obj = Good.GenDummy(-1)
+  if (nil == hud_obj) then
+    hud_obj = Good.GenDummy(-1)
+  end
+  stage_heroes_obj = Good.GenDummy(hud_obj)
   local offset = 0
   for hero_id, hero_count in pairs(stage_heroes_count) do
     local hero = HeroData[hero_id]
