@@ -98,7 +98,10 @@ AnimDamageHpObj = {}
 
 AnimDamageHpObj.OnStep = function(param)
   if (nil == param.k) then
-    local dx = math.random(-TILE_W/2, TILE_W/2)
+    local dx = math.random(TILE_W/3, 2*TILE_W/3)
+    if (math.random(2) == 1) then
+      dx = -1 * dx
+    end
     local loop1 = ArAddLoop(nil)
     ArAddMoveBy(loop1, 'Pos', 0.2, dx, -TILE_H/2).ease = ArEaseOut
     ArAddMoveBy(loop1, 'Pos', 0.35, 0, TILE_H).ease = ArEaseOutBounce
