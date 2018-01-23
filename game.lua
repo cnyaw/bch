@@ -249,6 +249,20 @@ function GetLevelValue(lv, init_val)
   return math.floor(init_val * math.pow(UPGRADE_CURVE, lv))
 end
 
+function PrepareSelectableHeroes(stage, selectable_hero)
+  local remain_hero_count = 0
+  for i = 1, #stage.Heroes do
+    local hero_config = stage.Heroes[i]
+    local hero_id = hero_config[1]
+    local hero_count = stage_heroes_count[hero_id]
+    if (0 < hero_count) then
+      selectable_hero[hero_id] = {hero_count}
+      remain_hero_count = remain_hero_count + hero_count
+    end
+  end
+  return remain_hero_count
+end
+
 function InitNextWave()
   if (IsGameOver()) then
     return
@@ -263,16 +277,7 @@ function InitNextWave()
   end
   -- Prepare selectable heroes for next wave.
   local selectable_hero = {}
-  local remain_hero_count = 0
-  for i = 1, #stage.Heroes do
-    local hero_config = stage.Heroes[i]
-    local hero_id = hero_config[1]
-    local hero_count = stage_heroes_count[hero_id]
-    if (0 < hero_count) then
-      selectable_hero[hero_id] = {hero_count}
-      remain_hero_count = remain_hero_count + hero_count
-    end
-  end
+  local remain_hero_count = PrepareSelectableHeroes(stage, selectable_hero)
   -- Advance to next stage if curr stage is cleared.
   if (0 >= remain_hero_count) then
     InitStage(curr_stage_id + 1)
