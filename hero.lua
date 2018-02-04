@@ -578,11 +578,10 @@ function UpgradeHeroOnField(hero_id)
     if (IsHeroAlive(o)) then
       local param = Good.GetParam(o)
       if (hero_id == param.hero_id) then
-        param.lv = param.lv + 1
-        param.max_hp = GetLevelValue(param.lv, hero.Hp)
-        param.hp = param.max_hp
-        AddAnimHpObj(o, 'LvUp', 0xff00ff00, 0xff007f00, 'AnimHealHpObj')
-        UpdateHeroHpObj(param)
+        local new_hero = GenHeroObj(hero_id, param.pos, MY_HP_COLOR, true, param.lv + 1)
+        AddAnimHpObj(new_hero, 'LvUp', 0xff00ff00, 0xff007f00, 'AnimHealHpObj')
+        Good.KillObj(o)
+        MyHeroes[i] = new_hero
       end
     end
   end
