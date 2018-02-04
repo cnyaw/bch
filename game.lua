@@ -1,5 +1,3 @@
-local UPGRADE_CURVE = 1.2
-local UPGRADE_CD_CURVE = 1.05
 
 local HERO_MENU_W, HERO_MENU_H = 65, 2.2 * TILE_H
 local HERO_MENU_OFFSET_X = (WND_W - 6 * HERO_MENU_W) / 2
@@ -239,14 +237,6 @@ end
 
 function GetKingLv()
   return 1 + curr_stage_id/25
-end
-
-function GetLevelCdValue(lv, init_val)
-  return math.floor(init_val * math.pow(UPGRADE_CD_CURVE, lv))
-end
-
-function GetLevelValue(lv, init_val)
-  return math.floor(init_val * math.pow(UPGRADE_CURVE, lv))
 end
 
 function PrepareSelectableHeroes(stage, selectable_hero)

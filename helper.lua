@@ -1,4 +1,6 @@
 local SAV_FILE_NAME = "bch.sav"
+local UPGRADE_CD_CURVE = 1.05
+local UPGRADE_CURVE = 1.2
 
 Graphics.SetAntiAlias(1)                -- Enable anti alias.
 
@@ -140,4 +142,12 @@ function SaveGame()
     outf:write(string.format('TotalKillEnemy[%d]=%d\n', hero_id, TotalKillEnemy[hero_id]))
   end
   outf:close()
+end
+
+function GetLevelCdValue(lv, init_val)
+  return math.floor(init_val * math.pow(UPGRADE_CD_CURVE, lv))
+end
+
+function GetLevelValue(lv, init_val)
+  return math.floor(init_val * math.pow(UPGRADE_CURVE, lv))
 end
