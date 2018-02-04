@@ -452,6 +452,7 @@ function SelectHero(x, y)
         end
       end
       UpdateCoinCountObj(true)
+      UpgradeHeroOnField(NewSelHero)
     end
   else
     if (NewSelHero == SelHero) then

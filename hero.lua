@@ -570,3 +570,20 @@ function UpdateHeroHpObj(param)
     Good.SetDim(param.hp_obj, 0, 0, (param.hp / param.max_hp) * (TILE_W - 4), 3)
   end
 end
+
+function UpgradeHeroOnField(hero_id)
+  local hero = HeroData[hero_id]
+  for i = 1, #MyHeroes do
+    local o = MyHeroes[i]
+    if (IsHeroAlive(o)) then
+      local param = Good.GetParam(o)
+      if (hero_id == param.hero_id) then
+        param.lv = param.lv + 1
+        param.max_hp = GetLevelValue(param.lv, hero.Hp)
+        param.hp = param.max_hp
+        AddAnimHpObj(o, 'LvUp', 0xff00ff00, 0xff007f00, 'AnimHealHpObj')
+        UpdateHeroHpObj(param)
+      end
+    end
+  end
+end
