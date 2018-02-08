@@ -6,18 +6,18 @@ texs=13 17 18 21 3 15 26 1 31 32 20
 levels=19 14 0 22
 
 [scripts]
-6=./herodata.lua
-7=./skilldata.lua
-8=./buffdata.lua
-9=./effectdata.lua
+6=./script/herodata.lua
+7=./script/skilldata.lua
+8=./script/buffdata.lua
+9=./script/effectdata.lua
 10=../good/samples/Util.lua
 11=../good/samples/ar.lua
-27=./helper.lua
-4=./game.lua
-5=./hero.lua
-12=./anim.lua
-16=./stage.lua
-36=./title.lua
+27=./script/helper.lua
+4=./script/game.lua
+5=./script/hero.lua
+12=./script/anim.lua
+16=./script/stage.lua
+36=./script/title.lua
 
 [tex13]
 name=coin
