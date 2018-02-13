@@ -121,6 +121,33 @@ Game.OnStep = function(param)
   total_play_time = total_play_time + 1
 end
 
+function CloseGameMenu(param)
+  SaveGame()
+  Good.KillObj(menu_obj)
+  reset_timeout = nil
+  param.step = OnGamePlaying
+end
+
+function HandleQuitGame()
+  SaveGame()
+  sel_stage_id = curr_stage_id
+  Good.GenObj(-1, stage_lvl_id)
+end
+
+function HandleResetGame(btn_reset)
+  if (nil == reset_timeout) then
+    reset_timeout = Good.GenTextObj(btn_reset, 'Push again to reset', TILE_H/3)
+    Good.SetPos(reset_timeout, 0, -TILE_H/2)
+    reset_timer = RESET_WAIT_TIME
+    return
+  end
+  ResetGame()
+  reset_count = reset_count + 1
+  SaveGame()
+  sel_stage_id = curr_stage_id
+  Good.GenObj(-1, stage_lvl_id)
+end
+
 function OnGameMenu(param)
   UpdateStatistics()
   UpdateHeroMenuCd()
@@ -132,10 +159,7 @@ function OnGameMenu(param)
     end
   end
   if (Input.IsKeyPressed(Input.ESCAPE)) then
-    SaveGame()
-    Good.KillObj(menu_obj)
-    reset_timeout = nil
-    param.step = OnGamePlaying
+    CloseGameMenu(param)
     return
   end
   if (Input.IsKeyPressed(Input.LBUTTON)) then
@@ -147,10 +171,7 @@ function OnGameMenu(param)
     x = x + menu_x
     y = y + menu_y
     if (PtInRect(mouse_x, mouse_y, x, y, x + w, y + h)) then
-      -- Quit game.
-      SaveGame()
-      sel_stage_id = curr_stage_id
-      Good.GenObj(-1, stage_lvl_id)
+      HandleQuitGame()
       return
     end
     local btn_reset = Good.FindChild(menu_obj, 'reset game')
@@ -159,20 +180,17 @@ function OnGameMenu(param)
     x = x + menu_x
     y = y + menu_y
     if (PtInRect(mouse_x, mouse_y, x, y, x + w, y + h)) then
-      -- Reset game.
-      if (nil == reset_timeout) then
-        reset_timeout = Good.GenTextObj(btn_reset, 'Push again to reset', TILE_H/3)
-        Good.SetPos(reset_timeout, 0, -TILE_H/2)
-        reset_timer = RESET_WAIT_TIME
-        return
-      end
-      ResetGame()
-      reset_count = reset_count + 1
-      SaveGame()
-      sel_stage_id = curr_stage_id
-      Good.GenObj(-1, stage_lvl_id)
+      HandleResetGame(btn_reset)
       return
     end
+  end
+end
+
+function ToggleHourGlassSpeed()
+  if (1 == glass_speed) then
+    glass_speed = 2
+  else
+    glass_speed = 1
   end
 end
 
@@ -192,11 +210,7 @@ function OnGamePlaying(param)
     local l,t,mw,mh = Good.GetDim(map_id) -- map dim.
     local x, y = Input.GetMousePos()
     if (PtInRect(x, y, WND_W - 2 * TILE_W, 0, WND_W, TILE_H)) then
-      if (1 == glass_speed) then
-        glass_speed = 2
-      else
-        glass_speed = 1
-      end
+      ToggleHourGlassSpeed()
     elseif (PtInRect(x, y, MAP_X, MAP_Y, MAP_X + mw, MAP_Y + mh)) then
       PutHero(x, y, mw, mh)
     elseif (PtInRect(x, y, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
