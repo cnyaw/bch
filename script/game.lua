@@ -186,7 +186,7 @@ function OnGameMenu(param)
   end
 end
 
-function ToggleHourGlassSpeed()
+function ToggleSandGlassSpeed()
   if (1 == glass_speed) then
     glass_speed = 2
   else
@@ -210,7 +210,7 @@ function OnGamePlaying(param)
     local l,t,mw,mh = Good.GetDim(map_id) -- map dim.
     local x, y = Input.GetMousePos()
     if (PtInRect(x, y, WND_W - 2 * TILE_W, 0, WND_W, TILE_H)) then
-      ToggleHourGlassSpeed()
+      ToggleSandGlassSpeed()
     elseif (PtInRect(x, y, MAP_X, MAP_Y, MAP_X + mw, MAP_Y + mh)) then
       PutHero(x, y, mw, mh)
     elseif (PtInRect(x, y, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
@@ -267,6 +267,52 @@ function PrepareSelectableHeroes(stage, selectable_hero)
   return remain_hero_count
 end
 
+function AdvanceNextStage()
+  InitStage(curr_stage_id + 1)
+  UpdateCoinCountObj(true)
+  local p = Good.GetParam(king_obj)
+  p.lv = GetKingLv()
+  p.max_hp = GetLevelValue(p.lv, HeroData[king_hero_id].Hp)
+end
+
+function AddStageNextHeroInfo()
+  if (nil == hud_obj) then
+    hud_obj = Good.GenDummy(-1)
+  end
+  stage_heroes_obj = Good.GenDummy(hud_obj)
+  local offset = 0
+  for hero_id, hero_count in pairs(stage_heroes_count) do
+    local hero = HeroData[hero_id]
+    local o = GenHeroPieceObj(stage_heroes_obj, hero.Face, false, '')
+    Good.SetScale(o, 0.5, 0.5)
+    Good.SetPos(o, TILE_W/2 * offset, TILE_H/2)
+    offset = offset + 1
+    if (0 < hero_count) then
+      Good.SetAlpha(o, 255)
+      local o2 = Good.GenTextObj(stage_heroes_obj, string.format('%d', hero_count), TILE_W/2)
+      Good.SetPos(o2, TILE_W/2 * offset, TILE_H/2)
+    else
+      Good.SetAlpha(o, 128)
+    end
+    offset = offset + 1.2
+  end
+end
+
+function GenSandGlassObj(wave)
+  local sand_glass_obj = Good.GenObj(-1, sand_glass_id, 'AnimSandGlass')
+  Good.SetPos(sand_glass_obj, WND_W - TILE_W - 6, -TILE_H/4)
+  Good.SetAnchor(sand_glass_obj, 0.5, 0.5)
+  local s = (TILE_W/2)/45
+  Good.SetScale(sand_glass_obj, s, s)
+  if (1 == glass_speed) then
+    Good.SetBgColor(sand_glass_obj, 0xffffffff)
+  else
+    Good.SetBgColor(sand_glass_obj, 0xffff0000)
+  end
+  local p = Good.GetParam(sand_glass_obj)
+  p.wave = wave
+end
+
 function InitNextWave()
   if (IsGameOver()) then
     return
@@ -284,11 +330,7 @@ function InitNextWave()
   local remain_hero_count = PrepareSelectableHeroes(stage, selectable_hero)
   -- Advance to next stage if curr stage is cleared.
   if (0 >= remain_hero_count) then
-    InitStage(curr_stage_id + 1)
-    UpdateCoinCountObj(true)
-    local p = Good.GetParam(king_obj)
-    p.lv = GetKingLv()
-    p.max_hp = GetLevelValue(p.lv, HeroData[king_hero_id].Hp)
+    AdvanceNextStage()
     return
   end
   -- Select next wave heroes.
@@ -321,39 +363,9 @@ function InitNextWave()
     end
   end
   -- Gen stage heroes info.
-  if (nil == hud_obj) then
-    hud_obj = Good.GenDummy(-1)
-  end
-  stage_heroes_obj = Good.GenDummy(hud_obj)
-  local offset = 0
-  for hero_id, hero_count in pairs(stage_heroes_count) do
-    local hero = HeroData[hero_id]
-    local o = GenHeroPieceObj(stage_heroes_obj, hero.Face, false, '')
-    Good.SetScale(o, 0.5, 0.5)
-    Good.SetPos(o, TILE_W/2 * offset, TILE_H/2)
-    offset = offset + 1
-    if (0 < hero_count) then
-      Good.SetAlpha(o, 255)
-      local o2 = Good.GenTextObj(stage_heroes_obj, string.format('%d', hero_count), TILE_W/2)
-      Good.SetPos(o2, TILE_W/2 * offset, TILE_H/2)
-    else
-      Good.SetAlpha(o, 128)
-    end
-    offset = offset + 1.2
-  end
+  AddStageNextHeroInfo()
   -- Add sand glass obj.
-  local sand_glass_obj = Good.GenObj(-1, sand_glass_id, 'AnimSandGlass')
-  Good.SetPos(sand_glass_obj, WND_W - TILE_W - 6, -TILE_H/4)
-  Good.SetAnchor(sand_glass_obj, 0.5, 0.5)
-  local s = (TILE_W/2)/45
-  Good.SetScale(sand_glass_obj, s, s)
-  if (1 == glass_speed) then
-    Good.SetBgColor(sand_glass_obj, 0xffffffff)
-  else
-    Good.SetBgColor(sand_glass_obj, 0xffff0000)
-  end
-  local p = Good.GetParam(sand_glass_obj)
-  p.wave = stage.Wave[1]
+  GenSandGlassObj(stage.Wave[1])
 end
 
 function InitStage(stage_id)
