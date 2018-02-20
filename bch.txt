@@ -133,20 +133,28 @@ name=game menu
 bgColor=2 106 136
 x=16
 y=64
-dim=0 0 300 420
-objects=29 30
+dim=0 0 300 380
+objects=29 30 37
 
 [object29]
 name=quit game
 bgColor=5 142 5
 x=16
-y=96
+y=304
 dim=0 0 120 40
 
 [object30]
 name=reset game
 bgColor=199 26 59
 x=160
-y=96
+y=304
 dim=0 0 120 40
+
+[object37]
+name=msg dummy
+sprite=255
+texture=255
+map=255
+x=16
+y=16
 

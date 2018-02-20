@@ -496,9 +496,6 @@ function ShowGameMenu()
   local o = Good.GenObj(-1, menu_id, '')
   local l,t,w,h = Good.GetDim(o)
   Good.SetPos(o, (WND_W - w)/2, (WND_H - h)/2)
-  local s = Good.GenTextObj(o, 'Chess Battle', TILE_H)
-  local slen = GetTextObjWidth(s)
-  Good.SetPos(s, (w - slen)/2, TILE_H/2)
   menu_obj = o
   -- Buttons.
   local btn_quit = Good.FindChild(o, 'quit game')
@@ -636,11 +633,9 @@ function UpdateStage()
 end
 
 function UpdateStatistics()
-  local btn_quit = Good.FindChild(menu_obj, 'quit game')
-  Good.KillObj(Good.GetChild(btn_quit, 1))
-  local l,t,w,h = Good.GetDim(btn_quit)
-  local dummy = Good.GenDummy(btn_quit)
-  Good.SetPos(dummy, 0, h)
+  local msg_dummy = Good.FindChild(menu_obj, 'msg dummy')
+  Good.KillObj(Good.GetChild(msg_dummy, 0)) -- First child is the dummy of msgs.
+  local dummy = Good.GenDummy(msg_dummy)
   local STAT_TEXT_SIZE = TILE_H/2
   local SMALL_STAT_TEXT_SIZE = TILE_H/3
   local OFFSET_1 = 1.05
