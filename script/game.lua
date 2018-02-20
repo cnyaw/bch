@@ -41,10 +41,6 @@ local next_wave_pos = 0
 
 local SelHero = nil
 
-if (nil == HeroMenu) then
-  InitMenu()
-end
-
 local stage = nil
 
 local menu_obj = nil

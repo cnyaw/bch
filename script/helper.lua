@@ -79,7 +79,7 @@ function GetXyFromPos(pos)
   return x, y
 end
 
-function InitMenu()
+function GenHeroMenu()
   HeroMenu = {}
   for hero_id = 1, 6 do
     local menu = {}
@@ -92,6 +92,10 @@ function InitMenu()
     end
     HeroMenu[hero_id] = menu
   end
+end
+
+if (nil == HeroMenu) then
+  GenHeroMenu()
 end
 
 function InitOccupyMap()
@@ -118,7 +122,7 @@ function ResetGame()
   for i = 1, 6 do
     CurrKillEnemy[i] = 0
   end
-  InitMenu()
+  GenHeroMenu()
 end
 
 function SaveGame()
