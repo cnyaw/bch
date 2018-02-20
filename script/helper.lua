@@ -1,6 +1,12 @@
 local SAV_FILE_NAME = "bch.sav"
 local UPGRADE_CD_CURVE = 1.05
 local UPGRADE_CURVE = 1.2
+local MENU_TEXT_OFFSET_X, MENU_TEXT_OFFSET_Y = 2, 2
+local MENU_TEXT_SIZE = 15
+local HERO_UPGRADE_DISABLE_COLOR = 0xff505050
+local HERO_MENU_DISABLE_COLOR = 0xff808080
+local HERO_MENU_DESEL_COLOR = 0xff4c8000
+local HERO_MENU_SEL_COLOR = 0xff8cff00
 
 Graphics.SetAntiAlias(1)                -- Enable anti alias.
 
@@ -10,9 +16,14 @@ MAP_X, MAP_Y = 0, 0
 MAP_W, MAP_H = 9, 10
 TILE_W, TILE_H = 44, 44
 
+HERO_MENU_W, HERO_MENU_H = 65, 2.2 * TILE_H
+HERO_MENU_OFFSET_X = (WND_W - 6 * HERO_MENU_W) / 2
+HERO_MENU_OFFSET_Y = WND_H - HERO_MENU_H
+
 sel_stage_id = 1
 max_stage_id = 1
 max_max_stage_id = 1
+local hero_menu_button_id = 3
 
 coin_count = 100
 curr_total_coin_count = 0
@@ -96,6 +107,97 @@ end
 
 if (nil == HeroMenu) then
   GenHeroMenu()
+end
+
+function InitHeroMenu(menu, hero_id)
+  local hero = HeroData[hero_id]
+  menu.gen_cd = GetLevelCdValue(menu.lv, hero.GenCd)
+  menu.put_cost = GetLevelValue(menu.lv, hero.PutCost)
+  menu.upgrade_cost = GetLevelValue(menu.lv, hero.UpgradeCost)
+  menu.count = 0
+  menu.cd = 0
+  local x = HERO_MENU_OFFSET_X + (hero_id - 1) * HERO_MENU_W
+  local y = HERO_MENU_OFFSET_Y
+  local dummy = Good.GenDummy(-1)
+  Good.SetPos(dummy, x, y)
+  local cd_obj = GenColorObj(dummy, HERO_MENU_W - 4, HERO_MENU_H, HERO_MENU_DISABLE_COLOR)
+  Good.SetPos(cd_obj, 2, 2)
+  menu.cd_obj = cd_obj
+  local piece_obj = GenHeroPieceObj(dummy, hero.Face, true, '')
+  Good.SetAlpha(piece_obj, 128)
+  Good.SetPos(piece_obj, (HERO_MENU_W - TILE_W) / 2, (HERO_MENU_H - TILE_H) / 2)
+  SetTextObjColor(piece_obj, hero.Color)
+  menu.o = piece_obj
+  menu.dummy = dummy
+  menu.info_obj = nil
+end
+
+function UpdateHeroMenuInfo(menu)
+  if (nil ~= menu.info_obj) then
+    Good.KillObj(menu.info_obj)
+  end
+  if (0 > menu.max_count) then
+    return
+  end
+  local info_obj = Good.GenDummy(menu.dummy)
+  if (0 < menu.max_count) then
+    local lv_obj = Good.GenTextObj(info_obj, string.format('%d', menu.lv), MENU_TEXT_SIZE)
+    Good.SetPos(lv_obj, (HERO_MENU_W + TILE_W/2)/2, (HERO_MENU_H + TILE_H/2)/2)
+    local cost_obj = Good.GenTextObj(info_obj, string.format('$%d', menu.put_cost), MENU_TEXT_SIZE)
+    Good.SetPos(cost_obj, MENU_TEXT_OFFSET_X, MENU_TEXT_OFFSET_Y)
+    local count_obj = Good.GenTextObj(info_obj, string.format('%d/%d', menu.count, menu.max_count), MENU_TEXT_SIZE)
+    local tw = GetTextObjWidth(count_obj)
+    Good.SetPos(count_obj, HERO_MENU_W - MENU_TEXT_OFFSET_X - tw, MENU_TEXT_OFFSET_Y)
+  end
+  local btn_obj = Good.GenObj(info_obj, hero_menu_button_id)
+  local l,t,w,h = Good.GetDim(btn_obj)
+  Good.SetPos(btn_obj, (HERO_MENU_W - w)/2, HERO_MENU_H - MENU_TEXT_OFFSET_Y - h)
+  local upgrade_obj = Good.GenTextObj(btn_obj, string.format('$%d', menu.upgrade_cost), MENU_TEXT_SIZE)
+  tw = GetTextObjWidth(upgrade_obj)
+  Good.SetPos(upgrade_obj, (w - tw)/2, (h - MENU_TEXT_SIZE)/2)
+  menu.btn_obj = btn_obj
+  menu.info_obj = info_obj
+end
+
+function UpdateHeroMenuSel()
+  for  i = 1, #HeroMenu do
+    local menu = HeroMenu[i]
+    if (coin_count < menu.put_cost or menu.count >= menu.max_count) then
+      Good.SetAlpha(menu.o, 128)
+      Good.SetBgColor(menu.cd_obj, HERO_MENU_DISABLE_COLOR)
+    else
+      if (i == SelHero or nil == SelHero) then
+        Good.SetAlpha(menu.o, 255)
+        Good.SetBgColor(menu.cd_obj, HERO_MENU_SEL_COLOR)
+        SelHero = i
+      else
+        Good.SetAlpha(menu.o, 128)
+        Good.SetBgColor(menu.cd_obj, HERO_MENU_DESEL_COLOR)
+      end
+    end
+    if (nil == menu.info_obj) then
+      return
+    end
+    if (coin_count < menu.upgrade_cost) then
+      Good.SetBgColor(menu.btn_obj, HERO_UPGRADE_DISABLE_COLOR)
+    else
+      Good.SetBgColor(menu.btn_obj, 0xffffffff)
+    end
+  end
+end
+
+function UpdateHeroMenuCd()
+  for i = 1, #HeroMenu do
+    local menu = HeroMenu[i]
+    if (0 < menu.cd) then
+      menu.cd = menu.cd - 1
+      local d = menu.cd / menu.gen_cd
+      local offset_y = math.floor(HERO_MENU_H * d)
+      local h = HERO_MENU_H - offset_y
+      Good.SetPos(menu.cd_obj, 2, 2 + offset_y)
+      Good.SetDim(menu.cd_obj, 0, 0, HERO_MENU_W - 4, h)
+    end
+  end
 end
 
 function InitOccupyMap()
