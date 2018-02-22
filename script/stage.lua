@@ -3,6 +3,7 @@ local MENU_ITEM_H = 31
 local MAX_MENU_ITEM = 20
 
 local game_lvl_id = 0
+local map_lvl_id = 39
 local combat_id = 15
 
 LoadGame()
@@ -27,6 +28,10 @@ Stage.OnCreate = function(param)
 end
 
 Stage.OnStep = function(param)
+  if (Input.IsKeyPressed(Input.ESCAPE)) then
+    Good.GenObj(-1, map_lvl_id)
+    return
+  end
   -- Handle sel menu item.
   if (Input.IsKeyPressed(Input.LBUTTON)) then
     local menu_x, menu_y = Good.GetPos(param.menu_root_obj)

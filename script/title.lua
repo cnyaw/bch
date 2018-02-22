@@ -1,9 +1,9 @@
-Title = {}
+local map_lvl_id = 39
 
-local stage_lvl_id = 14
+Title = {}
 
 Title.OnStep = function(param)
   if (Input.IsKeyPressed(Input.LBUTTON)) then
-    Good.GenObj(-1, stage_lvl_id)
+    Good.GenObj(-1, map_lvl_id)
   end
 end

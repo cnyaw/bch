@@ -12,6 +12,7 @@ local sand_glass_id = 17
 local castle_id = 26
 local menu_id = 28
 local king_hero_id = 50
+local game_lvl_id = 0
 
 local hud_obj = nil
 local coin_obj = nil
@@ -183,7 +184,7 @@ function OnGameOverEnter(param)
 end
 
 function OnGameOver(param)
-  if (Input.IsKeyPushed(Input.LBUTTON)) then
+  if (Input.IsKeyPressed(Input.LBUTTON)) then
     sel_stage_id = curr_stage_id
     Good.GenObj(-1, stage_lvl_id)
   end
@@ -416,7 +417,7 @@ function PutHero(x, y, mw, mh)
 end
 
 function SelectHero(x, y)
-  -- Select hero.
+  local inGame = game_lvl_id == Good.GetLevelId()
   local NewSelHero = 1 + math.floor((x - HERO_MENU_OFFSET_X) / HERO_MENU_W)
   local menu = HeroMenu[NewSelHero]
   if (PtInRect(x, y, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y + HERO_MENU_H - 26, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
@@ -436,10 +437,13 @@ function SelectHero(x, y)
           UpdateHeroMenuInfo(menu)
         end
       end
-      UpdateCoinCountObj(true)
-      UpgradeHeroOnField(NewSelHero)
+      UpdateCoinCountObj(inGame)
+      if (inGame) then
+        UpgradeHeroOnField(NewSelHero)
+      end
+      SaveGame()
     end
-  else
+  elseif (inGame) then
     if (NewSelHero == SelHero) then
       return
     end
@@ -475,7 +479,7 @@ function ShowGameOver(param)
   local o = GenColorObj(-1, WND_W, WND_H + 10, 0xff00137f, 'AnimGameOver')
   local s = Good.GenTextObj(o, 'Game Over', 64)
   local slen = GetTextObjWidth(s)
-  Good.SetPos(s, (WND_W - slen)/2, 2/5 * WND_H)
+  Good.SetPos(s, (WND_W - slen)/2, 3/7 * WND_H)
   Good.SetPos(o, 0, -WND_H)
   local p = Good.GetParam(o)
   p.lvl_param = param
