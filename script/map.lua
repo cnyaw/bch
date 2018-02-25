@@ -1,14 +1,23 @@
+local CITY_LABLE_W = 32
+local CITY_LABLE_H = 20
+local CITY_LABLE_TEXT_SIZE = 16
+local CITY_ICON_SIZE = 32
+local CITY_HITTEST_DELTA = 20
+
 local title_lvl_id = 19
 local stage_lvl_id = 14
 local map_obj_id = 41
 local dummy_group_id = 42
+local adv_city_id = 43
 
 local curr_sel_city = nil
 local curr_sel_city_obj = nil
 
 function SetSelCity(o)
   if (curr_sel_city == o) then
-    Good.GenObj(-1, stage_lvl_id)
+    if (adv_city_id == o) then
+      Good.GenObj(-1, stage_lvl_id)
+    end
     return
   end
 
@@ -26,10 +35,31 @@ function SelectCity(mx, my)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
     local x, y = Good.GetPos(o)
-    if (PtInRect(mx, my, x - 16, y - 16, x + 48, y + 48)) then
+    if (PtInRect(mx, my, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
       SetSelCity(o)
       return
     end
+  end
+end
+
+function AddCityLevelInfo()
+  local c = Good.GetChildCount(dummy_group_id)
+  for i = 0, c - 1 do
+    local o = Good.GetChild(dummy_group_id, i)
+    local id = tonumber(Good.GetName(o))
+    local clr = 0xff808080
+    local lv
+    if (0 == id) then
+      lv = max_stage_id
+      clr = 0xff0000ff
+    else
+      lv = city_max_stage_id[id]
+    end
+    local bg = GenColorObj(o, CITY_LABLE_W, CITY_LABLE_H, clr)
+    Good.SetPos(bg, 0, CITY_ICON_SIZE)
+    local s = Good.GenTextObj(bg, string.format('%d', lv), CITY_LABLE_TEXT_SIZE)
+    local w = GetTextObjWidth(s)
+    Good.SetPos(s, (CITY_LABLE_W - w)/2, (CITY_LABLE_H - CITY_LABLE_TEXT_SIZE)/2)
   end
 end
 
@@ -48,6 +78,8 @@ Map.OnCreate = function(param)
   -- Init.
   curr_sel_city = nil
   curr_sel_city_obj = nil
+  AddCityLevelInfo()
+  SetSelCity(adv_city_id)
 end
 
 Map.OnStep = function(param)

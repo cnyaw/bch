@@ -7,6 +7,7 @@ local HERO_UPGRADE_DISABLE_COLOR = 0xff505050
 local HERO_MENU_DISABLE_COLOR = 0xff808080
 local HERO_MENU_DESEL_COLOR = 0xff4c8000
 local HERO_MENU_SEL_COLOR = 0xff8cff00
+local MAX_CITY = 14
 
 local game_lvl_id = 0
 
@@ -26,6 +27,15 @@ sel_stage_id = 1
 max_stage_id = 1
 max_max_stage_id = 1
 local hero_menu_button_id = 3
+
+city_max_stage_id = nil
+
+if (nil == city_max_stage_id) then
+  city_max_stage_id = {}
+  for i = 1, MAX_CITY do
+    city_max_stage_id[i] = 1
+  end
+end
 
 coin_count = 100
 curr_total_coin_count = 0
@@ -223,6 +233,9 @@ function ResetGame()
   coin_count = 200
   curr_total_coin_count = 0
   max_stage_id = 1
+  for i = 1, MAX_CITY do
+    city_max_stage_id[i] = 1
+  end
   curr_play_time = 0
   for i = 1, 6 do
     CurrKillEnemy[i] = 0
@@ -235,6 +248,9 @@ function SaveGame()
   outf:write(string.format('reset_count=%d\n', reset_count))
   outf:write(string.format('coin_count=%d\n', coin_count))
   outf:write(string.format('max_stage_id=%d\n', max_stage_id))
+  for i = 1, MAX_CITY do
+    outf:write(string.format('city_max_stage_id[%d]=%d\n', i, city_max_stage_id[i]))
+  end
   for hero_id = 1, 6 do
     local menu = HeroMenu[hero_id]
     outf:write(string.format('HeroMenu[%d].lv=%d\n', hero_id, menu.lv))

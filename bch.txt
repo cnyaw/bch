@@ -110,90 +110,111 @@ dim=0 0 400 460
 sprite=255
 texture=255
 map=255
-objects=90 87 86 82 80 78 77 76 73 72 71 69 68 65
+objects=90 87 86 82 80 78 77 76 73 72 71 69 68 65 43
 
 [object90]
+name=1
 texture=26
 x=288
 y=296
 dim=0 0 32 32
 
 [object87]
+name=2
 texture=26
 x=168
 y=272
 dim=0 0 32 32
 
 [object86]
+name=3
 texture=26
 x=112
 y=320
 dim=0 0 32 32
 
 [object82]
+name=4
 texture=26
 x=184
 y=336
 dim=0 0 32 32
 
 [object80]
+name=5
 texture=26
 x=232
 y=256
 dim=0 0 32 32
 
 [object78]
+name=6
 texture=26
 x=256
 y=344
 dim=0 0 32 32
 
 [object77]
+name=7
 texture=26
 x=344
 y=464
 dim=0 0 32 32
 
 [object76]
+name=8
 texture=26
 x=320
 y=400
 dim=0 0 32 32
 
 [object73]
+name=9
 texture=26
 x=280
 y=216
 dim=0 0 32 32
 
 [object72]
+name=10
 texture=26
 x=208
 y=112
 dim=0 0 32 32
 
 [object71]
+name=11
 texture=26
 x=160
 y=160
 dim=0 0 32 32
 
 [object69]
+name=12
 texture=26
 x=104
 y=256
 dim=0 0 32 32
 
 [object68]
+name=13
 texture=26
 x=8
 y=312
 dim=0 0 32 32
 
 [object65]
+name=14
 texture=26
 x=112
 y=440
+dim=0 0 32 32
+
+[object43]
+name=0
+texture=26
+x=32
+y=152
 dim=0 0 32 32
 
 [level14]
