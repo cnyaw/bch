@@ -84,6 +84,7 @@ Map = {}
 
 Map.OnCreate = function(param)
   -- Coin info.
+  hud_obj = nil
   UpdateCoinCountObj(false)
   -- Hero menu.
   for hero_id = 1, 6 do

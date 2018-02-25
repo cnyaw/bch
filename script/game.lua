@@ -14,7 +14,7 @@ local menu_id = 28
 local king_hero_id = 50
 local game_lvl_id = 0
 
-local hud_obj = nil
+hud_obj = nil
 local coin_obj = nil
 
 local init_game = false
