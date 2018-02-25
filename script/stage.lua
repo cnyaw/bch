@@ -18,7 +18,7 @@ Stage.OnCreate = function(param)
   param.menu_obj = Good.GenDummy(param.menu_root_obj)
   local first_stage_id = GetFirstStageId()
   for stage_id = first_stage_id, first_stage_id + MAX_MENU_ITEM - 1 do
-    local o = AddMenuItem(param, stage_id)
+    local o = GenStageInfoObj(param.menu_obj, stage_id)
   end
   local menu_offset_y = (first_stage_id - 1) * MENU_ITEM_H
   Good.SetPos(param.menu_root_obj, 0, -menu_offset_y + TILE_H/2)
@@ -49,15 +49,14 @@ Stage.OnStep = function(param)
   end
 end
 
-function AddMenuItem(param, stage_id)
+function GenStageInfoObj(parent, stage_id)
   -- Stage id.
   local t_color = 0xffffffff
   if (max_stage_id < stage_id) then
     t_color = 0xff505050
   end
-  --local stage = StageData[stage_id]
   local stage = GetStageData(stage_id)
-  local menu_item = Good.GenTextObj(param.menu_obj, string.format('%d', stage_id), TILE_W/2)
+  local menu_item = Good.GenTextObj(parent, string.format('%d', stage_id), TILE_W/2)
   SetTextObjColor(menu_item, t_color)
   Good.SetPos(menu_item, 0, (stage_id - 1) * MENU_ITEM_H + (MENU_ITEM_H - TILE_H/2)/2)
   local cp = Good.GenObj(menu_item, combat_id, '')

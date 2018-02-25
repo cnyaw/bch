@@ -12,8 +12,20 @@ local adv_city_id = 43
 
 local curr_sel_city = nil
 local curr_sel_city_obj = nil
+local stage_info_obj = nil
 
-function SetSelCity(o)
+function GetCityStageId(o)
+  local id = tonumber(Good.GetName(o))
+  local lv
+  if (0 == id) then
+    lv = max_stage_id
+  else
+    lv = city_max_stage_id[id]
+  end
+  return lv
+end
+
+function SetSelCity(o, stage_id)
   if (curr_sel_city == o) then
     if (adv_city_id == o) then
       Good.GenObj(-1, stage_lvl_id)
@@ -28,6 +40,13 @@ function SetSelCity(o)
 
   curr_sel_city_obj = GenColorObj(-1, 32, 32, 0x80ff0000)
   Good.SetPos(curr_sel_city_obj, Good.GetScreenPos(o))
+
+  if (nil ~= stage_info_obj) then
+    Good.KillObj(stage_info_obj)
+  end
+
+  stage_info_obj = GenStageInfoObj(-1, stage_id)
+  Good.SetPos(stage_info_obj, 0, TILE_H/2)
 end
 
 function SelectCity(mx, my)
@@ -36,7 +55,7 @@ function SelectCity(mx, my)
     local o = Good.GetChild(dummy_group_id, i)
     local x, y = Good.GetPos(o)
     if (PtInRect(mx, my, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
-      SetSelCity(o)
+      SetSelCity(o, GetCityStageId(o))
       return
     end
   end
@@ -46,14 +65,11 @@ function AddCityLevelInfo()
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
+    local lv = GetCityStageId(o)
     local id = tonumber(Good.GetName(o))
     local clr = 0xff808080
-    local lv
     if (0 == id) then
-      lv = max_stage_id
       clr = 0xff0000ff
-    else
-      lv = city_max_stage_id[id]
     end
     local bg = GenColorObj(o, CITY_LABLE_W, CITY_LABLE_H, clr)
     Good.SetPos(bg, 0, CITY_ICON_SIZE)
@@ -78,8 +94,9 @@ Map.OnCreate = function(param)
   -- Init.
   curr_sel_city = nil
   curr_sel_city_obj = nil
+  stage_info_obj = nil
   AddCityLevelInfo()
-  SetSelCity(adv_city_id)
+  SetSelCity(adv_city_id, GetCityStageId(adv_city_id))
 end
 
 Map.OnStep = function(param)
