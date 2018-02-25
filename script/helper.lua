@@ -55,6 +55,7 @@ CurrKillEnemy = {0, 0, 0, 0, 0, 0}
 OccupyMap = {}
 
 HeroMenu = nil
+SelHero = nil
 
 function ConvertRedPos(pos)
   local col = pos % MAP_W

@@ -26,8 +26,6 @@ local king_obj = nil
 local next_wave_heroes = {}
 local next_wave_pos = 0
 
-local SelHero = nil
-
 local stage = nil
 
 local menu_obj = nil
@@ -443,7 +441,7 @@ function SelectHero(x, y)
       end
       SaveGame()
     end
-  elseif (inGame) then
+  else
     if (NewSelHero == SelHero) then
       return
     end
