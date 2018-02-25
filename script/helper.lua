@@ -243,6 +243,8 @@ function ResetGame()
   GenHeroMenu()
 end
 
+LoadGame()
+
 function SaveGame()
   local outf = io.open(SAV_FILE_NAME, "w")
   outf:write(string.format('reset_count=%d\n', reset_count))

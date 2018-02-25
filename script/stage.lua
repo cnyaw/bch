@@ -1,53 +1,7 @@
-local MENU_ITEM_W = WND_W
 local MENU_ITEM_H = 31
 local MAX_MENU_ITEM = 20
 
-local game_lvl_id = 0
-local map_lvl_id = 39
 local combat_id = 15
-
-LoadGame()
-
-Stage = {}
-
-Stage.OnCreate = function(param)
-  -- Display coin info.
-  UpdateCoinCountObj(false)
-  -- Gen menu.
-  param.menu_root_obj = Good.GenDummy(-1)
-  param.menu_obj = Good.GenDummy(param.menu_root_obj)
-  local first_stage_id = GetFirstStageId()
-  for stage_id = first_stage_id, first_stage_id + MAX_MENU_ITEM - 1 do
-    local o = GenStageInfoObj(param.menu_obj, stage_id)
-  end
-  local menu_offset_y = (first_stage_id - 1) * MENU_ITEM_H
-  Good.SetPos(param.menu_root_obj, 0, -menu_offset_y + TILE_H/2)
-  -- Gen sel stage obj.
-  sel_stage_id = max_stage_id
-  GenSelStageObj(param, sel_stage_id)
-end
-
-Stage.OnStep = function(param)
-  if (Input.IsKeyPressed(Input.ESCAPE)) then
-    Good.GenObj(-1, map_lvl_id)
-    return
-  end
-  -- Handle sel menu item.
-  if (Input.IsKeyPressed(Input.LBUTTON)) then
-    local menu_x, menu_y = Good.GetPos(param.menu_root_obj)
-    local mouse_x, mouse_y = Input.GetMousePos()
-    local first_stage_id = GetFirstStageId()
-    local sel_id = math.floor((-menu_y + mouse_y) / MENU_ITEM_H) + 1
-    if (first_stage_id <= sel_id and max_stage_id >= sel_id) then
-      if (sel_stage_id ~= sel_id) then
-        sel_stage_id = sel_id
-        GenSelStageObj(param, sel_id)
-      else
-        Good.GenObj(-1, game_lvl_id)
-      end
-    end
-  end
-end
 
 function GenStageInfoObj(parent, stage_id)
   -- Stage id.
@@ -87,25 +41,6 @@ end
 
 function GetEnemyLevel(stage_id)
   return 1 + stage_id / 15
-end
-
-function GetFirstStageId()
-  return math.max(1, max_stage_id - MAX_MENU_ITEM + 1)
-end
-
-function GenSelStageObj(param, id)
-  if (nil ~= param.sel_stage_obj) then
-    Good.KillObj(param.sel_stage_obj)
-  end
-  local y = (id - 1) * MENU_ITEM_H
-  local sel_stage_obj = Good.GenObj(param.menu_root_obj, -1, 'AnimSelMenuItem')
-  Good.SetAnchor(sel_stage_obj, 0.5, 0.5)
-  Good.SetScale(sel_stage_obj, 0, 0)
-  Good.SetPos(sel_stage_obj, 0, y)
-  Good.SetDim(sel_stage_obj, 0, 0, WND_W, MENU_ITEM_H)
-  Good.SetBgColor(sel_stage_obj, 0xffff6a00)
-  Good.AddChild(param.menu_root_obj, sel_stage_obj, 0)
-  param.sel_stage_obj = sel_stage_obj
 end
 
 function GetStageCombatPower(stage_id, heroes)

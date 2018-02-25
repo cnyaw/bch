@@ -6,7 +6,7 @@ local RESET_WAIT_TIME = 120
 
 local map_id = 2
 local coin_id = 13
-local stage_lvl_id = 14
+local map_lvl_id = 39
 local combat_id = 15
 local sand_glass_id = 17
 local castle_id = 26
@@ -91,7 +91,7 @@ end
 function HandleQuitGame()
   SaveGame()
   sel_stage_id = curr_stage_id
-  Good.GenObj(-1, stage_lvl_id)
+  Good.GenObj(-1, map_lvl_id)
 end
 
 function HandleResetGame(btn_reset)
@@ -105,7 +105,7 @@ function HandleResetGame(btn_reset)
   reset_count = reset_count + 1
   SaveGame()
   sel_stage_id = curr_stage_id
-  Good.GenObj(-1, stage_lvl_id)
+  Good.GenObj(-1, map_lvl_id)
 end
 
 function OnGameMenu(param)
@@ -186,7 +186,7 @@ end
 function OnGameOver(param)
   if (Input.IsKeyPressed(Input.LBUTTON)) then
     sel_stage_id = curr_stage_id
-    Good.GenObj(-1, stage_lvl_id)
+    Good.GenObj(-1, map_lvl_id)
   end
 end
 

@@ -5,7 +5,7 @@ local CITY_ICON_SIZE = 32
 local CITY_HITTEST_DELTA = 20
 
 local title_lvl_id = 19
-local stage_lvl_id = 14
+local game_lvl_id = 0
 local map_obj_id = 41
 local dummy_group_id = 42
 local adv_city_id = 43
@@ -28,13 +28,14 @@ end
 function SetSelCity(o, stage_id)
   if (curr_sel_city == o) then
     if (adv_city_id == o) then
-      Good.GenObj(-1, stage_lvl_id)
+      sel_stage_id = stage_id
+      Good.GenObj(-1, game_lvl_id)
     end
     return
   end
 
   curr_sel_city = o
-  if (curr_sel_city_obj ~= nil) then
+  if (nil ~= curr_sel_city_obj) then
     Good.KillObj(curr_sel_city_obj)
   end
 
