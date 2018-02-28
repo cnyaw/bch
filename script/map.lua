@@ -14,6 +14,24 @@ local curr_sel_city = nil
 local curr_sel_city_obj = nil
 local stage_info_obj = nil
 
+CityData = {
+  [0] = {12},
+  [1] = {6},
+  [2] = {4, 5, 12},
+  [3] = {4, 12, 13},
+  [4] = {2, 3, 4, 14},
+  [5] = {2, 6, 9},
+  [6] = {1, 4, 5, 8},
+  [7] = {8},
+  [8] = {6, 7},
+  [9] = {5},
+  [10] = {11},
+  [11] = {10, 12},
+  [12] = {0, 2, 3, 11},
+  [13] = {3},
+  [14] = {4},
+}
+
 function GetCityStageId(o)
   local id = tonumber(Good.GetName(o))
   local lv
@@ -80,6 +98,72 @@ function AddCityLevelInfo()
   end
 end
 
+function IsLinkExist(links, a, b)
+  local tag1 = string.format('%d-%d', a, b)
+  local tag2 = string.format('%d-%d', b, a)
+  for _,tag in ipairs(links) do
+    if (tag1 == tag or tag2 == tag) then
+      return true
+    end
+  end
+  return false
+end
+
+function GetObjByCityId(idTarget)
+  local c = Good.GetChildCount(dummy_group_id)
+  for i = 0, c - 1 do
+    local o = Good.GetChild(dummy_group_id, i)
+    local id = tonumber(Good.GetName(o))
+    if (idTarget == id) then
+      return o
+    end
+  end
+  return -1
+end
+
+function lerp(v0, v1, t)
+  return (1 - t) * v0 + t * v1
+end
+
+function GetCityAnchor(o)
+  local x, y = Good.GetPos(o)
+  local l,t,w,h = Good.GetDim(o)
+  return x + w/2, y + h/2
+end
+
+function GenCityLink(o1, o2)
+  local mx, my = Good.GetPos(map_obj_id)
+  local x1, y1 = GetCityAnchor(o1)
+  local x2, y2 = GetCityAnchor(o2)
+  local t = 0
+  while (true) do
+    local o = GenColorObj(map_obj_id, 3, 3, 0xfff00000)
+    Good.SetPos(o, lerp(x1, x2, t) - mx, lerp(y1, y2, t) - my)
+    t = t + 0.1
+    if (1 <= t) then
+      break
+    end
+  end
+end
+
+function GenCityLinks()
+  local gened_links = {}
+  local c = Good.GetChildCount(dummy_group_id)
+  for i = 0, c - 1 do
+    local o = Good.GetChild(dummy_group_id, i)
+    local id = tonumber(Good.GetName(o))
+    local links = CityData[id]
+    for j = 1, #links do
+      local idTarget = links[j]
+      if (not IsLinkExist(gened_links, id, idTarget)) then
+        table.insert(gened_links, string.format('%d-%d', id, idTarget))
+        table.insert(gened_links, string.format('%d-%d', idTarget, id))
+        GenCityLink(o, GetObjByCityId(idTarget))
+      end
+    end
+  end
+end
+
 Map = {}
 
 Map.OnCreate = function(param)
@@ -97,6 +181,7 @@ Map.OnCreate = function(param)
   curr_sel_city = nil
   curr_sel_city_obj = nil
   stage_info_obj = nil
+  GenCityLinks()
   AddCityLevelInfo()
   SetSelCity(adv_city_id, GetCityStageId(adv_city_id))
 end
