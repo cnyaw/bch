@@ -26,8 +26,8 @@ CityData = {
   [8] = {6, 7},
   [9] = {5},
   [10] = {11},
-  [11] = {10, 12},
-  [12] = {0, 2, 3, 11},
+  [11] = {2, 10},
+  [12] = {0, 2, 3},
   [13] = {3},
   [14] = {4},
 }
@@ -80,7 +80,7 @@ function SelectCity(mx, my)
   end
 end
 
-function AddCityLevelInfo()
+function GenCityLevelInfo()
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
@@ -182,7 +182,7 @@ Map.OnCreate = function(param)
   curr_sel_city_obj = nil
   stage_info_obj = nil
   GenCityLinks()
-  AddCityLevelInfo()
+  GenCityLevelInfo()
   SetSelCity(adv_city_id, GetCityStageId(adv_city_id))
 end
 

@@ -1,5 +1,4 @@
 local MENU_ITEM_H = 31
-local MAX_MENU_ITEM = 20
 
 local combat_id = 15
 

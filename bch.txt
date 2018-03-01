@@ -129,15 +129,15 @@ dim=0 0 32 32
 [object86]
 name=3
 texture=26
-x=112
-y=320
+x=96
+y=344
 dim=0 0 32 32
 
 [object82]
 name=4
 texture=26
 x=184
-y=336
+y=352
 dim=0 0 32 32
 
 [object80]
@@ -150,8 +150,8 @@ dim=0 0 32 32
 [object78]
 name=6
 texture=26
-x=256
-y=352
+x=248
+y=376
 dim=0 0 32 32
 
 [object77]
@@ -165,21 +165,21 @@ dim=0 0 32 32
 name=8
 texture=26
 x=320
-y=400
+y=392
 dim=0 0 32 32
 
 [object73]
 name=9
 texture=26
-x=280
+x=288
 y=216
 dim=0 0 32 32
 
 [object72]
 name=10
 texture=26
-x=208
-y=112
+x=216
+y=104
 dim=0 0 32 32
 
 [object71]
@@ -192,8 +192,8 @@ dim=0 0 32 32
 [object69]
 name=12
 texture=26
-x=104
-y=256
+x=96
+y=248
 dim=0 0 32 32
 
 [object68]
@@ -206,7 +206,7 @@ dim=0 0 32 32
 [object65]
 name=14
 texture=26
-x=112
+x=128
 y=440
 dim=0 0 32 32
 
