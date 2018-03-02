@@ -34,8 +34,12 @@ CityData = {
   [14] = {3, 4},
 }
 
+function GetCityId(o)
+  return tonumber(Good.GetName(o))
+end
+
 function GetCityStageId(o)
-  local id = tonumber(Good.GetName(o))
+  local id = GetCityId(o)
   local lv
   if (0 == id) then
     lv = max_stage_id
@@ -49,7 +53,7 @@ function GetCityObj(id)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
-    if (tonumber(Good.GetName(o)) == id) then
+    if (GetCityId(o) == id) then
       return o
     end
   end
@@ -100,7 +104,7 @@ function GenCityLevelInfo()
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
     local lv = GetCityStageId(o)
-    local id = tonumber(Good.GetName(o))
+    local id = GetCityId(o)
     local clr = 0xff808080
     if (0 == id) then
       clr = 0xff0000ff
@@ -128,7 +132,7 @@ function GetObjByCityId(idTarget)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
-    local id = tonumber(Good.GetName(o))
+    local id = GetCityId(o)
     if (idTarget == id) then
       return o
     end
@@ -166,7 +170,7 @@ function GenCityLinks()
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
-    local id = tonumber(Good.GetName(o))
+    local id = GetCityId(o)
     local links = CityData[id]
     for j = 1, #links do
       local idTarget = links[j]
@@ -193,7 +197,7 @@ function GenBattleBtnPanel()
   battle_btn_panel = Good.GenDummy(-1)
   local panel = GenColorObj(battle_btn_panel, w, h, 0xa0000000)
   Good.SetPos(battle_btn_panel, x, y)
-  local id = tonumber(Good.GetName(curr_sel_city))
+  local id = GetCityId(curr_sel_city)
   local links = CityData[id]
   for i = 1, #links do
     local idTarget = links[i]
