@@ -2,24 +2,26 @@ local CITY_LABLE_W = 32
 local CITY_LABLE_H = 20
 local CITY_LABLE_TEXT_SIZE = 16
 local CITY_ICON_SIZE = 32
-local CITY_HITTEST_DELTA = 20
+local CITY_HITTEST_DELTA = 10
 
 local title_lvl_id = 19
 local game_lvl_id = 0
 local map_obj_id = 41
 local dummy_group_id = 42
 local adv_city_id = 43
+local battle_tex_id = 14
 
 local curr_sel_city = nil
 local curr_sel_city_obj = nil
 local stage_info_obj = nil
+local battle_btn_panel = nil
 
 CityData = {
   [0] = {12},
   [1] = {6},
-  [2] = {4, 5, 12},
-  [3] = {4, 12, 13},
-  [4] = {2, 3, 4, 14},
+  [2] = {4, 5, 11, 12},
+  [3] = {4, 12, 13, 14},
+  [4] = {2, 3, 6, 14},
   [5] = {2, 6, 9},
   [6] = {1, 4, 5, 8},
   [7] = {8},
@@ -29,7 +31,7 @@ CityData = {
   [11] = {2, 10},
   [12] = {0, 2, 3},
   [13] = {3},
-  [14] = {4},
+  [14] = {3, 4},
 }
 
 function GetCityStageId(o)
@@ -43,13 +45,24 @@ function GetCityStageId(o)
   return lv
 end
 
+function GetCityObj(id)
+  local c = Good.GetChildCount(dummy_group_id)
+  for i = 0, c - 1 do
+    local o = Good.GetChild(dummy_group_id, i)
+    if (tonumber(Good.GetName(o)) == id) then
+      return o
+    end
+  end
+  return nil
+end
+
 function SetSelCity(o, stage_id)
   if (curr_sel_city == o) then
-    if (adv_city_id == o) then
-      sel_stage_id = stage_id
-      Good.GenObj(-1, game_lvl_id)
-    end
-    return
+--    if (adv_city_id == o) then
+  --    sel_stage_id = stage_id
+    --  Good.GenObj(-1, game_lvl_id)
+    --end
+    return true
   end
 
   curr_sel_city = o
@@ -66,6 +79,8 @@ function SetSelCity(o, stage_id)
 
   stage_info_obj = GenStageInfoObj(-1, stage_id)
   Good.SetPos(stage_info_obj, 0, TILE_H/2)
+
+  return false
 end
 
 function SelectCity(mx, my)
@@ -74,10 +89,10 @@ function SelectCity(mx, my)
     local o = Good.GetChild(dummy_group_id, i)
     local x, y = Good.GetPos(o)
     if (PtInRect(mx, my, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
-      SetSelCity(o, GetCityStageId(o))
-      return
+      return SetSelCity(o, GetCityStageId(o))
     end
   end
+  return false
 end
 
 function GenCityLevelInfo()
@@ -164,6 +179,38 @@ function GenCityLinks()
   end
 end
 
+function GenBattleBtn(id)
+  local x, y = Good.GetPos(battle_btn_panel)
+  local ox, oy = Good.GetPos(GetCityObj(id))
+  local o = Good.GenObj(battle_btn_panel, battle_tex_id)
+  Good.SetPos(o, ox - x, oy - y)
+  Good.SetName(o, tostring(id))
+end
+
+function GenBattleBtnPanel()
+  local x, y = Good.GetPos(map_obj_id)
+  local l,t,w,h = Good.GetDim(map_obj_id)
+  battle_btn_panel = Good.GenDummy(-1)
+  local panel = GenColorObj(battle_btn_panel, w, h, 0xa0000000)
+  Good.SetPos(battle_btn_panel, x, y)
+  local id = tonumber(Good.GetName(curr_sel_city))
+  local links = CityData[id]
+  for i = 1, #links do
+    local idTarget = links[i]
+    GenBattleBtn(idTarget)
+  end
+  GenBattleBtn(id)
+end
+
+function SelBattleBtn(mx, my)
+  if (nil ~= battle_btn_panel) then
+    Good.KillObj(battle_btn_panel)
+    battle_btn_panel = nil
+    return true
+  end
+  return false
+end
+
 Map = {}
 
 Map.OnCreate = function(param)
@@ -181,6 +228,7 @@ Map.OnCreate = function(param)
   curr_sel_city = nil
   curr_sel_city_obj = nil
   stage_info_obj = nil
+  battle_btn_panel = nil
   GenCityLinks()
   GenCityLevelInfo()
   SetSelCity(adv_city_id, GetCityStageId(adv_city_id))
@@ -188,7 +236,11 @@ end
 
 Map.OnStep = function(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
-    Good.GenObj(-1, title_lvl_id)
+    if (nil ~= battle_btn_panel) then
+      SelBattleBtn(-1, -1)              -- Force close panel.
+    else
+      Good.GenObj(-1, title_lvl_id)
+    end
     return
   end
 
@@ -197,6 +249,10 @@ Map.OnStep = function(param)
   end
 
   local mx, my = Input.GetMousePos()
+
+  if (SelBattleBtn(mx, my)) then
+    return
+  end
 
   -- Click on hero menu.
   if (PtInRect(mx, my, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
@@ -208,7 +264,9 @@ Map.OnStep = function(param)
   local x, y = Good.GetPos(map_obj_id)
   local l,t,w,h = Good.GetDim(map_obj_id)
   if (PtInRect(mx, my, x, y, x + w, y + h)) then
-    SelectCity(mx, my)
+    if (SelectCity(mx, my)) then
+      GenBattleBtnPanel(param)
+    end
     return
   end
 end
