@@ -62,10 +62,6 @@ end
 
 function SetSelCity(o, stage_id)
   if (curr_sel_city == o) then
---    if (adv_city_id == o) then
-  --    sel_stage_id = stage_id
-    --  Good.GenObj(-1, game_lvl_id)
-    --end
     return true
   end
 
@@ -208,6 +204,19 @@ end
 
 function SelBattleBtn(mx, my)
   if (nil ~= battle_btn_panel) then
+    local px, py = Good.GetPos(battle_btn_panel)
+    local c = Good.GetChildCount(battle_btn_panel)
+    for i = 1, c - 1 do                 -- Skip panel(idx=0).
+      local o = Good.GetChild(battle_btn_panel, i)
+      local x, y = Good.GetPos(o)
+      local l,t,w,h = Good.GetDim(o)
+      if (PtInRect(mx - px, my - py, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
+        local stage_id = GetCityStageId(o)
+        sel_stage_id = stage_id
+        Good.GenObj(-1, game_lvl_id)
+        return true
+      end
+    end
     Good.KillObj(battle_btn_panel)
     battle_btn_panel = nil
     return true
