@@ -70,7 +70,7 @@ function SetSelCity(o, stage_id)
     Good.KillObj(curr_sel_city_obj)
   end
 
-  curr_sel_city_obj = GenColorObj(-1, 32, 32, 0x80ff0000)
+  curr_sel_city_obj = GenColorObj(-1, 32, 32, 0x80ff0000, 'AnimSelCity')
   Good.SetPos(curr_sel_city_obj, Good.GetScreenPos(o))
 
   if (nil ~= stage_info_obj) then
