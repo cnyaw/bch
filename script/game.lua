@@ -157,10 +157,10 @@ function CheckGameOver()
     return
   end
   if (IsGameComplete()) then
-    ShowGameOver(param, 'Stage Clear', 0xff005000)
+    ShowGameOver(param, 'Stage Clear', 0xff00137f)
     param.step = OnGameOverEnter
   elseif (IsGameOver()) then
-    ShowGameOver(param, 'Game Over', 0xff00137f)
+    ShowGameOver(param, 'Game Over', 0xff500000)
     param.step = OnGameOverEnter
   end
 end
