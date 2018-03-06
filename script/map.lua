@@ -15,6 +15,7 @@ local curr_sel_city = nil
 local curr_sel_city_obj = nil
 local stage_info_obj = nil
 local battle_btn_panel = nil
+sel_city_id = nil
 
 CityData = {
   [0] = {12},
@@ -211,8 +212,8 @@ function SelBattleBtn(mx, my)
       local x, y = Good.GetPos(o)
       local l,t,w,h = Good.GetDim(o)
       if (PtInRect(mx - px, my - py, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
-        local stage_id = GetCityStageId(o)
-        sel_stage_id = stage_id
+        sel_city_id = GetCityId(o)
+        sel_stage_id = GetCityStageId(o)
         Good.GenObj(-1, game_lvl_id)
         return true
       end

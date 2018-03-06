@@ -21,6 +21,10 @@ local chess_tex_id = 18
 local COLOR_RED = 0
 local COLOR_BLACK = 1
 
+function GetEnemyHeroCount()
+  return #EnemyHeroes
+end
+
 -- Hero impl.
 
 Hero = {}

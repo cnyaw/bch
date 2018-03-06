@@ -35,6 +35,7 @@ end
 function AcAnimKillHero(param)
   local dummy = Good.GetParent(param._id)
   Good.KillObj(dummy)
+  CheckGameOver()
 end
 
 function AcSetNextWave(param)

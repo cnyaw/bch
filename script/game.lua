@@ -47,6 +47,7 @@ Game.OnCreate = function(param)
   curr_stage_id = sel_stage_id
   king_obj = AddMyHero(king_hero_id, INIT_KING_POS, GetKingLv())
   stage_heroes_obj = nil
+  next_wave_heroes = {}
   InitStage(sel_stage_id)
   -- Hero menu.
   SelHero = nil
@@ -88,7 +89,6 @@ end
 
 function HandleQuitGame()
   SaveGame()
-  sel_stage_id = curr_stage_id
   Good.GenObj(-1, map_lvl_id)
 end
 
@@ -102,7 +102,6 @@ function HandleResetGame(btn_reset)
   ResetGame()
   reset_count = reset_count + 1
   SaveGame()
-  sel_stage_id = curr_stage_id
   Good.GenObj(-1, map_lvl_id)
 end
 
@@ -152,15 +151,24 @@ function ToggleSandGlassSpeed()
   end
 end
 
+function CheckGameOver()
+  local param = Good.GetParam(Good.GetLevelId())
+  if (OnGamePlaying ~= param.step) then
+    return
+  end
+  if (IsGameComplete()) then
+    ShowGameOver(param, 'Stage Clear', 0xff005000)
+    param.step = OnGameOverEnter
+  elseif (IsGameOver()) then
+    ShowGameOver(param, 'Game Over', 0xff00137f)
+    param.step = OnGameOverEnter
+  end
+end
+
 function OnGamePlaying(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
     ShowGameMenu()
     param.step = OnGameMenu
-    return
-  end
-  if (IsGameOver()) then
-    ShowGameOver(param)
-    param.step = OnGameOverEnter
     return
   end
   UpdateHeroMenuCd()
@@ -183,8 +191,18 @@ end
 
 function OnGameOver(param)
   if (Input.IsKeyPressed(Input.LBUTTON)) then
-    sel_stage_id = curr_stage_id
+    if (IsGameComplete()) then
+      if (0 == sel_city_id) then
+        max_stage_id = max_stage_id + 1
+        max_max_stage_id = math.max(max_max_stage_id, max_stage_id)
+      else
+        city_max_stage_id[sel_city_id] = city_max_stage_id[sel_city_id] + 1
+        max_max_stage_id = math.max(max_max_stage_id, city_max_stage_id[sel_city_id])
+      end
+    end
+    SaveGame()
     Good.GenObj(-1, map_lvl_id)
+    return
   end
 end
 
@@ -197,7 +215,7 @@ function AddCoin(coin)
 end
 
 function AddCoinObj(id)
-  if (IsGameOver()) then
+  if (IsGameOver() or IsGameComplete()) then
     return
   end
   local o = Good.GenObj(-1, coin_id, 'AnimFlyCoinObj')
@@ -223,14 +241,6 @@ function PrepareSelectableHeroes(stage, selectable_hero)
     end
   end
   return remain_hero_count
-end
-
-function AdvanceNextStage()
-  InitStage(curr_stage_id + 1)
-  UpdateCoinCountObj(true)
-  local p = Good.GetParam(king_obj)
-  p.lv = GetKingLv()
-  p.max_hp = GetLevelValue(p.lv, HeroData[king_hero_id].Hp)
 end
 
 function AddStageNextHeroInfo()
@@ -286,9 +296,7 @@ function InitNextWave()
   -- Prepare selectable heroes for next wave.
   local selectable_hero = {}
   local remain_hero_count = PrepareSelectableHeroes(stage, selectable_hero)
-  -- Advance to next stage if curr stage is cleared.
   if (0 >= remain_hero_count) then
-    AdvanceNextStage()
     return
   end
   -- Select next wave heroes.
@@ -327,9 +335,6 @@ function InitNextWave()
 end
 
 function InitStage(stage_id)
-  if (IsGameOver()) then
-    return
-  end
   if (nil ~= stage_heroes_obj) then
     Good.KillObj(stage_heroes_obj)
     stage_heroes_obj = nil
@@ -340,10 +345,6 @@ function InitStage(stage_id)
   end
   -- Save hero list and count of this stage.
   curr_stage_id = stage_id
-  if (stage_id > max_stage_id) then
-    max_stage_id = stage_id
-  end
-  max_max_stage_id = math.max(max_max_stage_id, max_stage_id)
   stage_heroes_count = {}
   for i = 1, #stage.Heroes do
     local hero_config = stage.Heroes[i]
@@ -373,6 +374,24 @@ function IsGameOver()
     return true
   end
   return not IsHeroAlive(king_obj)
+end
+
+function IsGameComplete()
+  if (0 < #next_wave_heroes) then
+    return false
+  end
+  local remain_hero_count = 0
+  for hero_id, hero_count in pairs(stage_heroes_count) do
+    remain_hero_count = remain_hero_count + hero_count
+  end
+  if (0 < remain_hero_count) then
+    return false
+  end
+  local enemy_count = GetEnemyHeroCount()
+  if (0 < enemy_count) then
+    return false
+  end
+  return true
 end
 
 function KillSelHero(hero_id)
@@ -473,9 +492,9 @@ function ShowGameMenu()
   UpdateStatistics()
 end
 
-function ShowGameOver(param)
-  local o = GenColorObj(-1, WND_W, WND_H + 10, 0xff00137f, 'AnimGameOver')
-  local s = Good.GenTextObj(o, 'Game Over', 64)
+function ShowGameOver(param, msg, clr)
+  local o = GenColorObj(-1, WND_W, WND_H + 10, clr, 'AnimGameOver')
+  local s = Good.GenTextObj(o, msg, 64)
   local slen = GetTextObjWidth(s)
   Good.SetPos(s, (WND_W - slen)/2, 3/7 * WND_H)
   Good.SetPos(o, 0, -WND_H)
