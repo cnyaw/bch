@@ -43,7 +43,7 @@ Game.OnCreate = function(param)
   InitOccupyMap()
   InitHero()
   curr_stage_id = sel_stage_id
-  king_obj = AddMyHero(king_hero_id, INIT_KING_POS, GetKingLv())
+  king_obj = AddMyHero(king_hero_id, INIT_KING_POS, GetKingLv(curr_stage_id))
   stage_heroes_obj = nil
   next_wave_heroes = {}
   InitStage(sel_stage_id)
@@ -221,10 +221,6 @@ function AddCoinObj(id)
   Good.SetPos(o, MAP_X + x, MAP_Y + y)
   local param = Good.GetParam(o)
   param.coin = math.random(stage.Coin[1], stage.Coin[2])
-end
-
-function GetKingLv()
-  return 1 + curr_stage_id/25
 end
 
 function PrepareSelectableHeroes(stage, selectable_hero)

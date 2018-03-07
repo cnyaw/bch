@@ -279,3 +279,7 @@ end
 function GetLevelValue(lv, init_val)
   return math.floor(init_val * math.pow(UPGRADE_CURVE, lv))
 end
+
+function GetKingLv(stage_id)
+  return 1 + stage_id/25
+end
