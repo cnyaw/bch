@@ -151,11 +151,13 @@ function GenCityLink(o1, o2)
   local mx, my = Good.GetPos(map_obj_id)
   local x1, y1 = GetCityAnchor(o1)
   local x2, y2 = GetCityAnchor(o2)
+  local len = math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
+  local delta = 1 / (len / 8)
   local t = 0
   while (true) do
     local o = GenColorObj(map_obj_id, 3, 3, 0xfff00000)
     Good.SetPos(o, lerp(x1, x2, t) - mx, lerp(y1, y2, t) - my)
-    t = t + 0.1
+    t = t + delta
     if (1 <= t) then
       break
     end
