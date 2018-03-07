@@ -17,7 +17,6 @@ local game_lvl_id = 0
 hud_obj = nil
 local coin_obj = nil
 
-local init_game = false
 local curr_stage_id = 1
 local stage_heroes_count = {}
 local stage_heroes_obj = nil
@@ -36,7 +35,6 @@ Game = {}
 
 Game.OnCreate = function(param)
   MAP_X, MAP_Y = Good.GetPos(map_id)
-  init_game = true
   hud_obj = nil
   coin_obj = nil
   reset_timeout = nil
@@ -54,7 +52,7 @@ Game.OnCreate = function(param)
   for hero_id = 1, 6 do
     local menu = HeroMenu[hero_id]
     InitHeroMenu(menu, hero_id)
-    -- Put init heroes.
+    -- Put init my heroes.
     local hero_count = menu.max_count
     local init_pos = INIT_GAME_POS[hero_id]
     for j = 1, #init_pos do
@@ -350,22 +348,20 @@ function InitStage(stage_id)
     local hero_config = stage.Heroes[i]
     local hero_id = hero_config[1]
     local hero_count = hero_config[2]
-    if (init_game) then
-      local init_pos = INIT_GAME_POS[hero_id]
-      for j = 1, #init_pos do
-        if (0 >= hero_count) then
-          break
-        end
-        local pos = init_pos[j]
-        local o = GenEnemyHeroObj(hero_id, pos, GetEnemyLevel(stage_id))
-        OccupyMap[pos] = o
-        AddEnemyHeroObj(o)
-        hero_count = hero_count - 1
+    -- Put init enemy heroes.
+    local init_pos = INIT_GAME_POS[hero_id]
+    for j = 1, #init_pos do
+      if (0 >= hero_count) then
+        break
       end
+      local pos = init_pos[j]
+      local o = GenEnemyHeroObj(hero_id, pos, GetEnemyLevel(stage_id))
+      OccupyMap[pos] = o
+      AddEnemyHeroObj(o)
+      hero_count = hero_count - 1
     end
     stage_heroes_count[hero_id] = hero_count
   end
-  init_game = false
   InitNextWave()
 end
 
