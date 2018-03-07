@@ -190,13 +190,7 @@ end
 function OnGameOver(param)
   if (Input.IsKeyPressed(Input.LBUTTON)) then
     if (IsGameComplete()) then
-      if (0 == sel_city_id) then
-        max_stage_id = max_stage_id + 1
-        max_max_stage_id = math.max(max_max_stage_id, max_stage_id)
-      else
-        city_max_stage_id[sel_city_id] = city_max_stage_id[sel_city_id] + 1
-        max_max_stage_id = math.max(max_max_stage_id, city_max_stage_id[sel_city_id])
-      end
+      StageClear(sel_city_id)
     end
     SaveGame()
     Good.GenObj(-1, map_lvl_id)

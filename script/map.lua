@@ -63,7 +63,7 @@ end
 
 function SetSelCity(o, stage_id)
   if (curr_sel_city == o) then
-    return true
+    return 1 == city_owner[GetCityId(o)]
   end
 
   curr_sel_city = o
@@ -103,7 +103,7 @@ function GenCityLevelInfo()
     local lv = GetCityStageId(o)
     local id = GetCityId(o)
     local clr = 0xff808080
-    if (0 == id) then
+    if (1 == city_owner[id]) then
       clr = 0xff0000ff
     end
     local bg = GenColorObj(o, CITY_LABLE_W, CITY_LABLE_H, clr)

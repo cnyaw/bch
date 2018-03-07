@@ -37,6 +37,16 @@ if (nil == city_max_stage_id) then
   end
 end
 
+city_owner = nil
+
+if (nil == city_owner) then
+  city_owner = {}
+  city_owner[0] = 1                     -- Default city[id=0].
+  for i = 1, MAX_CITY do
+    city_owner[i] = 0
+  end
+end
+
 coin_count = 100
 curr_total_coin_count = 0
 total_coin_count = 0
@@ -234,8 +244,10 @@ function ResetGame()
   coin_count = 200
   curr_total_coin_count = 0
   max_stage_id = 1
+  city_owner[0] = 1
   for i = 1, MAX_CITY do
     city_max_stage_id[i] = 1
+    city_owner[i] = 0
   end
   curr_play_time = 0
   for i = 1, 6 do
@@ -253,6 +265,9 @@ function SaveGame()
   outf:write(string.format('max_stage_id=%d\n', max_stage_id))
   for i = 1, MAX_CITY do
     outf:write(string.format('city_max_stage_id[%d]=%d\n', i, city_max_stage_id[i]))
+  end
+  for i = 0, MAX_CITY do
+    outf:write(string.format('city_owner[%d]=%d\n', i, city_owner[i]))
   end
   for hero_id = 1, 6 do
     local menu = HeroMenu[hero_id]
@@ -282,4 +297,18 @@ end
 
 function GetKingLv(stage_id)
   return 1 + stage_id/25
+end
+
+function StageClear(city_id)
+  if (1 ~= city_owner[city_id]) then
+    city_owner[city_id] = 1
+    return
+  end
+  if (0 == city_id) then
+    max_stage_id = max_stage_id + 1
+    max_max_stage_id = math.max(max_max_stage_id, max_stage_id)
+  else
+    city_max_stage_id[city_id] = city_max_stage_id[city_id] + 1
+    max_max_stage_id = math.max(max_max_stage_id, city_max_stage_id[city_id])
+  end
 end
