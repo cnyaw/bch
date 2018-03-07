@@ -79,6 +79,9 @@ Game.OnStep = function(param)
 end
 
 function CloseGameMenu(param)
+  if (nil == menu_obj) then
+    return
+  end
   SaveGame()
   Good.KillObj(menu_obj)
   menu_obj = nil
@@ -152,7 +155,7 @@ end
 
 function CheckGameOver()
   local param = Good.GetParam(Good.GetLevelId())
-  if (nil ~= menu_obj) then
+  if (IsGameOver() or IsGameComplete()) then
     CloseGameMenu(param)
   end
   if (OnGamePlaying ~= param.step) then
