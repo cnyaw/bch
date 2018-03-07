@@ -198,7 +198,9 @@ function GenBattleBtnPanel()
   local links = CityData[id]
   for i = 1, #links do
     local idTarget = links[i]
-    GenBattleBtn(idTarget)
+    if (1 ~= city_owner[idTarget]) then
+      GenBattleBtn(idTarget)
+    end
   end
   GenBattleBtn(id)
 end
