@@ -81,6 +81,7 @@ end
 function CloseGameMenu(param)
   SaveGame()
   Good.KillObj(menu_obj)
+  menu_obj = nil
   reset_timeout = nil
   param.step = OnGamePlaying
 end
@@ -151,6 +152,9 @@ end
 
 function CheckGameOver()
   local param = Good.GetParam(Good.GetLevelId())
+  if (nil ~= menu_obj) then
+    CloseGameMenu(param)
+  end
   if (OnGamePlaying ~= param.step) then
     return
   end
