@@ -4,13 +4,8 @@ local combat_id = 15
 
 function GenStageInfoObj(parent, stage_id)
   -- Stage id.
-  local t_color = 0xffffffff
-  if (max_stage_id < stage_id) then
-    t_color = 0xff505050
-  end
   local stage = GetStageData(stage_id)
   local menu_item = Good.GenTextObj(parent, string.format('%d', stage_id), TILE_W/2)
-  SetTextObjColor(menu_item, t_color)
   Good.SetPos(menu_item, 0, (stage_id - 1) * MENU_ITEM_H + (MENU_ITEM_H - TILE_H/2)/2)
   local cp = Good.GenObj(menu_item, combat_id, '')
   local scale = (TILE_W/2) / 32
@@ -18,7 +13,6 @@ function GenStageInfoObj(parent, stage_id)
   Good.SetPos(cp, TILE_W, 0)
   local cp_text = Good.GenTextObj(menu_item, string.format('%d', GetStageCombatPower(stage_id, stage.Heroes)), TILE_W/2)
   Good.SetPos(cp_text, TILE_W + TILE_W/2, 0)
-  SetTextObjColor(cp_text, t_color)
   -- Stage heroes info.
   local offset = -3
   for i = 1, #stage.Heroes do
@@ -32,7 +26,6 @@ function GenStageInfoObj(parent, stage_id)
     offset = offset + 1
     o2 = Good.GenTextObj(menu_item, string.format('%d', hero_count), TILE_W/2)
     Good.SetPos(o2, WND_W/2 + TILE_W/2 * offset, 0)
-    SetTextObjColor(o2, t_color)
     offset = offset + 1
   end
   return menu_item
