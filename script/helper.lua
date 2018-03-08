@@ -254,6 +254,7 @@ function ResetGame()
     CurrKillEnemy[i] = 0
   end
   GenHeroMenu()
+  reset_count = reset_count + 1
 end
 
 LoadGame()

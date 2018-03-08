@@ -102,7 +102,6 @@ function HandleResetGame(btn_reset)
     return
   end
   ResetGame()
-  reset_count = reset_count + 1
   SaveGame()
   Good.GenObj(-1, map_lvl_id)
 end
