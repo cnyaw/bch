@@ -78,7 +78,7 @@ Game.OnStep = function(param)
   total_play_time = total_play_time + 1
 end
 
-function CloseGameMenu(param)
+function CloseGameMenu()
   if (nil == menu_obj) then
     return
   end
@@ -86,12 +86,16 @@ function CloseGameMenu(param)
   Good.KillObj(menu_obj)
   menu_obj = nil
   reset_timeout = nil
-  param.step = OnGamePlaying
 end
 
 function HandleQuitGame()
   SaveGame()
-  Good.GenObj(-1, map_lvl_id)
+  local inGame = game_lvl_id == Good.GetLevelId()
+  if (inGame) then
+    Good.GenObj(-1, map_lvl_id)
+  else
+    Good.Exit()
+  end
 end
 
 function HandleResetGame(btn_reset)
@@ -106,9 +110,7 @@ function HandleResetGame(btn_reset)
   Good.GenObj(-1, map_lvl_id)
 end
 
-function OnGameMenu(param)
-  UpdateStatistics()
-  UpdateHeroMenuCd()
+function HandleGameMenu(param, next_step)
   if (nil ~= reset_timeout and 0 < reset_timer) then
     reset_timer = reset_timer - 1
     if (0 >= reset_timer) then
@@ -117,7 +119,8 @@ function OnGameMenu(param)
     end
   end
   if (Input.IsKeyPressed(Input.ESCAPE)) then
-    CloseGameMenu(param)
+    CloseGameMenu()
+    param.step = next_step
     return
   end
   if (Input.IsKeyPressed(Input.LBUTTON)) then
@@ -144,6 +147,12 @@ function OnGameMenu(param)
   end
 end
 
+function OnGameMenu(param)
+  UpdateStatistics()
+  UpdateHeroMenuCd()
+  HandleGameMenu(param, OnGamePlaying)
+end
+
 function ToggleSandGlassSpeed()
   if (1 == glass_speed) then
     glass_speed = 2
@@ -155,7 +164,8 @@ end
 function CheckGameOver()
   local param = Good.GetParam(Good.GetLevelId())
   if (IsGameOver() or IsGameComplete()) then
-    CloseGameMenu(param)
+    CloseGameMenu()
+    param.step = OnGamePlaying
   end
   if (OnGamePlaying ~= param.step) then
     return
@@ -482,6 +492,7 @@ function ShowGameMenu()
   Good.SetPos(s_reset, (w - slen_reset)/2, (h - TILE_H/2)/2)
   -- Statistics.
   UpdateStatistics()
+  return o
 end
 
 function ShowGameOver(param, msg, clr)

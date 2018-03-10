@@ -15,6 +15,7 @@ local curr_sel_city = nil
 local curr_sel_city_obj = nil
 local stage_info_obj = nil
 local battle_btn_panel = nil
+local menu_obj = nil
 sel_city_id = nil
 
 CityData = {
@@ -247,17 +248,28 @@ Map.OnCreate = function(param)
   curr_sel_city_obj = nil
   stage_info_obj = nil
   battle_btn_panel = nil
+  menu_obj = nil
   GenCityLinks()
   GenCityLevelInfo()
   SetSelCity(adv_city_id, GetCityStageId(adv_city_id))
+  param.step = OnMapPlaying
 end
 
 Map.OnStep = function(param)
+  param.step(param)
+end
+
+function OnMapMenu(param)
+  HandleGameMenu(param, OnMapPlaying)
+end
+
+function OnMapPlaying(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
     if (nil ~= battle_btn_panel) then
       SelBattleBtn(-1, -1)              -- Force close panel.
     else
-      Good.GenObj(-1, title_lvl_id)
+      menu_obj = ShowGameMenu()
+      param.step = OnMapMenu
     end
     return
   end
