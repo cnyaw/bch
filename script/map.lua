@@ -10,6 +10,7 @@ local map_obj_id = 41
 local dummy_group_id = 42
 local adv_city_id = 43
 local battle_tex_id = 14
+local upgrade_tex_id = 44
 
 local curr_sel_city = nil
 local curr_sel_city_obj = nil
@@ -183,15 +184,15 @@ function GenCityLinks()
   end
 end
 
-function GenBattleBtn(id)
+function GenActionBtn(id, tex_id)
   local x, y = Good.GetPos(battle_btn_panel)
   local ox, oy = Good.GetPos(GetCityObj(id))
-  local o = Good.GenObj(battle_btn_panel, battle_tex_id)
+  local o = Good.GenObj(battle_btn_panel, tex_id)
   Good.SetPos(o, ox - x, oy - y)
   Good.SetName(o, tostring(id))
 end
 
-function GenBattleBtnPanel()
+function GenActionBtnPanel()
   local x, y = Good.GetPos(map_obj_id)
   local l,t,w,h = Good.GetDim(map_obj_id)
   battle_btn_panel = Good.GenDummy(-1)
@@ -202,10 +203,10 @@ function GenBattleBtnPanel()
   for i = 1, #links do
     local idTarget = links[i]
     if (1 ~= city_owner[idTarget]) then
-      GenBattleBtn(idTarget)
+      GenActionBtn(idTarget, battle_tex_id)
     end
   end
-  GenBattleBtn(id)
+  GenActionBtn(id, upgrade_tex_id)
 end
 
 function SelBattleBtn(mx, my)
@@ -295,7 +296,7 @@ function OnMapPlaying(param)
   local l,t,w,h = Good.GetDim(map_obj_id)
   if (PtInRect(mx, my, x, y, x + w, y + h)) then
     if (SelectCity(mx, my)) then
-      GenBattleBtnPanel(param)
+      GenActionBtnPanel(param)
     end
     return
   end
