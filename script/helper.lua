@@ -176,7 +176,7 @@ function UpdateHeroMenuInfo(menu)
   local l,t,w,h = Good.GetDim(btn_obj)
   Good.SetPos(btn_obj, (HERO_MENU_W - w)/2, HERO_MENU_H - MENU_TEXT_OFFSET_Y - h)
   local upgrade_obj = Good.GenTextObj(btn_obj, string.format('$%d', menu.upgrade_cost), MENU_TEXT_SIZE)
-  tw = GetTextObjWidth(upgrade_obj)
+  local tw = GetTextObjWidth(upgrade_obj)
   Good.SetPos(upgrade_obj, (w - tw)/2, (h - MENU_TEXT_SIZE)/2)
   menu.btn_obj = btn_obj
   menu.info_obj = info_obj

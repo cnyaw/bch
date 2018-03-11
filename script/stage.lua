@@ -11,7 +11,7 @@ function GenStageInfoObj(parent, stage_id)
   local scale = (TILE_W/2) / 32
   Good.SetScale(cp, scale, scale)
   Good.SetPos(cp, TILE_W, 0)
-  local cp_text = Good.GenTextObj(menu_item, string.format('%d', GetStageCombatPower(stage_id, stage.Heroes)), TILE_W/2)
+  local cp_text = Good.GenTextObj(menu_item, string.format('%d', GetStageCombatPower_i(stage_id, stage.Heroes)), TILE_W/2)
   Good.SetPos(cp_text, TILE_W + TILE_W/2, 0)
   -- Stage heroes info.
   local offset = -3
@@ -35,7 +35,7 @@ function GetEnemyLevel(stage_id)
   return 1 + stage_id / 15
 end
 
-function GetStageCombatPower(stage_id, heroes)
+function GetStageCombatPower_i(stage_id, heroes)
   local p = 0
   for i = 1, #heroes do
     local hero_config = heroes[i]
@@ -45,6 +45,11 @@ function GetStageCombatPower(stage_id, heroes)
     p = p + hero_count * GetLevelValue(GetEnemyLevel(stage_id), hero.Atk)
   end
   return p
+end
+
+function GetStageCombatPower(stage_id)
+  local stage = GetStageData(stage_id)
+  return GetStageCombatPower_i(stage_id, stage.Heroes)
 end
 
 function GetStageData(stage_id)

@@ -1,8 +1,9 @@
 local CITY_LABLE_W = 32
-local CITY_LABLE_H = 20
-local CITY_LABLE_TEXT_SIZE = 16
+local CITY_LABLE_H = 16
+local CITY_LABLE_TEXT_SIZE = 15
 local CITY_ICON_SIZE = 32
 local CITY_HITTEST_DELTA = 10
+local CITY_UPGRADE_DISABLE_COLOR = 0xff505050
 
 local title_lvl_id = 19
 local game_lvl_id = 0
@@ -11,11 +12,12 @@ local dummy_group_id = 42
 local adv_city_id = 43
 local battle_tex_id = 14
 local upgrade_tex_id = 44
+local hero_menu_button_id = 3
 
 local curr_sel_city = nil
 local curr_sel_city_obj = nil
 local stage_info_obj = nil
-local battle_btn_panel = nil
+local action_btn_panel = nil
 local menu_obj = nil
 sel_city_id = nil
 
@@ -98,21 +100,25 @@ function SelectCity(mx, my)
   return false
 end
 
+function GenCityLevelInfo_i(o)
+  local id = GetCityId(o)
+  local clr = 0xff808080
+  if (1 == city_owner[id]) then
+    clr = 0xff0000ff
+  end
+  local bg = GenColorObj(o, CITY_LABLE_W, CITY_LABLE_H, clr)
+  Good.SetPos(bg, 0, CITY_ICON_SIZE)
+  local lv = GetCityStageId(o)
+  local s = Good.GenTextObj(bg, string.format('%d', lv), CITY_LABLE_TEXT_SIZE)
+  local w = GetTextObjWidth(s)
+  Good.SetPos(s, (CITY_LABLE_W - w)/2, (CITY_LABLE_H - CITY_LABLE_TEXT_SIZE)/2)
+end
+
 function GenCityLevelInfo()
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
-    local lv = GetCityStageId(o)
-    local id = GetCityId(o)
-    local clr = 0xff808080
-    if (1 == city_owner[id]) then
-      clr = 0xff0000ff
-    end
-    local bg = GenColorObj(o, CITY_LABLE_W, CITY_LABLE_H, clr)
-    Good.SetPos(bg, 0, CITY_ICON_SIZE)
-    local s = Good.GenTextObj(bg, string.format('%d', lv), CITY_LABLE_TEXT_SIZE)
-    local w = GetTextObjWidth(s)
-    Good.SetPos(s, (CITY_LABLE_W - w)/2, (CITY_LABLE_H - CITY_LABLE_TEXT_SIZE)/2)
+    GenCityLevelInfo_i(o)
   end
 end
 
@@ -185,19 +191,35 @@ function GenCityLinks()
 end
 
 function GenActionBtn(id, tex_id)
-  local x, y = Good.GetPos(battle_btn_panel)
+  local x, y = Good.GetPos(action_btn_panel)
   local ox, oy = Good.GetPos(GetCityObj(id))
-  local o = Good.GenObj(battle_btn_panel, tex_id)
+  local o = Good.GenObj(action_btn_panel, tex_id)
   Good.SetPos(o, ox - x, oy - y)
   Good.SetName(o, tostring(id))
+  return o
+end
+
+function GenUpgradeBtn(id)
+  local btn_obj = GenActionBtn(id, upgrade_tex_id)
+  local label_obj = Good.GenObj(btn_obj, hero_menu_button_id)
+  local l,t,w,h = Good.GetDim(label_obj)
+  Good.SetPos(label_obj, (CITY_ICON_SIZE - w)/2, CITY_ICON_SIZE)
+  local upgrade_cost = GetStageCombatPower(GetCityStageId(curr_sel_city))
+  local s = Good.GenTextObj(label_obj, string.format('$%d', upgrade_cost), CITY_LABLE_TEXT_SIZE)
+  local tw = GetTextObjWidth(s)
+  Good.SetPos(s, (w - tw)/2, (h - CITY_LABLE_TEXT_SIZE)/2)
+  if (upgrade_cost > coin_count) then
+    Good.SetBgColor(btn_obj, CITY_UPGRADE_DISABLE_COLOR)
+    Good.SetBgColor(label_obj, CITY_UPGRADE_DISABLE_COLOR)
+  end
 end
 
 function GenActionBtnPanel()
   local x, y = Good.GetPos(map_obj_id)
   local l,t,w,h = Good.GetDim(map_obj_id)
-  battle_btn_panel = Good.GenDummy(-1)
-  local panel = GenColorObj(battle_btn_panel, w, h, 0xa0000000)
-  Good.SetPos(battle_btn_panel, x, y)
+  action_btn_panel = Good.GenDummy(-1)
+  local panel = GenColorObj(action_btn_panel, w, h, 0xa0000000)
+  Good.SetPos(action_btn_panel, x, y)
   local id = GetCityId(curr_sel_city)
   local links = CityData[id]
   for i = 1, #links do
@@ -206,26 +228,45 @@ function GenActionBtnPanel()
       GenActionBtn(idTarget, battle_tex_id)
     end
   end
-  GenActionBtn(id, upgrade_tex_id)
+  GenUpgradeBtn(id)
 end
 
-function SelBattleBtn(mx, my)
-  if (nil ~= battle_btn_panel) then
-    local px, py = Good.GetPos(battle_btn_panel)
-    local c = Good.GetChildCount(battle_btn_panel)
+function UpgradeCurSelCity()
+  local upgrade_cost = GetStageCombatPower(GetCityStageId(curr_sel_city))
+  if (upgrade_cost <= coin_count) then
+    coin_count = coin_count - upgrade_cost
+    StageClear(GetCityId(curr_sel_city))
+    UpdateCoinCountObj(false)
+    Good.KillAllChild(curr_sel_city)
+    GenCityLevelInfo_i(curr_sel_city)
+  else
+    return false                        -- No coin to upgrade.
+  end
+  return true
+end
+
+function SelActionBtn(mx, my)
+  if (nil ~= action_btn_panel) then
+    local px, py = Good.GetPos(action_btn_panel)
+    local c = Good.GetChildCount(action_btn_panel)
     for i = 1, c - 1 do                 -- Skip panel(idx=0).
-      local o = Good.GetChild(battle_btn_panel, i)
+      local o = Good.GetChild(action_btn_panel, i)
       local x, y = Good.GetPos(o)
-      local l,t,w,h = Good.GetDim(o)
       if (PtInRect(mx - px, my - py, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
         sel_city_id = GetCityId(o)
-        sel_stage_id = GetCityStageId(o)
-        Good.GenObj(-1, game_lvl_id)
-        return true
+        if (GetCityId(curr_sel_city) == sel_city_id) then
+          if (not UpgradeCurSelCity()) then
+            return false
+          end
+        else
+          sel_stage_id = GetCityStageId(o)
+          Good.GenObj(-1, game_lvl_id)
+          return true
+        end
       end
     end
-    Good.KillObj(battle_btn_panel)
-    battle_btn_panel = nil
+    Good.KillObj(action_btn_panel)
+    action_btn_panel = nil
     return true
   end
   return false
@@ -248,7 +289,7 @@ Map.OnCreate = function(param)
   curr_sel_city = nil
   curr_sel_city_obj = nil
   stage_info_obj = nil
-  battle_btn_panel = nil
+  action_btn_panel = nil
   menu_obj = nil
   GenCityLinks()
   GenCityLevelInfo()
@@ -264,14 +305,10 @@ function OnMapMenu(param)
   HandleGameMenu(param, OnMapPlaying)
 end
 
-function OnMapPlaying(param)
+function OnActionPanel(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
-    if (nil ~= battle_btn_panel) then
-      SelBattleBtn(-1, -1)              -- Force close panel.
-    else
-      menu_obj = ShowGameMenu()
-      param.step = OnMapMenu
-    end
+    SelActionBtn(-1, -1)                -- Force close panel.
+    param.step = OnMapPlaying
     return
   end
 
@@ -280,10 +317,24 @@ function OnMapPlaying(param)
   end
 
   local mx, my = Input.GetMousePos()
-
-  if (SelBattleBtn(mx, my)) then
+  if (SelActionBtn(mx, my)) then
+    param.step = OnMapPlaying
     return
   end
+end
+
+function OnMapPlaying(param)
+  if (Input.IsKeyPressed(Input.ESCAPE)) then
+    menu_obj = ShowGameMenu()
+    param.step = OnMapMenu
+    return
+  end
+
+  if (not Input.IsKeyPressed(Input.LBUTTON)) then
+    return
+  end
+
+  local mx, my = Input.GetMousePos()
 
   -- Click on hero menu.
   if (PtInRect(mx, my, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
@@ -297,6 +348,7 @@ function OnMapPlaying(param)
   if (PtInRect(mx, my, x, y, x + w, y + h)) then
     if (SelectCity(mx, my)) then
       GenActionBtnPanel(param)
+      param.step = OnActionPanel
     end
     return
   end
