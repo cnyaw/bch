@@ -127,20 +127,12 @@ function HandleGameMenu(param, next_step)
     local mouse_x, mouse_y = Input.GetMousePos()
     local menu_x, menu_y = Good.GetPos(menu_obj)
     local btn_quit = Good.FindChild(menu_obj, 'quit game')
-    local l,t,w,h = Good.GetDim(btn_quit)
-    local x, y = Good.GetPos(btn_quit)
-    x = x + menu_x
-    y = y + menu_y
-    if (PtInRect(mouse_x, mouse_y, x, y, x + w, y + h)) then
+    if (PtInObj(mouse_x - menu_x, mouse_y - menu_y, btn_quit)) then
       HandleQuitGame()
       return
     end
     local btn_reset = Good.FindChild(menu_obj, 'reset game')
-    l,t,w,h = Good.GetDim(btn_reset)
-    x, y = Good.GetPos(btn_reset)
-    x = x + menu_x
-    y = y + menu_y
-    if (PtInRect(mouse_x, mouse_y, x, y, x + w, y + h)) then
+    if (PtInObj(mouse_x - menu_x, mouse_y - menu_y, btn_reset)) then
       HandleResetGame(btn_reset)
       return
     end

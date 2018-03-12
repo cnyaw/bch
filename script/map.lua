@@ -5,7 +5,6 @@ local CITY_ICON_SIZE = 32
 local CITY_HITTEST_DELTA = 10
 local CITY_UPGRADE_DISABLE_COLOR = 0xff505050
 
-local title_lvl_id = 19
 local game_lvl_id = 0
 local map_obj_id = 41
 local dummy_group_id = 42
@@ -18,7 +17,6 @@ local curr_sel_city = nil
 local curr_sel_city_obj = nil
 local stage_info_obj = nil
 local action_btn_panel = nil
-local menu_obj = nil
 sel_city_id = nil
 
 CityData = {
@@ -52,17 +50,6 @@ function GetCityStageId(o)
     lv = city_max_stage_id[id]
   end
   return lv
-end
-
-function GetCityObj(id)
-  local c = Good.GetChildCount(dummy_group_id)
-  for i = 0, c - 1 do
-    local o = Good.GetChild(dummy_group_id, i)
-    if (GetCityId(o) == id) then
-      return o
-    end
-  end
-  return nil
 end
 
 function SetSelCity(o, stage_id)
@@ -137,8 +124,7 @@ function GetObjByCityId(idTarget)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
-    local id = GetCityId(o)
-    if (idTarget == id) then
+    if (GetCityId(o) == idTarget) then
       return o
     end
   end
@@ -192,7 +178,7 @@ end
 
 function GenActionBtn(id, tex_id)
   local x, y = Good.GetPos(action_btn_panel)
-  local ox, oy = Good.GetPos(GetCityObj(id))
+  local ox, oy = Good.GetPos(GetObjByCityId(id))
   local o = Good.GenObj(action_btn_panel, tex_id)
   Good.SetPos(o, ox - x, oy - y)
   Good.SetName(o, tostring(id))
@@ -290,7 +276,6 @@ Map.OnCreate = function(param)
   curr_sel_city_obj = nil
   stage_info_obj = nil
   action_btn_panel = nil
-  menu_obj = nil
   GenCityLinks()
   GenCityLevelInfo()
   SetSelCity(adv_city_id, GetCityStageId(adv_city_id))
@@ -325,7 +310,7 @@ end
 
 function OnMapPlaying(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
-    menu_obj = ShowGameMenu()
+    ShowGameMenu()
     param.step = OnMapMenu
     return
   end
@@ -343,11 +328,9 @@ function OnMapPlaying(param)
   end
 
   -- Click on map.
-  local x, y = Good.GetPos(map_obj_id)
-  local l,t,w,h = Good.GetDim(map_obj_id)
-  if (PtInRect(mx, my, x, y, x + w, y + h)) then
+  if (PtInObj(mx, my, map_obj_id)) then
     if (SelectCity(mx, my)) then
-      GenActionBtnPanel(param)
+      GenActionBtnPanel()
       param.step = OnActionPanel
     end
     return

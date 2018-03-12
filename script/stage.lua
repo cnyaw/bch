@@ -1,13 +1,13 @@
 local MENU_ITEM_H = 31
 
-local combat_id = 15
+local combat_tex_id = 15
 
 function GenStageInfoObj(parent, stage_id)
   -- Stage id.
   local stage = GetStageData(stage_id)
   local menu_item = Good.GenTextObj(parent, string.format('%d', stage_id), TILE_W/2)
   Good.SetPos(menu_item, 0, (stage_id - 1) * MENU_ITEM_H + (MENU_ITEM_H - TILE_H/2)/2)
-  local cp = Good.GenObj(menu_item, combat_id, '')
+  local cp = Good.GenObj(menu_item, combat_tex_id, '')
   local scale = (TILE_W/2) / 32
   Good.SetScale(cp, scale, scale)
   Good.SetPos(cp, TILE_W, 0)

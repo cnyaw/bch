@@ -313,3 +313,9 @@ function StageClear(city_id)
     max_max_stage_id = math.max(max_max_stage_id, city_max_stage_id[city_id])
   end
 end
+
+function PtInObj(mx, my, o)
+  local l,t,w,h = Good.GetDim(o)
+  local x, y = Good.GetPos(o)
+  return PtInRect(mx, my, x, y, x + w, y + h)
+end
