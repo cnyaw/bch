@@ -15,7 +15,7 @@ local MY_HP_COLOR = 0xf000ff00
 local MyHeroes = {}
 local EnemyHeroes = {}
 
-local map_id = 2
+local board_id = 2
 local chess_tex_id = 18
 
 local COLOR_RED = 0
@@ -118,7 +118,7 @@ end
 
 function AddAnimHpObj(o, str, color, bgcolor, script)
   local x, y = Good.GetPos(o)
-  local s = Good.GenTextObj(map_id, str, TILE_W/2, script)
+  local s = Good.GenTextObj(board_id, str, TILE_W/2, script)
   CenterTextAnchor(s)
   local w = GetTextObjWidth(s)
   Good.SetPos(s, x + (TILE_W - w)/2, y)
@@ -214,7 +214,7 @@ end
 
 function GenHeroObj(hero_id, pos, hp_color, red, lv)
   local hero = HeroData[hero_id]
-  local dummy = Good.GenDummy(map_id)
+  local dummy = Good.GenDummy(board_id)
   local o = GenHeroPieceObj(dummy, hero.Face, red, 'Hero')
   local x, y = GetXyFromPos(pos)
   Good.SetPos(o, x, y)
@@ -505,7 +505,7 @@ function RemoveTableItem(t, id)
 end
 
 function ApplyFlyBuffEffect(param, skill_inst, effect_id, effect)
-  local o = Good.GenDummy(map_id, 'AnimFlyBuffEffect')
+  local o = Good.GenDummy(board_id, 'AnimFlyBuffEffect')
   local c = Good.GenObj(o, effect.FlyObj)
   Good.SetPos(c, 0, 0)
   local l,t,w,h = Good.GetDim(c)

@@ -4,7 +4,7 @@ local INIT_KING_POS = 85
 
 local RESET_WAIT_TIME = 120
 
-local map_id = 2
+local board_id = 2
 local coin_id = 13
 local map_lvl_id = 39
 local combat_id = 15
@@ -34,7 +34,7 @@ local reset_timer = RESET_WAIT_TIME
 Game = {}
 
 Game.OnCreate = function(param)
-  MAP_X, MAP_Y = Good.GetPos(map_id)
+  MAP_X, MAP_Y = Good.GetPos(board_id)
   hud_obj = nil
   coin_obj = nil
   reset_timeout = nil
@@ -179,14 +179,14 @@ function OnGamePlaying(param)
   end
   UpdateHeroMenuCd()
   if (Input.IsKeyPushed(Input.LBUTTON)) then
-    local l,t,mw,mh = Good.GetDim(map_id) -- map dim.
-    local x, y = Input.GetMousePos()
-    if (PtInRect(x, y, WND_W - 2 * TILE_W, 0, WND_W, TILE_H)) then
+    local mx, my = Input.GetMousePos()
+    local l,t,w,h = Good.GetDim(board_id)
+    if (PtInRect(mx, my, WND_W - 2 * TILE_W, 0, WND_W, TILE_H)) then
       ToggleSandGlassSpeed()
-    elseif (PtInRect(x, y, MAP_X, MAP_Y, MAP_X + mw, MAP_Y + mh)) then
-      PutHero(x, y, mw, mh)
-    elseif (PtInRect(x, y, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
-      SelectHero(x, y)
+    elseif (PtInRect(mx, my, MAP_X, MAP_Y, MAP_X + w, MAP_Y + h)) then
+      PutHero(mx, my, w, h)
+    elseif (PtInRect(mx, my, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
+      SelectHero(mx, my)
     end
   end
 end

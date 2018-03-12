@@ -234,6 +234,7 @@ snapWidth=24
 snapHeight=24
 
 [object2]
+name=board
 texture=21
 x=17
 y=112
