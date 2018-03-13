@@ -182,8 +182,12 @@ function UpdateHeroMenuInfo(menu)
   menu.info_obj = info_obj
 end
 
+function isInGame()
+  return game_lvl_id == Good.GetLevelId()
+end
+
 function UpdateHeroMenuSel()
-  local inGame = game_lvl_id == Good.GetLevelId()
+  local inGame = isInGame()
   for  i = 1, #HeroMenu do
     local menu = HeroMenu[i]
     if (coin_count < menu.put_cost or menu.count >= menu.max_count) then

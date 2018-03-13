@@ -90,8 +90,7 @@ end
 
 function HandleQuitGame()
   SaveGame()
-  local inGame = game_lvl_id == Good.GetLevelId()
-  if (inGame) then
+  if (isInGame()) then
     Good.GenObj(-1, map_lvl_id)
   else
     Good.Exit()
@@ -192,7 +191,9 @@ function OnGamePlaying(param)
 end
 
 function OnGameOverEnter(param)
-  -- NOP.
+  if (Input.IsKeyPressed(Input.ESCAPE)) then
+    -- NOP.
+  end
 end
 
 function OnGameOver(param)
@@ -428,7 +429,7 @@ function PutHero(x, y, mw, mh)
 end
 
 function SelectHero(x, y)
-  local inGame = game_lvl_id == Good.GetLevelId()
+  local inGame = isInGame()
   local NewSelHero = 1 + math.floor((x - HERO_MENU_OFFSET_X) / HERO_MENU_W)
   local menu = HeroMenu[NewSelHero]
   if (PtInRect(x, y, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y + HERO_MENU_H - 26, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
