@@ -218,13 +218,17 @@ function GenActionBtnPanel()
 end
 
 function UpgradeCurSelCity()
-  local upgrade_cost = GetStageCombatPower(GetCityStageId(curr_sel_city))
+  local stage_id = GetCityStageId(curr_sel_city)
+  local upgrade_cost = GetStageCombatPower(stage_id)
   if (upgrade_cost <= coin_count) then
     coin_count = coin_count - upgrade_cost
-    StageClear(GetCityId(curr_sel_city))
     UpdateCoinCountObj(false)
+    StageClear(GetCityId(curr_sel_city))
     Good.KillAllChild(curr_sel_city)
     GenCityLevelInfo_i(curr_sel_city)
+    Good.KillObj(stage_info_obj)
+    stage_info_obj = GenStageInfoObj(-1, stage_id + 1)
+    Good.SetPos(stage_info_obj, 0, TILE_H/2)
   else
     return false                        -- No coin to upgrade.
   end
