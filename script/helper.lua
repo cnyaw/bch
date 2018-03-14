@@ -7,7 +7,7 @@ local HERO_UPGRADE_DISABLE_COLOR = 0xff505050
 local HERO_MENU_DISABLE_COLOR = 0xff808080
 local HERO_MENU_DESEL_COLOR = 0xff4c8000
 local HERO_MENU_SEL_COLOR = 0xff8cff00
-local MAX_CITY = 14
+local MAX_CITY = 23
 
 local game_lvl_id = 0
 local arch_id = 46
@@ -33,7 +33,7 @@ city_max_stage_id = nil
 
 function ResetCityMaxStageId()
   city_max_stage_id = {}
-  for i = 0, MAX_CITY do
+  for i = 0, MAX_CITY-1 do
     city_max_stage_id[i] = 1
   end
 end
@@ -46,10 +46,10 @@ city_owner = nil
 
 function ResetCityOwner()
   city_owner = {}
-  for i = 0, MAX_CITY do
+  for i = 0, MAX_CITY-1 do
     city_owner[i] = 0
   end
-  city_owner[math.random(MAX_CITY)] = 1 -- Random select start city.
+  city_owner[math.random(MAX_CITY) - 1] = 1 -- Random select start city.
 end
 
 if (nil == city_owner) then
@@ -274,7 +274,7 @@ function SaveGame()
   outf:write(string.format('reset_count=%d\n', reset_count))
   outf:write(string.format('coin_count=%d\n', coin_count))
   outf:write(string.format('max_stage_id=%d\n', max_stage_id))
-  for i = 0, MAX_CITY do
+  for i = 0, MAX_CITY-1 do
     outf:write(string.format('city_max_stage_id[%d]=%d\n', i, city_max_stage_id[i]))
     outf:write(string.format('city_owner[%d]=%d\n', i, city_owner[i]))
   end
