@@ -10,6 +10,7 @@ local HERO_MENU_SEL_COLOR = 0xff8cff00
 local MAX_CITY = 14
 
 local game_lvl_id = 0
+local arch_id = 46
 
 Graphics.SetAntiAlias(1)                -- Enable anti alias.
 
@@ -30,21 +31,29 @@ local hero_menu_button_id = 3
 
 city_max_stage_id = nil
 
-if (nil == city_max_stage_id) then
+function ResetCityMaxStageId()
   city_max_stage_id = {}
-  for i = 1, MAX_CITY do
+  for i = 0, MAX_CITY do
     city_max_stage_id[i] = 1
   end
 end
 
+if (nil == city_max_stage_id) then
+  ResetCityMaxStageId()
+end
+
 city_owner = nil
 
-if (nil == city_owner) then
+function ResetCityOwner()
   city_owner = {}
-  city_owner[0] = 1                     -- Default city[id=0].
-  for i = 1, MAX_CITY do
+  for i = 0, MAX_CITY do
     city_owner[i] = 0
   end
+  city_owner[math.random(MAX_CITY)] = 1 -- Random select start city.
+end
+
+if (nil == city_owner) then
+  ResetCityOwner()
 end
 
 coin_count = 100
@@ -248,11 +257,8 @@ function ResetGame()
   coin_count = 200
   curr_total_coin_count = 0
   max_stage_id = 1
-  city_owner[0] = 1
-  for i = 1, MAX_CITY do
-    city_max_stage_id[i] = 1
-    city_owner[i] = 0
-  end
+  ResetCityMaxStageId()
+  ResetCityOwner()
   curr_play_time = 0
   for i = 1, 6 do
     CurrKillEnemy[i] = 0
@@ -268,10 +274,8 @@ function SaveGame()
   outf:write(string.format('reset_count=%d\n', reset_count))
   outf:write(string.format('coin_count=%d\n', coin_count))
   outf:write(string.format('max_stage_id=%d\n', max_stage_id))
-  for i = 1, MAX_CITY do
-    outf:write(string.format('city_max_stage_id[%d]=%d\n', i, city_max_stage_id[i]))
-  end
   for i = 0, MAX_CITY do
+    outf:write(string.format('city_max_stage_id[%d]=%d\n', i, city_max_stage_id[i]))
     outf:write(string.format('city_owner[%d]=%d\n', i, city_owner[i]))
   end
   for hero_id = 1, 6 do
@@ -305,13 +309,13 @@ function GetKingLv(stage_id)
 end
 
 function StageClear(city_id)
-  if (1 ~= city_owner[city_id]) then
-    city_owner[city_id] = 1
-    return
-  end
-  if (0 == city_id) then
+  if (arch_id == city_id) then
     max_stage_id = max_stage_id + 1
     max_max_stage_id = math.max(max_max_stage_id, max_stage_id)
+    return
+  end
+  if (1 ~= city_owner[city_id]) then
+    city_owner[city_id] = 1
   else
     city_max_stage_id[city_id] = city_max_stage_id[city_id] + 1
     max_max_stage_id = math.max(max_max_stage_id, city_max_stage_id[city_id])

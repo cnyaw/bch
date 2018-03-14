@@ -8,10 +8,10 @@ local CITY_UPGRADE_DISABLE_COLOR = 0xff505050
 local game_lvl_id = 0
 local map_obj_id = 41
 local dummy_group_id = 42
-local adv_city_id = 43
 local battle_tex_id = 14
 local upgrade_tex_id = 44
 local hero_menu_button_id = 3
+local arch_id = 46
 
 local curr_sel_city = nil
 local curr_sel_city_obj = nil
@@ -35,6 +35,7 @@ CityData = {
   [12] = {0, 2, 3},
   [13] = {3},
   [14] = {3, 4},
+  [46] = {}
 }
 
 function GetCityId(o)
@@ -44,7 +45,7 @@ end
 function GetCityStageId(o)
   local id = GetCityId(o)
   local lv
-  if (0 == id) then
+  if (arch_id == id) then
     lv = max_stage_id
   else
     lv = city_max_stage_id[id]
@@ -54,7 +55,14 @@ end
 
 function SetSelCity(o, stage_id)
   if (curr_sel_city == o) then
-    return 1 == city_owner[GetCityId(o)]
+    if (arch_id == o) then
+      sel_city_id = GetCityId(o)
+      sel_stage_id = GetCityStageId(o)
+      Good.GenObj(-1, game_lvl_id)
+      return false
+    else
+      return 1 == city_owner[GetCityId(o)]
+    end
   end
 
   curr_sel_city = o
@@ -90,7 +98,7 @@ end
 function GenCityLevelInfo_i(o)
   local id = GetCityId(o)
   local clr = 0xff808080
-  if (1 == city_owner[id]) then
+  if (arch_id ==id or 1 == city_owner[id]) then
     clr = 0xff0000ff
   end
   local bg = GenColorObj(o, CITY_LABLE_W, CITY_LABLE_H, clr)
@@ -107,6 +115,7 @@ function GenCityLevelInfo()
     local o = Good.GetChild(dummy_group_id, i)
     GenCityLevelInfo_i(o)
   end
+  GenCityLevelInfo_i(arch_id)
 end
 
 function IsLinkExist(links, a, b)
@@ -282,7 +291,7 @@ Map.OnCreate = function(param)
   action_btn_panel = nil
   GenCityLinks()
   GenCityLevelInfo()
-  SetSelCity(adv_city_id, GetCityStageId(adv_city_id))
+  SetSelCity(arch_id, GetCityStageId(arch_id))
   param.step = OnMapPlaying
 end
 
