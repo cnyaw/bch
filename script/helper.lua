@@ -27,7 +27,7 @@ HERO_MENU_OFFSET_Y = WND_H - HERO_MENU_H
 sel_stage_id = 1
 max_stage_id = 1
 max_max_stage_id = 1
-local hero_menu_button_id = 3
+local hero_menu_button_tex_id = 3
 
 city_max_stage_id = nil
 
@@ -181,7 +181,7 @@ function UpdateHeroMenuInfo(menu)
     local tw = GetTextObjWidth(count_obj)
     Good.SetPos(count_obj, HERO_MENU_W - MENU_TEXT_OFFSET_X - tw, MENU_TEXT_OFFSET_Y)
   end
-  local btn_obj = Good.GenObj(info_obj, hero_menu_button_id)
+  local btn_obj = Good.GenObj(info_obj, hero_menu_button_tex_id)
   local l,t,w,h = Good.GetDim(btn_obj)
   Good.SetPos(btn_obj, (HERO_MENU_W - w)/2, HERO_MENU_H - MENU_TEXT_OFFSET_Y - h)
   local upgrade_obj = Good.GenTextObj(btn_obj, string.format('$%d', menu.upgrade_cost), MENU_TEXT_SIZE)

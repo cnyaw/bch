@@ -10,7 +10,7 @@ local map_obj_id = 41
 local dummy_group_id = 42
 local battle_tex_id = 14
 local upgrade_tex_id = 44
-local hero_menu_button_id = 3
+local hero_menu_button_tex_id = 3
 local arch_id = 46
 
 local curr_sel_city = nil
@@ -204,7 +204,7 @@ end
 
 function GenUpgradeBtn(id)
   local btn_obj = GenActionBtn(id, upgrade_tex_id)
-  local label_obj = Good.GenObj(btn_obj, hero_menu_button_id)
+  local label_obj = Good.GenObj(btn_obj, hero_menu_button_tex_id)
   local l,t,w,h = Good.GetDim(label_obj)
   Good.SetPos(label_obj, (CITY_ICON_SIZE - w)/2, CITY_ICON_SIZE)
   local upgrade_cost = GetStageCombatPower(GetCityStageId(curr_sel_city))

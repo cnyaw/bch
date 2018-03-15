@@ -5,11 +5,11 @@ local INIT_KING_POS = 85
 local RESET_WAIT_TIME = 120
 
 local board_id = 2
-local coin_id = 13
+local coin_tex_id = 13
 local map_lvl_id = 39
-local combat_id = 15
-local sand_glass_id = 17
-local castle_id = 26
+local combat_tex_id = 15
+local sand_glass_tex_id = 17
+local castle_tex_id = 26
 local menu_id = 28
 local king_hero_id = 50
 local game_lvl_id = 0
@@ -219,7 +219,7 @@ function AddCoinObj(id)
   if (IsGameOver() or IsGameComplete()) then
     return
   end
-  local o = Good.GenObj(-1, coin_id, 'AnimFlyCoinObj')
+  local o = Good.GenObj(-1, coin_tex_id, 'AnimFlyCoinObj')
   local x, y = Good.GetPos(id)
   Good.SetPos(o, MAP_X + x, MAP_Y + y)
   local param = Good.GetParam(o)
@@ -264,7 +264,7 @@ function AddStageNextHeroInfo()
 end
 
 function GenSandGlassObj(wave)
-  local sand_glass_obj = Good.GenObj(-1, sand_glass_id, 'AnimSandGlass')
+  local sand_glass_obj = Good.GenObj(-1, sand_glass_tex_id, 'AnimSandGlass')
   Good.SetPos(sand_glass_obj, WND_W - TILE_W - 6, -TILE_H/4)
   Good.SetAnchor(sand_glass_obj, 0.5, 0.5)
   local s = (TILE_W/2)/45
@@ -507,18 +507,18 @@ function UpdateCoinCountObj(ShowStage)
   end
   coin_obj = Good.GenDummy(hud_obj)
   local scale = (TILE_W/2) / 32
-  local o = Good.GenObj(coin_obj, coin_id)
+  local o = Good.GenObj(coin_obj, coin_tex_id)
   Good.SetScale(o, scale, scale)
   o = Good.GenTextObj(coin_obj, string.format('%d', coin_count), TILE_W/2)
   Good.SetPos(o, TILE_W/2, 0)
-  local combat_obj = Good.GenObj(coin_obj, combat_id)
+  local combat_obj = Good.GenObj(coin_obj, combat_tex_id)
   local x = (WND_W - TILE_W/2)/4
   Good.SetPos(combat_obj, x, 0)
   Good.SetScale(combat_obj, scale, scale)
   o = Good.GenTextObj(coin_obj, string.format('%d', GetCombatPower()), TILE_W/2)
   Good.SetPos(o, x + TILE_W/2, 0)
   if (ShowStage) then
-    local castle_obj = Good.GenObj(coin_obj, castle_id)
+    local castle_obj = Good.GenObj(coin_obj, castle_tex_id)
     local x = (WND_W - TILE_W/2)/2
     Good.SetPos(castle_obj, x, 0)
     Good.SetScale(castle_obj, scale, scale)
@@ -570,7 +570,7 @@ function UpdateStatistics()
   Good.SetPos(s_max, 3 * TILE_W, TILE_H/2)
   offset = 1.4
   local scale = (TILE_W/2) / 32
-  local max_stage_obj = Good.GenObj(s_max, castle_id, '')
+  local max_stage_obj = Good.GenObj(s_max, castle_tex_id, '')
   Good.SetScale(max_stage_obj, scale, scale)
   Good.SetPos(max_stage_obj, 0, TILE_W/2 * offset)
   local s_max_stage_obj = Good.GenTextObj(s_max, string.format('%d', max_stage_id), STAT_TEXT_SIZE)
@@ -580,7 +580,7 @@ function UpdateStatistics()
   SetTextObjColor(s_max_stage_obj, TextColor)
   Good.SetPos(s_max_stage_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + OFFSET_2
-  local max_combat_obj = Good.GenObj(s_max, combat_id, '')
+  local max_combat_obj = Good.GenObj(s_max, combat_tex_id, '')
   Good.SetScale(max_combat_obj, scale, scale)
   Good.SetPos(max_combat_obj, 0, TILE_W/2 * offset)
   local s_max_combat_obj = Good.GenTextObj(s_max, string.format('%d', GetCombatPower()), STAT_TEXT_SIZE)
@@ -590,7 +590,7 @@ function UpdateStatistics()
   SetTextObjColor(s_max_combat_obj, TextColor)
   Good.SetPos(s_max_combat_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + OFFSET_2
-  local max_coin_obj = Good.GenObj(s_max, coin_id, '')
+  local max_coin_obj = Good.GenObj(s_max, coin_tex_id, '')
   Good.SetScale(max_coin_obj, scale, scale)
   Good.SetPos(max_coin_obj, 0, TILE_W/2 * offset)
   local s_total_coin_obj = Good.GenTextObj(s_max, string.format('%d', curr_total_coin_count), STAT_TEXT_SIZE)
@@ -601,7 +601,7 @@ function UpdateStatistics()
   Good.SetPos(s_total_coin_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + OFFSET_2
   scale = (TILE_W/2)/45
-  local play_time_obj = Good.GenObj(s_max, sand_glass_id, '')
+  local play_time_obj = Good.GenObj(s_max, sand_glass_tex_id, '')
   Good.SetScale(play_time_obj, scale, scale)
   Good.SetPos(play_time_obj, 4, TILE_W/2 * offset)
   local s_play_time_obj = Good.GenTextObj(s_max, GetFormatTimeStr(curr_play_time), STAT_TEXT_SIZE)
