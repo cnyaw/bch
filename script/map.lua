@@ -46,6 +46,8 @@ CityData = {
   [46] = {}
 }
 
+local PLAYER_COLOR = {0xffFF0000, 0xffFF6A00, 0xffB6FF00, 0xff00FF21, 0xff7F6A00, 0xff267F00, 0xff00FFFF, 0xffFFD800, 0xffFF00DC, 0xff7F0037}
+
 function GetCityId(o)
   return tonumber(Good.GetName(o))
 end
@@ -62,6 +64,7 @@ function GetCityStageId(o)
 end
 
 function SetSelCity(o, stage_id)
+  local id = GetCityId(o)
   if (curr_sel_city == o) then
     if (arch_id == o) then
       sel_city_id = GetCityId(o)
@@ -69,7 +72,7 @@ function SetSelCity(o, stage_id)
       Good.GenObj(-1, game_lvl_id)
       return false
     else
-      return 1 == city_owner[GetCityId(o)]
+      return my_player_id == city_owner[id]
     end
   end
 
@@ -106,8 +109,11 @@ end
 function GenCityLevelInfo_i(o)
   local id = GetCityId(o)
   local clr = 0xff808080
-  if (arch_id ==id or 1 == city_owner[id]) then
+  local owner = city_owner[id]
+  if (arch_id == id or my_player_id == owner) then
     clr = 0xff0000ff
+  elseif (0 ~= owner) then
+    clr = PLAYER_COLOR[owner]
   end
   local bg = GenColorObj(o, CITY_LABLE_W, CITY_LABLE_H, clr)
   Good.SetPos(bg, 0, CITY_ICON_SIZE)
@@ -227,7 +233,7 @@ function GenActionBtnPanel()
   local links = CityData[id]
   for i = 1, #links do
     local idTarget = links[i]
-    if (1 ~= city_owner[idTarget]) then
+    if (my_player_id ~= city_owner[idTarget]) then
       GenActionBtn(idTarget, battle_tex_id)
     end
   end

@@ -8,6 +8,7 @@ local HERO_MENU_DISABLE_COLOR = 0xff808080
 local HERO_MENU_DESEL_COLOR = 0xff4c8000
 local HERO_MENU_SEL_COLOR = 0xff8cff00
 local MAX_CITY = 23
+local MAX_PLAYER = 10
 
 local game_lvl_id = 0
 local arch_id = 46
@@ -49,11 +50,37 @@ function ResetCityOwner()
   for i = 1, MAX_CITY do
     city_owner[i] = 0
   end
-  city_owner[math.random(MAX_CITY)] = 1 -- Random select start city.
 end
 
 if (nil == city_owner) then
   ResetCityOwner()
+end
+
+function shuffle(a)
+  local len = #a
+  for i = len, 1, -1 do
+    local r = math.random(len)
+    a[i], a[r] = a[r], a[i]
+  end
+end
+
+players = nil
+my_player_id = nil
+
+function ResetPlayers()
+  players = {}
+  for i = 1, MAX_PLAYER do
+    players[i] = i
+  end
+  shuffle(players, MAX_PLAYER - 1)
+  for i = 1, MAX_PLAYER do
+    city_owner[i] = players[i]
+  end
+  my_player_id = math.random(MAX_PLAYER)
+end
+
+if (nil == players) then
+  ResetPlayers()
 end
 
 coin_count = 100
@@ -259,6 +286,7 @@ function ResetGame()
   max_stage_id = 1
   ResetCityStageId()
   ResetCityOwner()
+  ResetPlayers()
   curr_play_time = 0
   for i = 1, 6 do
     CurrKillEnemy[i] = 0
@@ -293,6 +321,10 @@ function SaveGame()
     outf:write(string.format('city_stage_id[%d]=%d\n', i, city_stage_id[i]))
     outf:write(string.format('city_owner[%d]=%d\n', i, city_owner[i]))
   end
+  outf:write(string.format('my_player_id=%d\n', my_player_id))
+  for i = 1, MAX_PLAYER do
+    outf:write(string.format('players[%d]=%d\n', i, players[i]))
+  end
   outf:close()
 end
 
@@ -314,8 +346,8 @@ function StageClear(city_id)
     max_max_stage_id = math.max(max_max_stage_id, max_stage_id)
     return
   end
-  if (1 ~= city_owner[city_id]) then
-    city_owner[city_id] = 1
+  if (my_player_id ~= city_owner[city_id]) then
+    city_owner[city_id] = my_player_id
   else
     city_stage_id[city_id] = city_stage_id[city_id] + 1
     max_max_stage_id = math.max(max_max_stage_id, city_stage_id[city_id])
