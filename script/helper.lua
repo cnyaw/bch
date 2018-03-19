@@ -29,27 +29,27 @@ max_stage_id = 1
 max_max_stage_id = 1
 local hero_menu_button_tex_id = 3
 
-city_max_stage_id = nil
+city_stage_id = nil
 
-function ResetCityMaxStageId()
-  city_max_stage_id = {}
-  for i = 0, MAX_CITY-1 do
-    city_max_stage_id[i] = 1
+function ResetCityStageId()
+  city_stage_id = {}
+  for i = 1, MAX_CITY do
+    city_stage_id[i] = 1
   end
 end
 
-if (nil == city_max_stage_id) then
-  ResetCityMaxStageId()
+if (nil == city_stage_id) then
+  ResetCityStageId()
 end
 
 city_owner = nil
 
 function ResetCityOwner()
   city_owner = {}
-  for i = 0, MAX_CITY-1 do
+  for i = 1, MAX_CITY do
     city_owner[i] = 0
   end
-  city_owner[math.random(MAX_CITY) - 1] = 1 -- Random select start city.
+  city_owner[math.random(MAX_CITY)] = 1 -- Random select start city.
 end
 
 if (nil == city_owner) then
@@ -257,7 +257,7 @@ function ResetGame()
   coin_count = 200
   curr_total_coin_count = 0
   max_stage_id = 1
-  ResetCityMaxStageId()
+  ResetCityStageId()
   ResetCityOwner()
   curr_play_time = 0
   for i = 1, 6 do
@@ -274,15 +274,6 @@ function SaveGame()
   outf:write(string.format('reset_count=%d\n', reset_count))
   outf:write(string.format('coin_count=%d\n', coin_count))
   outf:write(string.format('max_stage_id=%d\n', max_stage_id))
-  for i = 0, MAX_CITY-1 do
-    outf:write(string.format('city_max_stage_id[%d]=%d\n', i, city_max_stage_id[i]))
-    outf:write(string.format('city_owner[%d]=%d\n', i, city_owner[i]))
-  end
-  for hero_id = 1, 6 do
-    local menu = HeroMenu[hero_id]
-    outf:write(string.format('HeroMenu[%d].lv=%d\n', hero_id, menu.lv))
-    outf:write(string.format('HeroMenu[%d].max_count=%d\n', hero_id, menu.max_count))
-  end
   outf:write(string.format('max_max_stage_id=%d\n', max_max_stage_id))
   outf:write(string.format('max_combat_power=%d\n', max_combat_power))
   outf:write(string.format('curr_total_coin_count=%d\n', curr_total_coin_count))
@@ -292,6 +283,15 @@ function SaveGame()
   for hero_id = 1, 6 do
     outf:write(string.format('CurrKillEnemy[%d]=%d\n', hero_id, CurrKillEnemy[hero_id]))
     outf:write(string.format('TotalKillEnemy[%d]=%d\n', hero_id, TotalKillEnemy[hero_id]))
+  end
+  for hero_id = 1, 6 do
+    local menu = HeroMenu[hero_id]
+    outf:write(string.format('HeroMenu[%d].lv=%d\n', hero_id, menu.lv))
+    outf:write(string.format('HeroMenu[%d].max_count=%d\n', hero_id, menu.max_count))
+  end
+  for i = 1, MAX_CITY do
+    outf:write(string.format('city_stage_id[%d]=%d\n', i, city_stage_id[i]))
+    outf:write(string.format('city_owner[%d]=%d\n', i, city_owner[i]))
   end
   outf:close()
 end
@@ -317,8 +317,8 @@ function StageClear(city_id)
   if (1 ~= city_owner[city_id]) then
     city_owner[city_id] = 1
   else
-    city_max_stage_id[city_id] = city_max_stage_id[city_id] + 1
-    max_max_stage_id = math.max(max_max_stage_id, city_max_stage_id[city_id])
+    city_stage_id[city_id] = city_stage_id[city_id] + 1
+    max_max_stage_id = math.max(max_max_stage_id, city_stage_id[city_id])
   end
 end
 

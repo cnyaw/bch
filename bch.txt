@@ -223,7 +223,7 @@ y=400
 dim=0 0 32 32
 
 [object43]
-name=0
+name=23
 texture=26
 x=8
 y=160
