@@ -2,7 +2,7 @@
 version=0.3
 name=Battle Chess
 window=400 640
-texs=13 17 18 21 3 15 26 1 31 32 20 38 14 44 45
+texs=13 17 18 21 3 15 26 1 31 32 20 38 14 44
 levels=19 39 0 22
 
 [scripts]
@@ -76,10 +76,6 @@ fileName=./res/battle.png
 name=upgrade
 fileName=./res/upgrade.png
 
-[tex45]
-name=arch
-fileName=./res/arch.png
-
 [level19]
 name=title
 bgColor=0 64 64
@@ -122,7 +118,7 @@ dim=0 0 400 460
 sprite=255
 texture=255
 map=255
-objects=90 87 86 82 80 78 77 76 73 72 71 69 68 65 43 46 50 51 53 54 55 56 57 58
+objects=90 87 86 82 80 78 77 76 73 72 71 69 68 65 43 50 51 53 54 55 56 57 58 47
 
 [object90]
 name=1
@@ -229,13 +225,6 @@ x=8
 y=160
 dim=0 0 32 32
 
-[object46]
-name=46
-texture=45
-x=344
-y=80
-dim=0 0 32 32
-
 [object50]
 name=15
 texture=26
@@ -290,6 +279,13 @@ name=22
 texture=26
 x=296
 y=160
+dim=0 0 32 32
+
+[object47]
+name=24
+texture=26
+x=344
+y=80
 dim=0 0 32 32
 
 [level0]

@@ -11,7 +11,6 @@ local dummy_group_id = 42
 local battle_tex_id = 14
 local upgrade_tex_id = 44
 local hero_menu_button_tex_id = 3
-local arch_id = 46
 
 local curr_sel_city = nil
 local curr_sel_city_obj = nil
@@ -40,10 +39,10 @@ CityData = {
   [18] = {14, 17},
   [19] = {23, 11, 20},
   [20] = {10, 11, 19, 21},
-  [21] = {10, 20, 22},
-  [22] = {5, 9, 10, 21},
+  [21] = {10, 20, 22, 24},
+  [22] = {5, 9, 10, 21, 24},
   [23] = {11, 12, 19},
-  [46] = {}
+  [24] = {21, 22}
 }
 
 local PLAYER_COLOR = {0xffFF0000, 0xffFF6A00, 0xffB6FF00, 0xff00FF21, 0xff7F6A00, 0xff267F00, 0xff00FFFF, 0xffFFD800, 0xffFF00DC, 0xff7F0037}
@@ -54,26 +53,13 @@ end
 
 function GetCityStageId(o)
   local id = GetCityId(o)
-  local lv
-  if (arch_id == id) then
-    lv = max_stage_id
-  else
-    lv = city_stage_id[id]
-  end
-  return lv
+  return city_stage_id[id]
 end
 
 function SetSelCity(o, stage_id)
   local id = GetCityId(o)
   if (curr_sel_city == o) then
-    if (arch_id == o) then
-      sel_city_id = GetCityId(o)
-      sel_stage_id = GetCityStageId(o)
-      Good.GenObj(-1, game_lvl_id)
-      return false
-    else
-      return my_player_id == city_owner[id]
-    end
+    return my_player_id == city_owner[id]
   end
 
   curr_sel_city = o
@@ -110,7 +96,7 @@ function GenCityLevelInfo_i(o)
   local id = GetCityId(o)
   local clr = 0xff808080
   local owner = city_owner[id]
-  if (arch_id == id or my_player_id == owner) then
+  if (my_player_id == owner) then
     clr = 0xff0000ff
   elseif (0 ~= owner) then
     clr = PLAYER_COLOR[owner]
@@ -129,7 +115,6 @@ function GenCityLevelInfo()
     local o = Good.GetChild(dummy_group_id, i)
     GenCityLevelInfo_i(o)
   end
-  GenCityLevelInfo_i(arch_id)
 end
 
 function IsLinkExist(links, a, b)
@@ -143,11 +128,11 @@ function IsLinkExist(links, a, b)
   return false
 end
 
-function GetObjByCityId(idTarget)
+function GetObjByCityId(id)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
-    if (GetCityId(o) == idTarget) then
+    if (GetCityId(o) == id) then
       return o
     end
   end
@@ -252,6 +237,8 @@ function UpgradeCurSelCity()
     Good.KillObj(stage_info_obj)
     stage_info_obj = GenStageInfoObj(-1, stage_id + 1)
     Good.SetPos(stage_info_obj, 0, TILE_H/2)
+    UpdateMaxStageId()
+    SaveGame()
   else
     return false                        -- No coin to upgrade.
   end
@@ -305,7 +292,8 @@ Map.OnCreate = function(param)
   action_btn_panel = nil
   GenCityLinks()
   GenCityLevelInfo()
-  SetSelCity(arch_id, GetCityStageId(arch_id))
+  local o = GetObjByCityId(1)
+  SetSelCity(o, GetCityStageId(o))
   param.step = OnMapPlaying
 end
 

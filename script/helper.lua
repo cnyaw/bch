@@ -7,11 +7,10 @@ local HERO_UPGRADE_DISABLE_COLOR = 0xff505050
 local HERO_MENU_DISABLE_COLOR = 0xff808080
 local HERO_MENU_DESEL_COLOR = 0xff4c8000
 local HERO_MENU_SEL_COLOR = 0xff8cff00
-local MAX_CITY = 23
+local MAX_CITY = 24
 local MAX_PLAYER = 10
 
 local game_lvl_id = 0
-local arch_id = 46
 
 Graphics.SetAntiAlias(1)                -- Enable anti alias.
 
@@ -340,17 +339,27 @@ function GetKingLv(stage_id)
   return 1 + stage_id/25
 end
 
-function StageClear(city_id)
-  if (arch_id == city_id) then
-    max_stage_id = max_stage_id + 1
-    max_max_stage_id = math.max(max_max_stage_id, max_stage_id)
-    return
+function GetMaxStageId()
+  local max_id = 0
+  for i = 1, MAX_CITY do
+    if (my_player_id == city_owner[i] and city_stage_id[i] > max_id) then
+      max_id = city_stage_id[i]
+    end
   end
+  return max_id
+end
+
+function UpdateMaxStageId()
+  max_stage_id = math.max(max_stage_id, GetMaxStageId())
+  max_max_stage_id = math.max(max_max_stage_id, max_stage_id)
+end
+
+function StageClear(city_id)
   if (my_player_id ~= city_owner[city_id]) then
     city_owner[city_id] = my_player_id
   else
     city_stage_id[city_id] = city_stage_id[city_id] + 1
-    max_max_stage_id = math.max(max_max_stage_id, city_stage_id[city_id])
+    UpdateMaxStageId()
   end
 end
 
