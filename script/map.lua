@@ -92,15 +92,19 @@ function SelectCity(mx, my)
   return false
 end
 
+function GetPlayerColor(id)
+  local clr = 0xff808080
+  if (my_player_id == id) then
+    clr = 0xff0000ff
+  elseif (0 ~= id) then
+    clr = PLAYER_COLOR[id]
+  end
+  return clr
+end
+
 function GenCityLevelInfo_i(o)
   local id = GetCityId(o)
-  local clr = 0xff808080
-  local owner = city_owner[id]
-  if (my_player_id == owner) then
-    clr = 0xff0000ff
-  elseif (0 ~= owner) then
-    clr = PLAYER_COLOR[owner]
-  end
+  local clr = GetPlayerColor(city_owner[id])
   local bg = GenColorObj(o, CITY_LABLE_W, CITY_LABLE_H, clr)
   Good.SetPos(bg, 0, CITY_ICON_SIZE)
   local lv = GetCityStageId(o)
