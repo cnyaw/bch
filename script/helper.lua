@@ -65,6 +65,7 @@ end
 
 players = nil
 my_player_id = nil
+curr_player_idx = nil
 
 function ResetPlayers()
   players = {}
@@ -76,6 +77,7 @@ function ResetPlayers()
     city_owner[i] = players[i]
   end
   my_player_id = math.random(MAX_PLAYER)
+  curr_player_idx = 1
 end
 
 if (nil == players) then
@@ -320,10 +322,11 @@ function SaveGame()
     outf:write(string.format('city_stage_id[%d]=%d\n', i, city_stage_id[i]))
     outf:write(string.format('city_owner[%d]=%d\n', i, city_owner[i]))
   end
-  outf:write(string.format('my_player_id=%d\n', my_player_id))
   for i = 1, MAX_PLAYER do
     outf:write(string.format('players[%d]=%d\n', i, players[i]))
   end
+  outf:write(string.format('my_player_id=%d\n', my_player_id))
+  outf:write(string.format('curr_player_idx=%d\n', curr_player_idx))
   outf:close()
 end
 
@@ -367,4 +370,31 @@ function PtInObj(mx, my, o)
   local l,t,w,h = Good.GetDim(o)
   local x, y = Good.GetPos(o)
   return PtInRect(mx, my, x, y, x + w, y + h)
+end
+
+function MyTurn()
+  return my_player_id == players[curr_player_idx]
+end
+
+function GetFirstCurrPlayerCityId()
+  local id = players[curr_player_idx]
+  for i = 1, MAX_CITY do
+    if (id == city_owner[i]) then
+      return i
+    end
+  end
+  return -1
+end
+
+function NextTurn()
+  while true do
+    if (MAX_PLAYER == curr_player_idx) then
+      curr_player_idx = 1
+    else
+      curr_player_idx = curr_player_idx + 1
+    end
+    if (-1 ~= GetFirstCurrPlayerCityId()) then
+      break
+    end
+  end
 end

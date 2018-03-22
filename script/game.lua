@@ -200,6 +200,7 @@ function OnGameOver(param)
   if (Input.IsKeyPressed(Input.LBUTTON)) then
     if (IsGameComplete()) then
       StageClear(sel_city_id)
+      NextTurn()
     end
     SaveGame()
     Good.GenObj(-1, map_lvl_id)

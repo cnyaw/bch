@@ -265,7 +265,7 @@ function SelActionBtn(mx, my)
         else
           sel_stage_id = GetCityStageId(o)
           Good.GenObj(-1, game_lvl_id)
-          return true
+          return false
         end
       end
     end
@@ -296,9 +296,13 @@ Map.OnCreate = function(param)
   action_btn_panel = nil
   GenCityLinks()
   GenCityLevelInfo()
-  local o = GetObjByCityId(1)
+  local o = GetObjByCityId(GetFirstCurrPlayerCityId())
   SetSelCity(o, GetCityStageId(o))
-  param.step = OnMapPlaying
+  if (MyTurn()) then
+    param.step = OnMapPlaying
+  else
+    param.step = OnMapAiPlaying
+  end
 end
 
 Map.OnStep = function(param)
@@ -306,7 +310,26 @@ Map.OnStep = function(param)
 end
 
 function OnMapMenu(param)
-  HandleGameMenu(param, OnMapPlaying)
+  local NextStep
+  if (MyTurn()) then
+    NextStep = OnMapPlaying
+  else
+    NextStep = OnMapAiPlaying
+  end
+  HandleGameMenu(param, NextStep)
+end
+
+function SetNextTurn(param)
+  NextTurn()
+
+  local o = GetObjByCityId(GetFirstCurrPlayerCityId())
+  SetSelCity(o, GetCityStageId(o))
+
+  if (MyTurn()) then
+    param.step = OnMapPlaying
+  else
+    param.step = OnMapAiPlaying
+  end
 end
 
 function OnActionPanel(param)
@@ -322,7 +345,7 @@ function OnActionPanel(param)
 
   local mx, my = Input.GetMousePos()
   if (SelActionBtn(mx, my)) then
-    param.step = OnMapPlaying
+    SetNextTurn(param)
     return
   end
 end
@@ -354,4 +377,25 @@ function OnMapPlaying(param)
     end
     return
   end
+end
+
+function OnMapAiPlaying(param)
+  if (Input.IsKeyPressed(Input.ESCAPE)) then
+    ShowGameMenu()
+    param.step = OnMapMenu
+  end
+
+  if (nil == param.aiTime) then
+    param.aiTime = 40
+    return
+  else
+    param.aiTime = param.aiTime - 1
+    if (0 < param.aiTime) then
+      return
+    else
+      param.aiTime = nil
+    end
+  end
+
+  SetNextTurn(param)
 end
