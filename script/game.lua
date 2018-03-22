@@ -90,7 +90,7 @@ end
 
 function HandleQuitGame()
   SaveGame()
-  if (isInGame()) then
+  if (InGame()) then
     Good.GenObj(-1, map_lvl_id)
   else
     Good.Exit()
@@ -430,7 +430,7 @@ function PutHero(x, y, mw, mh)
 end
 
 function SelectHero(x, y)
-  local inGame = isInGame()
+  local IsInGame = InGame()
   local NewSelHero = 1 + math.floor((x - HERO_MENU_OFFSET_X) / HERO_MENU_W)
   local menu = HeroMenu[NewSelHero]
   if (PtInRect(x, y, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y + HERO_MENU_H - 26, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
@@ -450,8 +450,8 @@ function SelectHero(x, y)
           UpdateHeroMenuInfo(menu)
         end
       end
-      UpdateCoinCountObj(inGame)
-      if (inGame) then
+      UpdateCoinCountObj(IsInGame)
+      if (IsInGame) then
         UpgradeHeroOnField(NewSelHero)
       end
       SaveGame()

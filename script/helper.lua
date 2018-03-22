@@ -219,18 +219,18 @@ function UpdateHeroMenuInfo(menu)
   menu.info_obj = info_obj
 end
 
-function isInGame()
+function InGame()
   return game_lvl_id == Good.GetLevelId()
 end
 
 function UpdateHeroMenuSel()
-  local inGame = isInGame()
+  local IsInGame = InGame()
   for  i = 1, #HeroMenu do
     local menu = HeroMenu[i]
     if (coin_count < menu.put_cost or menu.count >= menu.max_count) then
       Good.SetAlpha(menu.o, 128)
       Good.SetBgColor(menu.cd_obj, HERO_MENU_DISABLE_COLOR)
-    elseif (inGame) then
+    elseif (IsInGame) then
       if (i == SelHero or nil == SelHero) then
         Good.SetAlpha(menu.o, 255)
         Good.SetBgColor(menu.cd_obj, HERO_MENU_SEL_COLOR)
