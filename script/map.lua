@@ -262,6 +262,13 @@ function UpgradeCurSelCity()
   return true
 end
 
+function KillActionPanel()
+  if (nil ~= action_btn_panel) then
+    Good.KillObj(action_btn_panel)
+    action_btn_panel = nil
+  end
+end
+
 function SelActionBtn(mx, my)
   if (nil ~= action_btn_panel) then
     local px, py = Good.GetPos(action_btn_panel)
@@ -272,9 +279,8 @@ function SelActionBtn(mx, my)
       if (PtInRect(mx - px, my - py, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
         sel_city_id = GetCityId(o)
         if (GetCityId(curr_sel_city) == sel_city_id) then
+          KillActionPanel()
           if (UpgradeCurSelCity()) then
-            Good.KillObj(action_btn_panel)
-            action_btn_panel = nil
             return true
           else
             return false
@@ -286,6 +292,8 @@ function SelActionBtn(mx, my)
         end
       end
     end
+    KillActionPanel()
+    return false
   end
   return false
 end
@@ -312,11 +320,7 @@ Map.OnCreate = function(param)
   GenCityLevelInfo()
   local o = GetObjByCityId(GetFirstCurrPlayerCityId())
   SetSelCity(o, GetCityStageId(o))
-  if (MyTurn()) then
-    param.step = OnMapPlaying
-  else
-    param.step = OnMapAiPlaying
-  end
+  SetPlayingStep(param)
 end
 
 function AddHarvestCoinObj(id)
@@ -355,12 +359,7 @@ function OnMapMenu(param)
   HandleGameMenu(param, NextStep)
 end
 
-function SetNextTurn(param)
-  NextTurn()
-
-  local o = GetObjByCityId(GetFirstCurrPlayerCityId())
-  SetSelCity(o, GetCityStageId(o))
-
+function SetPlayingStep(param)
   if (MyTurn()) then
     param.step = OnMapPlaying
   else
@@ -368,12 +367,16 @@ function SetNextTurn(param)
   end
 end
 
+function SetNextTurn(param)
+  NextTurn()
+  local o = GetObjByCityId(GetFirstCurrPlayerCityId())
+  SetSelCity(o, GetCityStageId(o))
+  SetPlayingStep(param)
+end
+
 function OnActionPanel(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
-    if (nil ~= action_btn_panel) then
-      Good.KillObj(action_btn_panel)
-      action_btn_panel = nil
-    end
+    KillActionPanel()
     param.step = OnMapPlaying
     return
   end
@@ -385,7 +388,8 @@ function OnActionPanel(param)
   local mx, my = Input.GetMousePos()
   if (SelActionBtn(mx, my)) then
     SetNextTurn(param)
-    return
+  else
+    SetPlayingStep(param)
   end
 end
 
