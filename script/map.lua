@@ -272,7 +272,11 @@ function SelActionBtn(mx, my)
       if (PtInRect(mx - px, my - py, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
         sel_city_id = GetCityId(o)
         if (GetCityId(curr_sel_city) == sel_city_id) then
-          if (not UpgradeCurSelCity()) then
+          if (UpgradeCurSelCity()) then
+            Good.KillObj(action_btn_panel)
+            action_btn_panel = nil
+            return true
+          else
             return false
           end
         else
@@ -282,9 +286,6 @@ function SelActionBtn(mx, my)
         end
       end
     end
-    Good.KillObj(action_btn_panel)
-    action_btn_panel = nil
-    return true
   end
   return false
 end
@@ -369,7 +370,10 @@ end
 
 function OnActionPanel(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
-    SelActionBtn(-1, -1)                -- Force close panel.
+    if (nil ~= action_btn_panel) then
+      Good.KillObj(action_btn_panel)
+      action_btn_panel = nil
+    end
     param.step = OnMapPlaying
     return
   end
