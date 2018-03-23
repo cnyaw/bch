@@ -298,3 +298,17 @@ AnimSelCity.OnStep = function(param)
     ArStepAnimator(param, param.k)
   end
 end
+
+AnimFlyingUpObj = {}
+
+AnimFlyingUpObj.OnStep = function(param)
+  if (nil == param.k) then
+    local loop1 = ArAddLoop(nil)
+    ArAddMoveBy(loop1, 'Pos', 0.4, 0, -TILE_H).ease = ArEaseOut
+    ArAddMoveTo(loop1, 'Alpha', .2, 0)
+    ArAddCall(loop1, 'AcKillAnimObj', 0)
+    param.k = ArAddAnimator({loop1})
+  else
+    ArStepAnimator(param, param.k)
+  end
+end

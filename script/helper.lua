@@ -7,7 +7,7 @@ local HERO_UPGRADE_DISABLE_COLOR = 0xff505050
 local HERO_MENU_DISABLE_COLOR = 0xff808080
 local HERO_MENU_DESEL_COLOR = 0xff4c8000
 local HERO_MENU_SEL_COLOR = 0xff8cff00
-local MAX_CITY = 24
+MAX_CITY = 24
 local MAX_PLAYER = 10
 local INIT_COIN_COUNT = 200
 
@@ -413,9 +413,22 @@ function GetFirstPlayerIdx()
   return -1
 end
 
-function GetHarvestOfRound()
+function GetPlayerIdx(id)
   for i = 1, MAX_PLAYER do
-    players_coin[i] = players_coin[i] + 100 * GetPlayerCityCount(players[i])
+    if (players[i] == id) then
+      return i
+    end
+  end
+  return -1
+end
+
+function GetHarvestOfRound()
+  for i = 1, MAX_CITY do
+    if (0 < city_owner[i]) then
+      local coin = 100 + city_stage_id[i]
+      local player_idx = GetPlayerIdx(city_owner[i])
+      players_coin[player_idx] = players_coin[player_idx] + coin
+    end
   end
 end
 

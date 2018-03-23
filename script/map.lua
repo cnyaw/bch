@@ -11,6 +11,7 @@ local dummy_group_id = 42
 local battle_tex_id = 14
 local upgrade_tex_id = 44
 local hero_menu_button_tex_id = 3
+local coin_tex_id = 13
 
 local curr_sel_city = nil
 local curr_sel_city_obj = nil
@@ -198,12 +199,16 @@ function GenActionBtn(id, tex_id)
   return o
 end
 
+function GetUpgradeCityCost(stage_id)
+  return 100 + GetStageCombatPower(stage_id)
+end
+
 function GenUpgradeBtn(id)
   local btn_obj = GenActionBtn(id, upgrade_tex_id)
   local label_obj = Good.GenObj(btn_obj, hero_menu_button_tex_id)
   local l,t,w,h = Good.GetDim(label_obj)
   Good.SetPos(label_obj, (CITY_ICON_SIZE - w)/2, CITY_ICON_SIZE)
-  local upgrade_cost = GetStageCombatPower(GetCityStageId(curr_sel_city))
+  local upgrade_cost = GetUpgradeCityCost(GetCityStageId(curr_sel_city))
   local s = Good.GenTextObj(label_obj, string.format('$%d', upgrade_cost), CITY_LABLE_TEXT_SIZE)
   local tw = GetTextObjWidth(s)
   Good.SetPos(s, (w - tw)/2, (h - CITY_LABLE_TEXT_SIZE)/2)
@@ -233,7 +238,7 @@ end
 
 function UpgradeCurSelCity()
   local stage_id = GetCityStageId(curr_sel_city)
-  local upgrade_cost = GetStageCombatPower(stage_id)
+  local upgrade_cost = GetUpgradeCityCost(stage_id)
   if (upgrade_cost <= coin_count) then
     coin_count = coin_count - upgrade_cost
     UpdateCoinCountObj(false)
@@ -307,11 +312,27 @@ Map.OnCreate = function(param)
   end
 end
 
+function AddHarvestCoinObj(id)
+  local o = Good.GenObj(-1, coin_tex_id, 'AnimFlyingUpObj')
+  Good.SetPos(o, Good.GetPos(id))
+end
+
+function GetCityHarvest()
+  local my_player_id = players[my_player_idx]
+  for i = 1, MAX_CITY do
+    if (my_player_id == city_owner[i]) then
+      local o = GetObjByCityId(i)
+      AddHarvestCoinObj(o)
+    end
+  end
+  AddCoin(players_coin[my_player_idx])
+  players_coin[my_player_idx] = 0
+  SaveGame()
+end
+
 Map.OnStep = function(param)
   if (0 < players_coin[my_player_idx]) then
-    AddCoin(players_coin[my_player_idx])
-    players_coin[my_player_idx] = 0
-    SaveGame()
+    GetCityHarvest()
   end
 
   param.step(param)
@@ -387,22 +408,29 @@ function OnMapPlaying(param)
   end
 end
 
+function TimeExpired(param, timer)
+  if (nil == param.timer) then
+    param.timer = timer
+    return false
+  else
+    param.timer = param.timer - 1
+    if (0 < param.timer) then
+      return false
+    else
+      param.timer = nil
+      return true
+    end
+  end
+end
+
 function OnMapAiPlaying(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
     ShowGameMenu()
     param.step = OnMapMenu
   end
 
-  if (nil == param.aiTime) then
-    param.aiTime = 40
+  if (not TimeExpired(param, 40)) then
     return
-  else
-    param.aiTime = param.aiTime - 1
-    if (0 < param.aiTime) then
-      return
-    else
-      param.aiTime = nil
-    end
   end
 
   SetNextTurn(param)
