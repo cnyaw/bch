@@ -60,7 +60,7 @@ end
 function SetSelCity(o, stage_id)
   local id = GetCityId(o)
   if (curr_sel_city == o) then
-    return MyTurn()
+    return GetMyPlayerId() == city_owner[id]
   end
 
   curr_sel_city = o
@@ -94,9 +94,8 @@ function SelectCity(mx, my)
 end
 
 function GetPlayerColor(id)
-  local my_player_id = players[my_player_idx]
   local clr = 0xff808080
-  if (my_player_id == id) then
+  if (GetMyPlayerId() == id) then
     clr = 0xff0000ff
   elseif (0 ~= id) then
     clr = PLAYER_COLOR[id]
@@ -226,10 +225,9 @@ function GenActionBtnPanel()
   Good.SetPos(action_btn_panel, x, y)
   local id = GetCityId(curr_sel_city)
   local links = CityData[id]
-  local my_player_id = players[my_player_idx]
   for i = 1, #links do
     local idTarget = links[i]
-    if (my_player_id ~= city_owner[idTarget]) then
+    if (GetMyPlayerId() ~= city_owner[idTarget]) then
       GenActionBtn(idTarget, battle_tex_id)
     end
   end
@@ -329,9 +327,8 @@ function AddHarvestCoinObj(id)
 end
 
 function GetCityHarvest()
-  local my_player_id = players[my_player_idx]
   for i = 1, MAX_CITY do
-    if (my_player_id == city_owner[i]) then
+    if (GetMyPlayerId() == city_owner[i]) then
       local o = GetObjByCityId(i)
       AddHarvestCoinObj(o)
     end

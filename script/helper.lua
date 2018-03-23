@@ -348,11 +348,14 @@ function GetKingLv(stage_id)
   return 1 + stage_id/25
 end
 
+function GetMyPlayerId()
+  return players[my_player_idx]
+end
+
 function GetMaxStageId()
-  local my_player_id = players[my_player_idx]
   local max_id = 0
   for i = 1, MAX_CITY do
-    if (my_player_id == city_owner[i] and city_stage_id[i] > max_id) then
+    if (GetMyPlayerId() == city_owner[i] and city_stage_id[i] > max_id) then
       max_id = city_stage_id[i]
     end
   end
@@ -365,7 +368,7 @@ function UpdateMaxStageId()
 end
 
 function StageClear(city_id)
-  local my_player_id = players[my_player_idx]
+  local my_player_id = GetMyPlayerId()
   if (my_player_id ~= city_owner[city_id]) then
     city_owner[city_id] = my_player_id
   else
