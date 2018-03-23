@@ -236,6 +236,11 @@ function GenActionBtnPanel()
   GenUpgradeBtn(id)
 end
 
+function AddUpgradeObj(id)
+  local o = Good.GenObj(-1, upgrade_tex_id, 'AnimFlyingUpObj')
+  Good.SetPos(o, Good.GetPos(id))
+end
+
 function UpgradeCurSelCity()
   local stage_id = GetCityStageId(curr_sel_city)
   local upgrade_cost = GetUpgradeCityCost(stage_id)
@@ -249,6 +254,7 @@ function UpgradeCurSelCity()
     stage_info_obj = GenStageInfoObj(-1, stage_id + 1)
     Good.SetPos(stage_info_obj, 0, TILE_H/2)
     UpdateMaxStageId()
+    AddUpgradeObj(curr_sel_city)
     SaveGame()
   else
     return false                        -- No coin to upgrade.
