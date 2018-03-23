@@ -9,6 +9,7 @@ local HERO_MENU_DESEL_COLOR = 0xff4c8000
 local HERO_MENU_SEL_COLOR = 0xff8cff00
 local MAX_CITY = 24
 local MAX_PLAYER = 10
+local INIT_COIN_COUNT = 200
 
 local game_lvl_id = 0
 
@@ -64,19 +65,23 @@ function shuffle(a)
 end
 
 players = nil
-my_player_id = nil
+players_coin = nil
+my_player_idx = nil
 curr_player_idx = nil
 
 function ResetPlayers()
   players = {}
+  players_coin = {}
   for i = 1, MAX_PLAYER do
     players[i] = i
+    players_coin[i] = INIT_COIN_COUNT
   end
   shuffle(players, MAX_PLAYER - 1)
   for i = 1, MAX_PLAYER do
     city_owner[i] = players[i]
   end
-  my_player_id = math.random(MAX_PLAYER)
+  my_player_idx = math.random(MAX_PLAYER)
+  players_coin[my_player_idx] = 0       -- Refer to global::coin_count.
   curr_player_idx = 1
 end
 
@@ -282,7 +287,7 @@ function LoadGame()
 end
 
 function ResetGame()
-  coin_count = 200
+  coin_count = INIT_COIN_COUNT
   curr_total_coin_count = 0
   max_stage_id = 1
   ResetCityStageId()
@@ -324,8 +329,9 @@ function SaveGame()
   end
   for i = 1, MAX_PLAYER do
     outf:write(string.format('players[%d]=%d\n', i, players[i]))
+    outf:write(string.format('players_coin[%d]=%d\n', i, players_coin[i]))
   end
-  outf:write(string.format('my_player_id=%d\n', my_player_id))
+  outf:write(string.format('my_player_idx=%d\n', my_player_idx))
   outf:write(string.format('curr_player_idx=%d\n', curr_player_idx))
   outf:close()
 end
@@ -343,6 +349,7 @@ function GetKingLv(stage_id)
 end
 
 function GetMaxStageId()
+  local my_player_id = players[my_player_idx]
   local max_id = 0
   for i = 1, MAX_CITY do
     if (my_player_id == city_owner[i] and city_stage_id[i] > max_id) then
@@ -358,6 +365,7 @@ function UpdateMaxStageId()
 end
 
 function StageClear(city_id)
+  local my_player_id = players[my_player_idx]
   if (my_player_id ~= city_owner[city_id]) then
     city_owner[city_id] = my_player_id
   else
@@ -373,7 +381,7 @@ function PtInObj(mx, my, o)
 end
 
 function MyTurn()
-  return my_player_id == players[curr_player_idx]
+  return my_player_idx == curr_player_idx
 end
 
 function GetFirstCurrPlayerCityId()
@@ -386,6 +394,31 @@ function GetFirstCurrPlayerCityId()
   return -1
 end
 
+function GetPlayerCityCount(id)
+  local c = 0
+  for i = 1, MAX_CITY do
+    if (id == city_owner[i]) then
+      c = c + 1
+    end
+  end
+  return c
+end
+
+function GetFirstPlayerIdx()
+  for i = 1, MAX_PLAYER do
+    if (0 < GetPlayerCityCount(players[i])) then
+      return i
+    end
+  end
+  return -1
+end
+
+function GetHarvestOfRound()
+  for i = 1, MAX_PLAYER do
+    players_coin[i] = players_coin[i] + 100 * GetPlayerCityCount(players[i])
+  end
+end
+
 function NextTurn()
   while true do
     if (MAX_PLAYER == curr_player_idx) then
@@ -396,5 +429,8 @@ function NextTurn()
     if (-1 ~= GetFirstCurrPlayerCityId()) then
       break
     end
+  end
+  if (GetFirstPlayerIdx() == curr_player_idx) then
+    GetHarvestOfRound()
   end
 end

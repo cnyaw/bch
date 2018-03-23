@@ -59,7 +59,7 @@ end
 function SetSelCity(o, stage_id)
   local id = GetCityId(o)
   if (curr_sel_city == o) then
-    return my_player_id == city_owner[id]
+    return MyTurn()
   end
 
   curr_sel_city = o
@@ -93,6 +93,7 @@ function SelectCity(mx, my)
 end
 
 function GetPlayerColor(id)
+  local my_player_id = players[my_player_idx]
   local clr = 0xff808080
   if (my_player_id == id) then
     clr = 0xff0000ff
@@ -220,6 +221,7 @@ function GenActionBtnPanel()
   Good.SetPos(action_btn_panel, x, y)
   local id = GetCityId(curr_sel_city)
   local links = CityData[id]
+  local my_player_id = players[my_player_idx]
   for i = 1, #links do
     local idTarget = links[i]
     if (my_player_id ~= city_owner[idTarget]) then
@@ -306,6 +308,12 @@ Map.OnCreate = function(param)
 end
 
 Map.OnStep = function(param)
+  if (0 < players_coin[my_player_idx]) then
+    AddCoin(players_coin[my_player_idx])
+    players_coin[my_player_idx] = 0
+    SaveGame()
+  end
+
   param.step(param)
 end
 
