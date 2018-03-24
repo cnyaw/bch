@@ -468,3 +468,21 @@ function GetPlayerColor(id)
   end
   return clr
 end
+
+function GetPlayerCoinCount(id)
+  local idx = GetPlayerIdx(id)
+  if (my_player_idx == idx) then
+    return coin_count
+  else
+    return players_coin[idx]
+  end
+end
+
+function SetPlayerCoinCount(id, count)
+  local idx = GetPlayerIdx(id)
+  if (my_player_idx == idx) then
+    coin_count = count
+  else
+    players_coin[idx] = count
+  end
+end

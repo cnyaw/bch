@@ -14,7 +14,7 @@ local hero_menu_button_tex_id = 3
 local coin_tex_id = 13
 
 local curr_sel_city = nil
-local curr_sel_city_obj = nil
+local anim_sel_city_obj = nil
 local stage_info_obj = nil
 local action_btn_panel = nil
 sel_city_id = nil
@@ -62,12 +62,12 @@ function SetSelCity(o, stage_id)
   end
 
   curr_sel_city = o
-  if (nil ~= curr_sel_city_obj) then
-    Good.KillObj(curr_sel_city_obj)
+  if (nil ~= anim_sel_city_obj) then
+    Good.KillObj(anim_sel_city_obj)
   end
 
-  curr_sel_city_obj = GenColorObj(-1, 32, 32, 0x80ff0000, 'AnimSelCity')
-  Good.SetPos(curr_sel_city_obj, Good.GetScreenPos(o))
+  anim_sel_city_obj = GenColorObj(-1, 32, 32, 0x80ff0000, 'AnimSelCity')
+  Good.SetPos(anim_sel_city_obj, Good.GetScreenPos(o))
 
   if (nil ~= stage_info_obj) then
     Good.KillObj(stage_info_obj)
@@ -223,20 +223,21 @@ function GenUpgradeAnimObj(id)
   Good.SetPos(o, Good.GetPos(id))
 end
 
-function UpgradeCurSelCity()
-  local stage_id = GetCityStageId(curr_sel_city)
+function UpgradeCity(o)
+  local stage_id = GetCityStageId(o)
   local upgrade_cost = GetUpgradeCityCost(stage_id)
-  if (upgrade_cost <= coin_count) then
-    coin_count = coin_count - upgrade_cost
-    UpdateCoinCountObj(false)
-    StageClear(GetCityId(curr_sel_city))
-    Good.KillAllChild(curr_sel_city)
-    GenCityLevelInfo_i(curr_sel_city)
+  local city_id = GetCityId(o)
+  local owner = city_owner[city_id]
+  local coin = GetPlayerCoinCount(owner)
+  if (upgrade_cost <= coin) then
+    SetPlayerCoinCount(owner, coin - upgrade_cost)
+    city_stage_id[city_id] = city_stage_id[city_id] + 1
+    Good.KillAllChild(o)
+    GenCityLevelInfo_i(o)
     Good.KillObj(stage_info_obj)
     stage_info_obj = GenStageInfoObj(-1, stage_id + 1)
     Good.SetPos(stage_info_obj, 0, TILE_H/2)
-    UpdateMaxStageId()
-    GenUpgradeAnimObj(curr_sel_city)
+    GenUpgradeAnimObj(o)
     SaveGame()
   else
     return false                        -- No coin to upgrade.
@@ -263,7 +264,9 @@ function SelActionBtn(mx, my)
         -- Click on upgrade btn.
         if (GetCityId(curr_sel_city) == sel_city_id) then
           KillActionPanel()
-          if (UpgradeCurSelCity()) then
+          if (UpgradeCity(curr_sel_city)) then
+            UpdateCoinCountObj(false)
+            UpdateMaxStageId()
             return true
           else
             return false
@@ -296,7 +299,7 @@ Map.OnCreate = function(param)
   UpdateHeroMenuSel()
   -- Init.
   curr_sel_city = nil
-  curr_sel_city_obj = nil
+  anim_sel_city_obj = nil
   stage_info_obj = nil
   action_btn_panel = nil
   GenCityLinks()
@@ -425,6 +428,8 @@ function OnMapAiPlaying(param)
   if (not TimeExpired(param, 40)) then
     return
   end
+
+  UpgradeCity(curr_sel_city)
 
   SetNextTurn(param)
 end
