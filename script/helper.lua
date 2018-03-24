@@ -7,9 +7,12 @@ local HERO_UPGRADE_DISABLE_COLOR = 0xff505050
 local HERO_MENU_DISABLE_COLOR = 0xff808080
 local HERO_MENU_DESEL_COLOR = 0xff4c8000
 local HERO_MENU_SEL_COLOR = 0xff8cff00
-MAX_CITY = 24
 local MAX_PLAYER = 10
 local INIT_COIN_COUNT = 200
+local PLAYER_COLOR = {
+  0xffFF0000, 0xffFF6A00, 0xffB6FF00, 0xff00FF21, 0xff7F6A00,
+  0xff267F00, 0xff00FFFF, 0xffFFD800, 0xffFF00DC, 0xff7F0037}
+MAX_CITY = 24
 
 local game_lvl_id = 0
 
@@ -80,6 +83,7 @@ function ResetPlayers()
   for i = 1, MAX_PLAYER do
     city_owner[i] = players[i]
   end
+  shuffle(city_owner, MAX_CITY - 1)
   my_player_idx = math.random(MAX_PLAYER)
   players_coin[my_player_idx] = 0       -- Refer to global::coin_count.
   curr_player_idx = 1
@@ -449,4 +453,18 @@ function NextTurn()
   if (GetFirstPlayerIdx() == curr_player_idx) then
     GetHarvestOfRound()
   end
+end
+
+function Lerp(v0, v1, t)
+  return (1 - t) * v0 + t * v1
+end
+
+function GetPlayerColor(id)
+  local clr = 0xff808080
+  if (GetMyPlayerId() == id) then
+    clr = 0xff0000ff
+  elseif (0 ~= id) then
+    clr = PLAYER_COLOR[id]
+  end
+  return clr
 end

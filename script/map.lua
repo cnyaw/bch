@@ -46,8 +46,6 @@ CityData = {
   [24] = {21, 22}
 }
 
-local PLAYER_COLOR = {0xffFF0000, 0xffFF6A00, 0xffB6FF00, 0xff00FF21, 0xff7F6A00, 0xff267F00, 0xff00FFFF, 0xffFFD800, 0xffFF00DC, 0xff7F0037}
-
 function GetCityId(o)
   return tonumber(Good.GetName(o))
 end
@@ -93,16 +91,6 @@ function SelectCity(mx, my)
   return false
 end
 
-function GetPlayerColor(id)
-  local clr = 0xff808080
-  if (GetMyPlayerId() == id) then
-    clr = 0xff0000ff
-  elseif (0 ~= id) then
-    clr = PLAYER_COLOR[id]
-  end
-  return clr
-end
-
 function GenCityLevelInfo_i(o)
   local id = GetCityId(o)
   local clr = GetPlayerColor(city_owner[id])
@@ -144,10 +132,6 @@ function GetObjByCityId(id)
   return -1
 end
 
-function lerp(v0, v1, t)
-  return (1 - t) * v0 + t * v1
-end
-
 function GetCityAnchor(o)
   local x, y = Good.GetPos(o)
   local l,t,w,h = Good.GetDim(o)
@@ -163,7 +147,7 @@ function GenCityLink(o1, o2)
   local t = 0
   while (true) do
     local o = GenColorObj(map_obj_id, 3, 3, 0xfff00000)
-    Good.SetPos(o, lerp(x1, x2, t) - mx, lerp(y1, y2, t) - my)
+    Good.SetPos(o, Lerp(x1, x2, t) - mx, Lerp(y1, y2, t) - my)
     t = t + delta
     if (1 <= t) then
       break
@@ -234,7 +218,7 @@ function GenActionBtnPanel()
   GenUpgradeBtn(id)
 end
 
-function AddUpgradeObj(id)
+function GenUpgradeAnimObj(id)
   local o = Good.GenObj(-1, upgrade_tex_id, 'AnimFlyingUpObj')
   Good.SetPos(o, Good.GetPos(id))
 end
@@ -252,7 +236,7 @@ function UpgradeCurSelCity()
     stage_info_obj = GenStageInfoObj(-1, stage_id + 1)
     Good.SetPos(stage_info_obj, 0, TILE_H/2)
     UpdateMaxStageId()
-    AddUpgradeObj(curr_sel_city)
+    GenUpgradeAnimObj(curr_sel_city)
     SaveGame()
   else
     return false                        -- No coin to upgrade.
@@ -276,6 +260,7 @@ function SelActionBtn(mx, my)
       local x, y = Good.GetPos(o)
       if (PtInRect(mx - px, my - py, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
         sel_city_id = GetCityId(o)
+        -- Click on upgrade btn.
         if (GetCityId(curr_sel_city) == sel_city_id) then
           KillActionPanel()
           if (UpgradeCurSelCity()) then
@@ -283,6 +268,7 @@ function SelActionBtn(mx, my)
           else
             return false
           end
+        -- Click on battle btn.
         else
           sel_stage_id = GetCityStageId(o)
           Good.GenObj(-1, game_lvl_id)
@@ -290,9 +276,8 @@ function SelActionBtn(mx, my)
         end
       end
     end
-    KillActionPanel()
-    return false
   end
+  KillActionPanel()
   return false
 end
 
@@ -329,8 +314,7 @@ end
 function GetCityHarvest()
   for i = 1, MAX_CITY do
     if (GetMyPlayerId() == city_owner[i]) then
-      local o = GetObjByCityId(i)
-      AddHarvestCoinObj(o)
+      AddHarvestCoinObj(GetObjByCityId(i))
     end
   end
   AddCoin(players_coin[my_player_idx])
@@ -342,7 +326,6 @@ Map.OnStep = function(param)
   if (0 < players_coin[my_player_idx]) then
     GetCityHarvest()
   end
-
   param.step(param)
 end
 
@@ -382,8 +365,7 @@ function OnActionPanel(param)
     return
   end
 
-  local mx, my = Input.GetMousePos()
-  if (SelActionBtn(mx, my)) then
+  if (SelActionBtn(Input.GetMousePos())) then
     SetNextTurn(param)
   else
     SetPlayingStep(param)
