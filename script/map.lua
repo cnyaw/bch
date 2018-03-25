@@ -223,6 +223,11 @@ function GenUpgradeAnimObj(id)
   Good.SetPos(o, Good.GetPos(id))
 end
 
+function UpdateCityInfo(o)
+  Good.KillAllChild(o)
+  GenCityLevelInfo_i(o)
+end
+
 function UpgradeCity(o)
   local stage_id = GetCityStageId(o)
   local upgrade_cost = GetUpgradeCityCost(stage_id)
@@ -232,8 +237,7 @@ function UpgradeCity(o)
   if (upgrade_cost <= coin) then
     SetPlayerCoinCount(owner, coin - upgrade_cost)
     city_stage_id[city_id] = city_stage_id[city_id] + 1
-    Good.KillAllChild(o)
-    GenCityLevelInfo_i(o)
+    UpdateCityInfo(o)
     Good.KillObj(stage_info_obj)
     stage_info_obj = GenStageInfoObj(-1, stage_id + 1)
     Good.SetPos(stage_info_obj, 0, TILE_H/2)
@@ -419,6 +423,58 @@ function TimeExpired(param, timer)
   end
 end
 
+function UpgradeHeroes()
+  local heroes = players_hero[curr_player_idx]
+  for i = MAX_HERO, 1, -1 do
+    local lv = heroes[i]
+    if (0 < lv or (1 < i and 0 ~= heroes[i - 1])) then
+      local cost = GetLevelValue(lv, HeroData[i].UpgradeCost)
+      if (cost < players_coin[curr_player_idx]) then
+        players_coin[curr_player_idx] = players_coin[curr_player_idx] - cost
+        heroes[i] = heroes[i] + 1
+        return true
+      end
+    end
+  end
+  return false
+end
+
+function GetHeroCombatPower(idx)
+  local heroes = players_hero[idx]
+  local p = 0
+  for hero_id = 1, MAX_HERO do
+    local hero = HeroData[hero_id]
+    local lv = heroes[hero_id]
+    local hero_max_count = math.min(lv, hero.MaxCount)
+    if (0 < hero_max_count) then
+      p = p + hero_max_count * GetLevelValue(lv, hero.Atk)
+    end
+  end
+  return p
+end
+
+function InvadeNearCity()
+  local hero_combat_power = GetHeroCombatPower(curr_player_idx)
+  local player_id = players[curr_player_idx]
+  local curr_city_id = GetCityId(curr_sel_city)
+  local near_city = CityData[curr_city_id]
+  for i = 1, #near_city do
+    local near_city_id = near_city[i]
+    local near_player_id = city_owner[near_city_id]
+    if (near_player_id ~= player_id) then
+      local city_combat_power = GetStageCombatPower(city_stage_id[near_city_id])
+      if (hero_combat_power > city_combat_power) then
+        if (math.random(hero_combat_power + city_combat_power) > city_combat_power) then
+          city_owner[near_city_id] = player_id
+          UpdateCityInfo(GetObjByCityId(near_city_id))
+        end
+        return true
+      end
+    end
+  end
+  return false
+end
+
 function OnMapAiPlaying(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
     ShowGameMenu()
@@ -429,7 +485,13 @@ function OnMapAiPlaying(param)
     return
   end
 
-  UpgradeCity(curr_sel_city)
+  while (UpgradeHeroes()) do
+    -- Continue upgrade hero until can't do.
+  end
+
+  if (not UpgradeCity(curr_sel_city)) then
+    InvadeNearCity()
+  end
 
   SetNextTurn(param)
 end
