@@ -291,7 +291,7 @@ Map.OnCreate = function(param)
   hud_obj = nil
   UpdateCoinCountObj(false)
   -- Hero menu.
-  for hero_id = 1, 6 do
+  for hero_id = 1, MAX_HERO do
     local menu = HeroMenu[hero_id]
     InitHeroMenu(menu, hero_id)
     UpdateHeroMenuInfo(menu)

@@ -49,7 +49,7 @@ Game.OnCreate = function(param)
   InitStage(sel_stage_id)
   -- Hero menu.
   SelHero = nil
-  for hero_id = 1, 6 do
+  for hero_id = 1, MAX_HERO do
     local menu = HeroMenu[hero_id]
     InitHeroMenu(menu, hero_id)
     -- Put init my heroes.
@@ -554,7 +554,7 @@ function UpdateStatistics()
   local s_kill = Good.GenTextObj(dummy, 'Kill', STAT_TEXT_SIZE)
   Good.SetPos(s_kill, 0, TILE_H/2)
   local offset = 1.4
-  for hero_id = 1, 6 do
+  for hero_id = 1, MAX_HERO do
     local hero_obj = GenHeroPieceObj(s_kill, HeroData[hero_id].Face, false, '')
     Good.SetScale(hero_obj, 0.5, 0.5)
     Good.SetPos(hero_obj, 0, TILE_W/2 * offset)

@@ -13,6 +13,7 @@ local PLAYER_COLOR = {
   0xffFF0000, 0xffFF6A00, 0xffB6FF00, 0xff00FF21, 0xff7F6A00,
   0xff267F00, 0xff00FFFF, 0xffFFD800, 0xffFF00DC, 0xff7F0037}
 MAX_CITY = 24
+MAX_HERO = 6
 
 local game_lvl_id = 0
 
@@ -161,7 +162,7 @@ end
 
 function GenHeroMenu()
   HeroMenu = {}
-  for hero_id = 1, 6 do
+  for hero_id = 1, MAX_HERO do
     local menu = {}
     if (1 == hero_id) then
       menu.lv = 1
@@ -298,7 +299,7 @@ function ResetGame()
   ResetCityOwner()
   ResetPlayers()
   curr_play_time = 0
-  for i = 1, 6 do
+  for i = 1, MAX_HERO do
     CurrKillEnemy[i] = 0
   end
   GenHeroMenu()
@@ -318,11 +319,11 @@ function SaveGame()
   outf:write(string.format('total_coin_count=%d\n', total_coin_count))
   outf:write(string.format('curr_play_time=%d\n', curr_play_time))
   outf:write(string.format('total_play_time=%d\n', total_play_time))
-  for hero_id = 1, 6 do
+  for hero_id = 1, MAX_HERO do
     outf:write(string.format('CurrKillEnemy[%d]=%d\n', hero_id, CurrKillEnemy[hero_id]))
     outf:write(string.format('TotalKillEnemy[%d]=%d\n', hero_id, TotalKillEnemy[hero_id]))
   end
-  for hero_id = 1, 6 do
+  for hero_id = 1, MAX_HERO do
     local menu = HeroMenu[hero_id]
     outf:write(string.format('HeroMenu[%d].lv=%d\n', hero_id, menu.lv))
     outf:write(string.format('HeroMenu[%d].max_count=%d\n', hero_id, menu.max_count))

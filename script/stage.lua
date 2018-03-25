@@ -65,7 +65,7 @@ function GetStageData(stage_id)
   local hero_count = math.min(9, 2 + math.floor(stage_id / 20))
   stage.Wave = {wave_time, hero_count}
   stage.Heroes = {}
-  for hero_id = 1, 6 do
+  for hero_id = 1, MAX_HERO do
     local count = math.min(50, math.floor((1 + stage_id) / (1 + 4 * (hero_id - 1))))
     if (0 < count) then
       table.insert(stage.Heroes, {hero_id, count})
