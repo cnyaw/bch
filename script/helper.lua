@@ -97,7 +97,6 @@ function ResetPlayers()
   shuffle(city_owner, MAX_CITY - 1)
   my_player_idx = math.random(MAX_PLAYER)
   players_coin[my_player_idx] = 0       -- Refer to global::coin_count.
-  players_hero[my_player_idx] = {}      -- Refer to global::HeroMenu
   curr_player_idx = 1
 end
 
@@ -348,6 +347,11 @@ function SaveGame()
     outf:write(string.format('players_coin[%d]=%d\n', i, players_coin[i]))
     outf:write(string.format('players_hero[%d]={', i))
     local heroes = players_hero[i]
+    if (my_player_idx == i) then
+      for j = 1, MAX_HERO do
+        heroes[j] = HeroMenu[j].lv
+      end
+    end
     for j = 1, #heroes do
       if (MAX_HERO == j) then
         outf:write(string.format('%d', heroes[j]))
