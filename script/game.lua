@@ -212,7 +212,7 @@ function AddCoin(coin)
   coin_count = coin_count + coin
   curr_total_coin_count = curr_total_coin_count + coin
   total_coin_count = total_coin_count + coin
-  UpdateCoinCountObj(true)
+  UpdateCoinCountObj(InGame())
   UpdateHeroMenuSel()
 end
 
@@ -418,7 +418,7 @@ function PutHero(x, y, mw, mh)
     if (-1 ~= AddMyHero(SelHero, pos, menu.lv)) then
       menu.cd = menu.gen_cd
       coin_count = coin_count - HeroMenu[SelHero].put_cost
-      UpdateCoinCountObj(true)
+      UpdateCoinCountObj(InGame())
       menu.count = menu.count + 1
       UpdateHeroMenuInfo(menu)
       if (coin_count < menu.put_cost or menu.count >= menu.max_count) then
