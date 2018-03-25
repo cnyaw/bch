@@ -68,17 +68,27 @@ function shuffle(a)
   end
 end
 
-players = nil
+players = nil                           -- Player ID.
 players_coin = nil
+players_hero = nil
 my_player_idx = nil
 curr_player_idx = nil
 
 function ResetPlayers()
   players = {}
   players_coin = {}
+  players_hero = {}
   for i = 1, MAX_PLAYER do
     players[i] = i
     players_coin[i] = INIT_COIN_COUNT
+    players_hero[i] = {}
+    for j = 1, MAX_HERO do
+      if (1 == j) then
+        table.insert(players_hero[i], 1)
+      else
+        table.insert(players_hero[i], 0)
+      end
+    end
   end
   shuffle(players, MAX_PLAYER - 1)
   for i = 1, MAX_PLAYER do
@@ -87,6 +97,7 @@ function ResetPlayers()
   shuffle(city_owner, MAX_CITY - 1)
   my_player_idx = math.random(MAX_PLAYER)
   players_coin[my_player_idx] = 0       -- Refer to global::coin_count.
+  players_hero[my_player_idx] = {}      -- Refer to global::HeroMenu
   curr_player_idx = 1
 end
 
@@ -335,6 +346,16 @@ function SaveGame()
   for i = 1, MAX_PLAYER do
     outf:write(string.format('players[%d]=%d\n', i, players[i]))
     outf:write(string.format('players_coin[%d]=%d\n', i, players_coin[i]))
+    outf:write(string.format('players_hero[%d]={', i))
+    local heroes = players_hero[i]
+    for j = 1, #heroes do
+      if (MAX_HERO == j) then
+        outf:write(string.format('%d', heroes[j]))
+      else
+        outf:write(string.format('%d,', heroes[j]))
+      end
+    end
+    outf:write(string.format('}\n'))
   end
   outf:write(string.format('my_player_idx=%d\n', my_player_idx))
   outf:write(string.format('curr_player_idx=%d\n', curr_player_idx))
