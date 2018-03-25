@@ -170,7 +170,7 @@ function GetXyFromPos(pos)
   return x, y
 end
 
-function GenHeroMenu()
+function ResetHeroMenu()
   HeroMenu = {}
   for hero_id = 1, MAX_HERO do
     local menu = {}
@@ -186,7 +186,7 @@ function GenHeroMenu()
 end
 
 if (nil == HeroMenu) then
-  GenHeroMenu()
+  ResetHeroMenu()
 end
 
 function InitHeroMenu(menu, hero_id)
@@ -291,14 +291,34 @@ function InitOccupyMap()
   end
 end
 
+function BuildMyHeroMenu()
+  local heroes = players_hero[my_player_idx]
+  for hero_id = 1, MAX_HERO do
+    local menu = {}
+    menu.lv = heroes[hero_id]
+    menu.max_count = math.min(menu.lv, HeroData[hero_id].MaxCount)
+    if (0 == menu.max_count and 1 < hero_id) then
+      if (0 == HeroMenu[hero_id - 1].lv) then
+        menu.max_count = -1           -- Unlockable.
+      end
+    end
+    HeroMenu[hero_id] = menu
+  end
+end
+
 function LoadGame()
   ResetGame()
+  HeroMenu[1].lv = -1                   -- As a flag to check does save file have HeroMenu.
   local inf = io.open(SAV_FILE_NAME, "r")
   if (nil == inf) then
     return
   end
   assert(loadstring(inf:read("*all")))()
   inf:close()
+  -- New save file doesn't have HeroMenu, rebuild it from players_hero[my_player_idx].
+  if (-1 == HeroMenu[1].lv) then
+    BuildMyHeroMenu()
+  end
 end
 
 function ResetGame()
@@ -312,7 +332,7 @@ function ResetGame()
   for i = 1, MAX_HERO do
     CurrKillEnemy[i] = 0
   end
-  GenHeroMenu()
+  ResetHeroMenu()
   reset_count = reset_count + 1
 end
 
@@ -332,11 +352,6 @@ function SaveGame()
   for hero_id = 1, MAX_HERO do
     outf:write(string.format('CurrKillEnemy[%d]=%d\n', hero_id, CurrKillEnemy[hero_id]))
     outf:write(string.format('TotalKillEnemy[%d]=%d\n', hero_id, TotalKillEnemy[hero_id]))
-  end
-  for hero_id = 1, MAX_HERO do
-    local menu = HeroMenu[hero_id]
-    outf:write(string.format('HeroMenu[%d].lv=%d\n', hero_id, menu.lv))
-    outf:write(string.format('HeroMenu[%d].max_count=%d\n', hero_id, menu.max_count))
   end
   for i = 1, MAX_CITY do
     outf:write(string.format('city_stage_id[%d]=%d\n', i, city_stage_id[i]))
