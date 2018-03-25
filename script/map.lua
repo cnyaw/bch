@@ -390,7 +390,7 @@ function OnMapPlaying(param)
 
   -- Click on hero menu.
   if (PtInRect(mx, my, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
-    SelectHero(mx, my)
+    SelHeroMenu(mx, my)
     return
   end
 
