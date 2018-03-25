@@ -60,7 +60,7 @@ if (nil == city_owner) then
   ResetCityOwner()
 end
 
-function shuffle(a)
+function Shuffle(a)
   local len = #a
   for i = len, 1, -1 do
     local r = math.random(len)
@@ -90,11 +90,11 @@ function ResetPlayers()
       end
     end
   end
-  shuffle(players, MAX_PLAYER - 1)
+  Shuffle(players)
   for i = 1, MAX_PLAYER do
     city_owner[i] = players[i]
   end
-  shuffle(city_owner, MAX_CITY - 1)
+  Shuffle(city_owner)
   my_player_idx = math.random(MAX_PLAYER)
   players_coin[my_player_idx] = 0       -- Refer to global::coin_count.
   curr_player_idx = 1

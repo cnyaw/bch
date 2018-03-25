@@ -423,7 +423,7 @@ function TimeExpired(param, timer)
   end
 end
 
-function UpgradeHeroes()
+function UpgradeHero()
   local heroes = players_hero[curr_player_idx]
   for i = MAX_HERO, 1, -1 do
     local lv = heroes[i]
@@ -453,7 +453,7 @@ function GetHeroCombatPower(idx)
   return p
 end
 
-function InvadeNearCity()
+function InvadeNearCity(empty_city)
   local hero_combat_power = GetHeroCombatPower(curr_player_idx)
   local player_id = players[curr_player_idx]
   local curr_city_id = GetCityId(curr_sel_city)
@@ -463,13 +463,35 @@ function InvadeNearCity()
     local near_player_id = city_owner[near_city_id]
     if (near_player_id ~= player_id) then
       local city_combat_power = GetStageCombatPower(city_stage_id[near_city_id])
-      if (hero_combat_power > city_combat_power) then
+      if (not empty_city and 0 ~= near_player_id) then
+        city_combat_power = city_combat_power + GetHeroCombatPower(GetPlayerIdx(near_player_id))
+      end
+      if ((empty_city and 0 == near_player_id) or hero_combat_power > city_combat_power) then
         if (math.random(hero_combat_power + city_combat_power) > city_combat_power) then
           city_owner[near_city_id] = player_id
           UpdateCityInfo(GetObjByCityId(near_city_id))
         end
         return true
       end
+    end
+  end
+  return false
+end
+
+function AiUpgradeCity()
+  local player_id = players[curr_player_idx]
+  local cities = {}
+  for i = 1, MAX_CITY do
+    if (player_id == city_owner[i]) then
+      local o = GetObjByCityId(i)
+      table.insert(cities, o)
+    end
+  end
+  Shuffle(cities)
+  for i = 1, #cities do
+    local o = cities[i]
+    if (UpgradeCity(o)) then
+      return true
     end
   end
   return false
@@ -485,12 +507,12 @@ function OnMapAiPlaying(param)
     return
   end
 
-  while (UpgradeHeroes()) do
-    -- Continue upgrade hero until can't do.
-  end
-
-  if (not UpgradeCity(curr_sel_city)) then
-    InvadeNearCity()
+  if (not InvadeNearCity(true)) then
+    if (not AiUpgradeCity()) then
+      if (not UpgradeHero()) then
+        InvadeNearCity(false)
+      end
+    end
   end
 
   SetNextTurn(param)
