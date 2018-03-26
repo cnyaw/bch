@@ -363,7 +363,8 @@ function TimeExpired(param, timer)
 end
 
 function UpgradeHero()
-  local heroes = city_hero[GetFirstPlayerCityId(curr_player_idx)]
+  local city_id = GetFirstPlayerCityId(curr_player_idx)
+  local heroes = city_hero[city_id]
   for i = MAX_HERO, 1, -1 do
     local lv = heroes[i]
     if (0 < lv or (1 < i and 0 ~= heroes[i - 1])) then
@@ -371,6 +372,7 @@ function UpgradeHero()
       if (cost < players_coin[curr_player_idx]) then
         players_coin[curr_player_idx] = players_coin[curr_player_idx] - cost
         heroes[i] = heroes[i] + 1
+        UpdateCityInfo(GetObjByCityId(city_id))
         return true
       end
     end
@@ -401,12 +403,9 @@ function InvadeNearCity(empty_city)
     local near_city_id = near_city[i]
     local near_player_id = city_owner[near_city_id]
     if (near_player_id ~= player_id) then
-      local city_combat_power = GetStageCombatPower(city_stage_id[near_city_id])
-      if (not empty_city and 0 ~= near_player_id) then
-        city_combat_power = city_combat_power + GetHeroCombatPower(near_city_id)
-      end
-      if ((empty_city and 0 == near_player_id) or hero_combat_power > city_combat_power) then
-        if (math.random(hero_combat_power + city_combat_power) > city_combat_power) then
+      local target_combat_power = GetHeroCombatPower(near_city_id)
+      if ((empty_city and 0 == near_player_id) or hero_combat_power > target_combat_power) then
+        if (math.random(hero_combat_power + target_combat_power) > target_combat_power) then
           city_owner[near_city_id] = player_id
           UpdateCityInfo(GetObjByCityId(near_city_id))
         end
