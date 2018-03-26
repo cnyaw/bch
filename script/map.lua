@@ -91,22 +91,22 @@ function SelectCity(mx, my)
   return false
 end
 
-function GenCityLevelInfo_i(o)
+function GenCityInfo_i(o)
   local id = GetCityId(o)
   local clr = GetPlayerColor(city_owner[id])
   local bg = GenColorObj(o, CITY_LABLE_W, CITY_LABLE_H, clr)
   Good.SetPos(bg, 0, CITY_ICON_SIZE)
-  local lv = GetCityStageId(o)
-  local s = Good.GenTextObj(bg, string.format('%d', lv), CITY_LABLE_TEXT_SIZE)
+  local combat_power = GetHeroCombatPower(id)
+  local s = Good.GenTextObj(bg, string.format('%d', combat_power), CITY_LABLE_TEXT_SIZE)
   local w = GetTextObjWidth(s)
   Good.SetPos(s, (CITY_LABLE_W - w)/2, (CITY_LABLE_H - CITY_LABLE_TEXT_SIZE)/2)
 end
 
-function GenCityLevelInfo()
+function GenCityInfo()
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
-    GenCityLevelInfo_i(o)
+    GenCityInfo_i(o)
   end
 end
 
@@ -225,7 +225,7 @@ end
 
 function UpdateCityInfo(o)
   Good.KillAllChild(o)
-  GenCityLevelInfo_i(o)
+  GenCityInfo_i(o)
 end
 
 function UpgradeCity(o)
@@ -307,7 +307,7 @@ Map.OnCreate = function(param)
   stage_info_obj = nil
   action_btn_panel = nil
   GenCityLinks()
-  GenCityLevelInfo()
+  GenCityInfo()
   local o = GetObjByCityId(GetFirstCurrPlayerCityId())
   SetSelCity(o, GetCityStageId(o))
   SetPlayingStep(param)
@@ -439,8 +439,8 @@ function UpgradeHero()
   return false
 end
 
-function GetHeroCombatPower(idx)
-  local heroes = city_hero[GetFirstPlayerCityId(idx)]
+function GetHeroCombatPower(city_id)
+  local heroes = city_hero[city_id]
   local p = 0
   for hero_id = 1, MAX_HERO do
     local hero = HeroData[hero_id]
@@ -454,9 +454,9 @@ function GetHeroCombatPower(idx)
 end
 
 function InvadeNearCity(empty_city)
-  local hero_combat_power = GetHeroCombatPower(curr_player_idx)
   local player_id = players[curr_player_idx]
   local curr_city_id = GetCityId(curr_sel_city)
+  local hero_combat_power = GetHeroCombatPower(curr_city_id)
   local near_city = CityData[curr_city_id]
   for i = 1, #near_city do
     local near_city_id = near_city[i]
@@ -464,7 +464,7 @@ function InvadeNearCity(empty_city)
     if (near_player_id ~= player_id) then
       local city_combat_power = GetStageCombatPower(city_stage_id[near_city_id])
       if (not empty_city and 0 ~= near_player_id) then
-        city_combat_power = city_combat_power + GetHeroCombatPower(GetPlayerIdx(near_player_id))
+        city_combat_power = city_combat_power + GetHeroCombatPower(near_city_id)
       end
       if ((empty_city and 0 == near_player_id) or hero_combat_power > city_combat_power) then
         if (math.random(hero_combat_power + city_combat_power) > city_combat_power) then
@@ -473,25 +473,6 @@ function InvadeNearCity(empty_city)
         end
         return true
       end
-    end
-  end
-  return false
-end
-
-function AiUpgradeCity()
-  local player_id = players[curr_player_idx]
-  local cities = {}
-  for i = 1, MAX_CITY do
-    if (player_id == city_owner[i]) then
-      local o = GetObjByCityId(i)
-      table.insert(cities, o)
-    end
-  end
-  Shuffle(cities)
-  for i = 1, #cities do
-    local o = cities[i]
-    if (UpgradeCity(o)) then
-      return true
     end
   end
   return false
@@ -508,10 +489,8 @@ function OnMapAiPlaying(param)
   end
 
   if (not InvadeNearCity(true)) then
-    if (not AiUpgradeCity()) then
-      if (not UpgradeHero()) then
-        InvadeNearCity(false)
-      end
+    if (not UpgradeHero()) then
+      InvadeNearCity(false)
     end
   end
 
