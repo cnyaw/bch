@@ -424,7 +424,7 @@ function TimeExpired(param, timer)
 end
 
 function UpgradeHero()
-  local heroes = players_hero[curr_player_idx]
+  local heroes = city_hero[GetFirstPlayerCityId(curr_player_idx)]
   for i = MAX_HERO, 1, -1 do
     local lv = heroes[i]
     if (0 < lv or (1 < i and 0 ~= heroes[i - 1])) then
@@ -440,7 +440,7 @@ function UpgradeHero()
 end
 
 function GetHeroCombatPower(idx)
-  local heroes = players_hero[idx]
+  local heroes = city_hero[GetFirstPlayerCityId(idx)]
   local p = 0
   for hero_id = 1, MAX_HERO do
     local hero = HeroData[hero_id]

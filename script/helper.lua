@@ -1,4 +1,4 @@
-local SAV_FILE_NAME = "bch.sav"
+local SAV_FILE_NAME = "bch2.sav"
 local UPGRADE_CD_CURVE = 1.05
 local UPGRADE_CURVE = 1.2
 local MENU_TEXT_OFFSET_X, MENU_TEXT_OFFSET_Y = 2, 2
@@ -68,27 +68,33 @@ function Shuffle(a)
   end
 end
 
+city_hero = nil
+
+function ResetCityHero()
+  city_hero = {}
+  for i = 1, MAX_CITY do
+    city_hero[i] = {}
+    for j = 1, MAX_HERO do
+      if (1 == j) then
+        table.insert(city_hero[i], 1)
+      else
+        table.insert(city_hero[i], 0)
+      end
+    end
+  end
+end
+
 players = nil                           -- Player ID.
 players_coin = nil
-players_hero = nil
 my_player_idx = nil
 curr_player_idx = nil
 
 function ResetPlayers()
   players = {}
   players_coin = {}
-  players_hero = {}
   for i = 1, MAX_PLAYER do
     players[i] = i
     players_coin[i] = INIT_COIN_COUNT
-    players_hero[i] = {}
-    for j = 1, MAX_HERO do
-      if (1 == j) then
-        table.insert(players_hero[i], 1)
-      else
-        table.insert(players_hero[i], 0)
-      end
-    end
   end
   Shuffle(players)
   for i = 1, MAX_PLAYER do
@@ -291,34 +297,14 @@ function InitOccupyMap()
   end
 end
 
-function BuildMyHeroMenu()
-  local heroes = players_hero[my_player_idx]
-  for hero_id = 1, MAX_HERO do
-    local menu = {}
-    menu.lv = heroes[hero_id]
-    menu.max_count = math.min(menu.lv, HeroData[hero_id].MaxCount)
-    if (0 == menu.max_count and 1 < hero_id) then
-      if (0 == HeroMenu[hero_id - 1].lv) then
-        menu.max_count = -1           -- Unlockable.
-      end
-    end
-    HeroMenu[hero_id] = menu
-  end
-end
-
 function LoadGame()
   ResetGame()
-  HeroMenu[1].lv = -1                   -- As a flag to check does save file have HeroMenu.
   local inf = io.open(SAV_FILE_NAME, "r")
   if (nil == inf) then
     return
   end
   assert(loadstring(inf:read("*all")))()
   inf:close()
-  -- New save file doesn't have HeroMenu, rebuild it from players_hero[my_player_idx].
-  if (-1 == HeroMenu[1].lv) then
-    BuildMyHeroMenu()
-  end
 end
 
 function ResetGame()
@@ -327,6 +313,7 @@ function ResetGame()
   max_stage_id = 1
   ResetCityStageId()
   ResetCityOwner()
+  ResetCityHero()
   ResetPlayers()
   curr_play_time = 0
   for i = 1, MAX_HERO do
@@ -356,17 +343,8 @@ function SaveGame()
   for i = 1, MAX_CITY do
     outf:write(string.format('city_stage_id[%d]=%d\n', i, city_stage_id[i]))
     outf:write(string.format('city_owner[%d]=%d\n', i, city_owner[i]))
-  end
-  for i = 1, MAX_PLAYER do
-    outf:write(string.format('players[%d]=%d\n', i, players[i]))
-    outf:write(string.format('players_coin[%d]=%d\n', i, players_coin[i]))
-    outf:write(string.format('players_hero[%d]={', i))
-    local heroes = players_hero[i]
-    if (my_player_idx == i) then
-      for j = 1, MAX_HERO do
-        heroes[j] = HeroMenu[j].lv
-      end
-    end
+    outf:write(string.format('city_hero[%d]={', i))
+    local heroes = city_hero[i]
     for j = 1, #heroes do
       if (MAX_HERO == j) then
         outf:write(string.format('%d', heroes[j]))
@@ -375,6 +353,10 @@ function SaveGame()
       end
     end
     outf:write(string.format('}\n'))
+  end
+  for i = 1, MAX_PLAYER do
+    outf:write(string.format('players[%d]=%d\n', i, players[i]))
+    outf:write(string.format('players_coin[%d]=%d\n', i, players_coin[i]))
   end
   outf:write(string.format('my_player_idx=%d\n', my_player_idx))
   outf:write(string.format('curr_player_idx=%d\n', curr_player_idx))
@@ -434,6 +416,16 @@ end
 
 function GetFirstCurrPlayerCityId()
   local id = players[curr_player_idx]
+  for i = 1, MAX_CITY do
+    if (id == city_owner[i]) then
+      return i
+    end
+  end
+  return -1
+end
+
+function GetFirstPlayerCityId(idx)
+  local id = players[idx]
   for i = 1, MAX_CITY do
     if (id == city_owner[i]) then
       return i
