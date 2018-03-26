@@ -64,7 +64,7 @@ function SetSelCity(o)
   return false
 end
 
-function SelectCity(mx, my)
+function SelCity(mx, my)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
@@ -326,7 +326,7 @@ function OnMapPlaying(param)
 
   -- Click on map.
   if (PtInObj(mx, my, map_obj_id)) then
-    if (SelectCity(mx, my)) then
+    if (SelCity(mx, my)) then
       GenActionBtnPanel()
       param.step = OnActionPanel
     end
