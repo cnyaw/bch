@@ -13,7 +13,6 @@ local coin_tex_id = 13
 
 local curr_sel_city = nil
 local anim_sel_city_obj = nil
-local stage_info_obj = nil
 local action_btn_panel = nil
 sel_city_id = nil
 
@@ -48,12 +47,7 @@ function GetCityId(o)
   return tonumber(Good.GetName(o))
 end
 
-function GetCityStageId(o)
-  local id = GetCityId(o)
-  return city_stage_id[id]
-end
-
-function SetSelCity(o, stage_id)
+function SetSelCity(o)
   local id = GetCityId(o)
   if (curr_sel_city == o) then
     return GetMyPlayerId() == city_owner[id]
@@ -67,13 +61,6 @@ function SetSelCity(o, stage_id)
   anim_sel_city_obj = GenColorObj(-1, 32, 32, 0x80ff0000, 'AnimSelCity')
   Good.SetPos(anim_sel_city_obj, Good.GetScreenPos(o))
 
-  if (nil ~= stage_info_obj) then
-    Good.KillObj(stage_info_obj)
-  end
-
-  stage_info_obj = GenStageInfoObj(-1, stage_id)
-  Good.SetPos(stage_info_obj, 0, TILE_H/2)
-
   return false
 end
 
@@ -83,7 +70,7 @@ function SelectCity(mx, my)
     local o = Good.GetChild(dummy_group_id, i)
     local x, y = Good.GetPos(o)
     if (PtInRect(mx, my, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
-      return SetSelCity(o, GetCityStageId(o))
+      return SetSelCity(o)
     end
   end
   return false
@@ -217,7 +204,7 @@ function SelActionBtn(mx, my)
       local x, y = Good.GetPos(o)
       if (PtInRect(mx - px, my - py, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
         sel_city_id = GetCityId(o)
-        sel_stage_id = GetCityStageId(o)
+        sel_stage_id = 1
         Good.GenObj(-1, game_lvl_id)
         return false
       end
@@ -248,7 +235,7 @@ Map.OnCreate = function(param)
   GenCityLinks()
   GenCityInfo()
   local o = GetObjByCityId(GetFirstCurrPlayerCityId())
-  SetSelCity(o, GetCityStageId(o))
+  SetSelCity(o)
   SetPlayingStep(param)
 end
 
@@ -296,7 +283,7 @@ end
 function SetNextTurn(param)
   NextTurn()
   local o = GetObjByCityId(GetFirstCurrPlayerCityId())
-  SetSelCity(o, GetCityStageId(o))
+  SetSelCity(o)
   SetPlayingStep(param)
 end
 
@@ -378,20 +365,6 @@ function UpgradeHero()
     end
   end
   return false
-end
-
-function GetHeroCombatPower(city_id)
-  local heroes = city_hero[city_id]
-  local p = 0
-  for hero_id = 1, MAX_HERO do
-    local hero = HeroData[hero_id]
-    local lv = heroes[hero_id]
-    local hero_max_count = math.min(lv, hero.MaxCount)
-    if (0 < hero_max_count) then
-      p = p + hero_max_count * GetLevelValue(lv, hero.Atk)
-    end
-  end
-  return p
 end
 
 function InvadeNearCity(empty_city)

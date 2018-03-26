@@ -34,19 +34,6 @@ max_stage_id = 1
 max_max_stage_id = 1
 local hero_menu_button_tex_id = 3
 
-city_stage_id = nil
-
-function ResetCityStageId()
-  city_stage_id = {}
-  for i = 1, MAX_CITY do
-    city_stage_id[i] = 1
-  end
-end
-
-if (nil == city_stage_id) then
-  ResetCityStageId()
-end
-
 city_owner = nil
 
 function ResetCityOwner()
@@ -311,7 +298,6 @@ function ResetGame()
   coin_count = INIT_COIN_COUNT
   curr_total_coin_count = 0
   max_stage_id = 1
-  ResetCityStageId()
   ResetCityOwner()
   ResetCityHero()
   ResetPlayers()
@@ -341,7 +327,6 @@ function SaveGame()
     outf:write(string.format('TotalKillEnemy[%d]=%d\n', hero_id, TotalKillEnemy[hero_id]))
   end
   for i = 1, MAX_CITY do
-    outf:write(string.format('city_stage_id[%d]=%d\n', i, city_stage_id[i]))
     outf:write(string.format('city_owner[%d]=%d\n', i, city_owner[i]))
     outf:write(string.format('city_hero[%d]={', i))
     local heroes = city_hero[i]
@@ -379,28 +364,10 @@ function GetMyPlayerId()
   return players[my_player_idx]
 end
 
-function GetMaxStageId()
-  local max_id = 0
-  for i = 1, MAX_CITY do
-    if (GetMyPlayerId() == city_owner[i] and city_stage_id[i] > max_id) then
-      max_id = city_stage_id[i]
-    end
-  end
-  return max_id
-end
-
-function UpdateMaxStageId()
-  max_stage_id = math.max(max_stage_id, GetMaxStageId())
-  max_max_stage_id = math.max(max_max_stage_id, max_stage_id)
-end
-
 function StageClear(city_id)
   local my_player_id = GetMyPlayerId()
   if (my_player_id ~= city_owner[city_id]) then
     city_owner[city_id] = my_player_id
-  else
-    city_stage_id[city_id] = city_stage_id[city_id] + 1
-    UpdateMaxStageId()
   end
 end
 
@@ -465,7 +432,7 @@ end
 function GetHarvestOfRound()
   for i = 1, MAX_CITY do
     if (0 < city_owner[i]) then
-      local coin = 100 + city_stage_id[i]
+      local coin = 100 + GetHeroCombatPower(i)
       local player_idx = GetPlayerIdx(city_owner[i])
       players_coin[player_idx] = players_coin[player_idx] + coin
     end
@@ -518,4 +485,18 @@ function SetPlayerCoinCount(id, count)
   else
     players_coin[idx] = count
   end
+end
+
+function GetHeroCombatPower(city_id)
+  local heroes = city_hero[city_id]
+  local p = 0
+  for hero_id = 1, MAX_HERO do
+    local hero = HeroData[hero_id]
+    local lv = heroes[hero_id]
+    local hero_max_count = math.min(lv, hero.MaxCount)
+    if (0 < hero_max_count) then
+      p = p + hero_max_count * GetLevelValue(lv, hero.Atk)
+    end
+  end
+  return p
 end
