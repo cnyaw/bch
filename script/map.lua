@@ -3,13 +3,11 @@ local CITY_LABLE_H = 16
 local CITY_LABLE_TEXT_SIZE = 15
 local CITY_ICON_SIZE = 32
 local CITY_HITTEST_DELTA = 10
-local CITY_UPGRADE_DISABLE_COLOR = 0xff505050
 
 local game_lvl_id = 0
 local map_obj_id = 41
 local dummy_group_id = 42
 local battle_tex_id = 14
-local upgrade_tex_id = 44
 local hero_menu_button_tex_id = 3
 local coin_tex_id = 13
 
@@ -182,25 +180,6 @@ function GenActionBtn(id, tex_id)
   return o
 end
 
-function GetUpgradeCityCost(stage_id)
-  return 100 + GetStageCombatPower(stage_id)
-end
-
-function GenUpgradeBtn(id)
-  local btn_obj = GenActionBtn(id, upgrade_tex_id)
-  local label_obj = Good.GenObj(btn_obj, hero_menu_button_tex_id)
-  local l,t,w,h = Good.GetDim(label_obj)
-  Good.SetPos(label_obj, (CITY_ICON_SIZE - w)/2, CITY_ICON_SIZE)
-  local upgrade_cost = GetUpgradeCityCost(GetCityStageId(curr_sel_city))
-  local s = Good.GenTextObj(label_obj, string.format('$%d', upgrade_cost), CITY_LABLE_TEXT_SIZE)
-  local tw = GetTextObjWidth(s)
-  Good.SetPos(s, (w - tw)/2, (h - CITY_LABLE_TEXT_SIZE)/2)
-  if (upgrade_cost > coin_count) then
-    Good.SetBgColor(btn_obj, CITY_UPGRADE_DISABLE_COLOR)
-    Good.SetBgColor(label_obj, CITY_UPGRADE_DISABLE_COLOR)
-  end
-end
-
 function GenActionBtnPanel()
   local x, y = Good.GetPos(map_obj_id)
   local l,t,w,h = Good.GetDim(map_obj_id)
@@ -215,38 +194,11 @@ function GenActionBtnPanel()
       GenActionBtn(idTarget, battle_tex_id)
     end
   end
-  GenUpgradeBtn(id)
-end
-
-function GenUpgradeAnimObj(id)
-  local o = Good.GenObj(-1, upgrade_tex_id, 'AnimFlyingUpObj')
-  Good.SetPos(o, Good.GetPos(id))
 end
 
 function UpdateCityInfo(o)
   Good.KillAllChild(o)
   GenCityInfo_i(o)
-end
-
-function UpgradeCity(o)
-  local stage_id = GetCityStageId(o)
-  local upgrade_cost = GetUpgradeCityCost(stage_id)
-  local city_id = GetCityId(o)
-  local owner = city_owner[city_id]
-  local coin = GetPlayerCoinCount(owner)
-  if (upgrade_cost <= coin) then
-    SetPlayerCoinCount(owner, coin - upgrade_cost)
-    city_stage_id[city_id] = city_stage_id[city_id] + 1
-    UpdateCityInfo(o)
-    Good.KillObj(stage_info_obj)
-    stage_info_obj = GenStageInfoObj(-1, stage_id + 1)
-    Good.SetPos(stage_info_obj, 0, TILE_H/2)
-    GenUpgradeAnimObj(o)
-    SaveGame()
-  else
-    return false                        -- No coin to upgrade.
-  end
-  return true
 end
 
 function KillActionPanel()
@@ -265,22 +217,9 @@ function SelActionBtn(mx, my)
       local x, y = Good.GetPos(o)
       if (PtInRect(mx - px, my - py, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
         sel_city_id = GetCityId(o)
-        -- Click on upgrade btn.
-        if (GetCityId(curr_sel_city) == sel_city_id) then
-          KillActionPanel()
-          if (UpgradeCity(curr_sel_city)) then
-            UpdateCoinCountObj(false)
-            UpdateMaxStageId()
-            return true
-          else
-            return false
-          end
-        -- Click on battle btn.
-        else
-          sel_stage_id = GetCityStageId(o)
-          Good.GenObj(-1, game_lvl_id)
-          return false
-        end
+        sel_stage_id = GetCityStageId(o)
+        Good.GenObj(-1, game_lvl_id)
+        return false
       end
     end
   end
