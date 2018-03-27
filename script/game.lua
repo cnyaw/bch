@@ -91,6 +91,7 @@ end
 function HandleQuitGame()
   SaveGame()
   if (InGame()) then
+    NextTurn()
     Good.GenObj(-1, map_lvl_id)
   else
     Good.Exit()
