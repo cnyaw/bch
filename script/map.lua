@@ -1,4 +1,4 @@
-local CITY_LABLE_W = 32
+local CITY_LABLE_W = 40
 local CITY_LABLE_H = 16
 local CITY_LABLE_TEXT_SIZE = 15
 local CITY_ICON_SIZE = 32
@@ -53,11 +53,13 @@ function SetSelCity(o)
     return GetMyPlayerId() == city_owner[id]
   end
 
+  -- Sel change.
   curr_sel_city = o
+  GenHeroMenu(id, GetMyPlayerId() ~= city_owner[id])
+
   if (nil ~= anim_sel_city_obj) then
     Good.KillObj(anim_sel_city_obj)
   end
-
   anim_sel_city_obj = GenColorObj(-1, 32, 32, 0x80ff0000, 'AnimSelCity')
   Good.SetPos(anim_sel_city_obj, Good.GetScreenPos(o))
 
@@ -80,7 +82,7 @@ function GenCityInfo_i(o)
   local id = GetCityId(o)
   local clr = GetPlayerColor(city_owner[id])
   local bg = GenColorObj(o, CITY_LABLE_W, CITY_LABLE_H, clr)
-  Good.SetPos(bg, 0, CITY_ICON_SIZE)
+  Good.SetPos(bg, (CITY_ICON_SIZE - CITY_LABLE_W)/2, CITY_ICON_SIZE)
   local combat_power = GetHeroCombatPower(id)
   local s = Good.GenTextObj(bg, string.format('%d', combat_power), CITY_LABLE_TEXT_SIZE)
   local w = GetTextObjWidth(s)
@@ -220,13 +222,6 @@ Map.OnCreate = function(param)
   -- Coin info.
   hud_obj = nil
   UpdateCoinCountObj(false)
-  -- Hero menu.
-  for hero_id = 1, MAX_HERO do
-    local menu = HeroMenu[hero_id]
-    InitHeroMenu(menu, hero_id)
-    UpdateHeroMenuInfo(menu)
-  end
-  UpdateHeroMenuSel()
   -- Init.
   curr_sel_city = nil
   anim_sel_city_obj = nil
@@ -319,8 +314,8 @@ function OnMapPlaying(param)
   local mx, my = Input.GetMousePos()
 
   -- Click on hero menu.
-  if (PtInRect(mx, my, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
-    SelHeroMenu(mx, my)
+  if (PtInRect(mx, my, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * MAX_HERO, WND_H)) then
+    --SelHeroMenu(mx, my)
     return
   end
 

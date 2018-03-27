@@ -184,7 +184,7 @@ function OnGamePlaying(param)
       ToggleSandGlassSpeed()
     elseif (PtInRect(mx, my, MAP_X, MAP_Y, MAP_X + w, MAP_Y + h)) then
       PutHero(mx, my, w, h)
-    elseif (PtInRect(mx, my, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
+    elseif (PtInRect(mx, my, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * MAX_HERO, WND_H)) then
       SelHeroMenu(mx, my)
     end
   end
@@ -433,7 +433,7 @@ function SelHeroMenu(x, y)
   local IsInGame = InGame()
   local NewSelHero = 1 + math.floor((x - HERO_MENU_OFFSET_X) / HERO_MENU_W)
   local menu = HeroMenu[NewSelHero]
-  if (PtInRect(x, y, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y + HERO_MENU_H - 26, HERO_MENU_OFFSET_X + HERO_MENU_W * #HeroMenu, WND_H)) then
+  if (PtInRect(x, y, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y + HERO_MENU_H - 26, HERO_MENU_OFFSET_X + HERO_MENU_W * MAX_HERO, WND_H)) then
     if (coin_count >= menu.upgrade_cost) then
       coin_count = coin_count - menu.upgrade_cost
       local hero = HeroData[NewSelHero]
