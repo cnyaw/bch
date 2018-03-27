@@ -268,7 +268,7 @@ function UpdateHeroMenuState_i(HeroMenu)
 end
 
 function UpdateHeroMenuSel()
-  UpdateHeroMenuSel_i(HeroMenu)
+  UpdateHeroMenuState_i(HeroMenu)
 end
 
 function UpdateHeroMenuCd()
