@@ -16,6 +16,7 @@ local game_lvl_id = 0
 
 hud_obj = nil
 local coin_obj = nil
+local anim_game_over_obj = nil
 
 local stage_heroes_count = {}
 local stage_heroes_obj = nil
@@ -34,6 +35,7 @@ Game.OnCreate = function(param)
   MAP_X, MAP_Y = Good.GetPos(board_id)
   hud_obj = nil
   coin_obj = nil
+  anim_game_over_obj = nil
   reset_timeout = nil
   glass_speed = 1
   next_wave_pos = 0
@@ -473,12 +475,15 @@ function ShowGameMenu()
 end
 
 function ShowGameOver(param, msg, clr)
-  local o = GenColorObj(-1, WND_W, WND_H + 10, clr, 'AnimGameOver')
-  local s = Good.GenTextObj(o, msg, 64)
+  if (nil ~= anim_game_over_obj) then
+    return
+  end
+  anim_game_over_obj = GenColorObj(-1, WND_W, WND_H + 10, clr, 'AnimGameOver')
+  local s = Good.GenTextObj(anim_game_over_obj, msg, 64)
   local slen = GetTextObjWidth(s)
   Good.SetPos(s, (WND_W - slen)/2, 3/7 * WND_H)
-  Good.SetPos(o, 0, -WND_H)
-  local p = Good.GetParam(o)
+  Good.SetPos(anim_game_over_obj, 0, -WND_H)
+  local p = Good.GetParam(anim_game_over_obj)
   p.lvl_param = param
 end
 
