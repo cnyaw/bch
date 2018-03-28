@@ -216,17 +216,6 @@ function AddCoin(coin)
   UpdateHeroMenuSel()
 end
 
-function AddCoinObj(id)
-  if (IsGameOver() or IsGameComplete()) then
-    return
-  end
-  local o = Good.GenObj(-1, coin_tex_id, 'AnimFlyCoinObj')
-  local x, y = Good.GetPos(id)
-  Good.SetPos(o, MAP_X + x, MAP_Y + y)
-  local param = Good.GetParam(o)
-  param.coin = math.random(stage.Coin[1], stage.Coin[2])
-end
-
 function PrepareSelectableHeroes(heroes, selectable_hero)
   local remain_hero_count = 0
   for hero_id = 1, MAX_HERO do

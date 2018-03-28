@@ -4,13 +4,6 @@ local HERO_MOVE_SPEED = 0.6             -- Cell/sec
 -- Animator callback.
 --
 
-function AcAddCoin(param)
-  if (not IsGameOver()) then
-    AddCoin(param.coin)
-  end
-  Good.KillObj(param._id)
-end
-
 function AcApplyBuffEffect(param)
   if (IsHeroAlive(param.target_id)) then
     ApplyBuffEffect(param.lv, param.hero_id, param.target_id, param.skill_id, param.effect_id)
@@ -126,22 +119,6 @@ AnimHealHpObj.OnStep = function(param)
     local loop2 = ArAddLoop(nil)
     ArAddDelay(loop2, 0.3)
     ArAddMoveTo(loop2, 'Scale', 0.1, 0, 0)
-    param.k = ArAddAnimator({loop1, loop2})
-  else
-    ArStepAnimator(param, param.k)
-  end
-end
-
-AnimFlyCoinObj = {}
-
-AnimFlyCoinObj.OnStep = function(param)
-  if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
-    ArAddMoveTo(loop1, 'Pos', 0.8, 0, 0).ease = ArEaseOut
-    ArAddCall(loop1, 'AcAddCoin', 0)
-    local loop2 = ArAddLoop(nil)
-    local scale = (TILE_W/2) / 32
-    ArAddMoveTo(loop2, 'Scale', 0.8, scale, scale)
     param.k = ArAddAnimator({loop1, loop2})
   else
     ArStepAnimator(param, param.k)
