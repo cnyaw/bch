@@ -206,7 +206,6 @@ function SelActionBtn(mx, my)
       local x, y = Good.GetPos(o)
       if (PtInRect(mx - px, my - py, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
         sel_city_id = GetCityId(o)
-        sel_stage_id = 1
         Good.GenObj(-1, game_lvl_id)
         return false
       end

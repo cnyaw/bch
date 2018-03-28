@@ -29,7 +29,6 @@ HERO_MENU_W, HERO_MENU_H = 65, 2.2 * TILE_H
 HERO_MENU_OFFSET_X = (WND_W - 6 * HERO_MENU_W) / 2
 HERO_MENU_OFFSET_Y = WND_H - HERO_MENU_H
 
-sel_stage_id = 1
 max_stage_id = 1
 max_max_stage_id = 1
 local hero_menu_button_tex_id = 3
@@ -268,7 +267,7 @@ function UpdateHeroMenuState_i(HeroMenu)
 end
 
 function UpdateHeroMenuSel()
-  UpdateHeroMenuState_i(HeroMenu)
+  --UpdateHeroMenuState_i(HeroMenu)
 end
 
 function UpdateHeroMenuCd()

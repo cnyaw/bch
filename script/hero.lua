@@ -434,7 +434,6 @@ end
 
 function KillHero(param)
   if (ENEMY_HP_COLOR == param.hp_color) then
-    AddCoinObj(param._id)
     CurrKillEnemy[param.hero_id] = CurrKillEnemy[param.hero_id] + 1
     TotalKillEnemy[param.hero_id] = TotalKillEnemy[param.hero_id] + 1
   else

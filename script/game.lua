@@ -17,7 +17,6 @@ local game_lvl_id = 0
 hud_obj = nil
 local coin_obj = nil
 
-local curr_stage_id = 1
 local stage_heroes_count = {}
 local stage_heroes_obj = nil
 local king_obj = nil
@@ -42,11 +41,11 @@ Game.OnCreate = function(param)
   next_wave_pos = 0
   InitOccupyMap()
   InitHero()
-  curr_stage_id = sel_stage_id
-  king_obj = AddMyHero(king_hero_id, INIT_KING_POS, GetKingLv(curr_stage_id))
+  king_obj = AddMyHero(king_hero_id, INIT_KING_POS, 1)
   stage_heroes_obj = nil
   next_wave_heroes = {}
-  InitStage(sel_stage_id)
+  InitStage()
+  InitNextWave()
   -- Hero menu.
   SelHero = nil
   for hero_id = 1, MAX_HERO do
@@ -228,11 +227,13 @@ function AddCoinObj(id)
   param.coin = math.random(stage.Coin[1], stage.Coin[2])
 end
 
-function PrepareSelectableHeroes(stage, selectable_hero)
+function PrepareSelectableHeroes(heroes, selectable_hero)
   local remain_hero_count = 0
-  for i = 1, #stage.Heroes do
-    local hero_config = stage.Heroes[i]
-    local hero_id = hero_config[1]
+  for hero_id = 1, MAX_HERO do
+    local lv = heroes[hero_id]
+    if (0 >= lv) then
+      break
+    end
     local hero_count = stage_heroes_count[hero_id]
     if (0 < hero_count) then
       selectable_hero[hero_id] = {hero_count}
@@ -288,13 +289,10 @@ function InitNextWave()
     Good.KillObj(stage_heroes_obj)
     stage_heroes_obj = nil
   end
-  stage = GetStageData(curr_stage_id)
-  if (nil == stage) then
-    return
-  end
   -- Prepare selectable heroes for next wave.
+  local heroes = city_hero[sel_city_id]
   local selectable_hero = {}
-  local remain_hero_count = PrepareSelectableHeroes(stage, selectable_hero)
+  local remain_hero_count = PrepareSelectableHeroes(heroes, selectable_hero)
   if (0 >= remain_hero_count) then
     return
   end
@@ -303,7 +301,7 @@ function InitNextWave()
   local pos = 1
   local select_count = 0
   local try_count = 100
-  while 0 < remain_hero_count and select_count < stage.Wave[2] do
+  while 0 < remain_hero_count and select_count < 3 do -- TODO:replace 3 with wave hero_count.
     try_count = try_count - 1
     if (0 >= try_count) then
       break
@@ -314,7 +312,7 @@ function InitNextWave()
       if (0 < hero_count) then
         rand_count = rand_count - hero_count
         if (0 >= rand_count) then
-          local o = GenEnemyHeroObj(hero_id, NEXT_WAVE_POS[pos], GetEnemyLevel(curr_stage_id))
+          local o = GenEnemyHeroObj(hero_id, NEXT_WAVE_POS[pos], heroes[hero_id])
           table.insert(next_wave_heroes, o)
           InitNextWaveHero(o)
           pos = pos + 1
@@ -330,40 +328,34 @@ function InitNextWave()
   -- Gen stage heroes info.
   AddStageNextHeroInfo()
   -- Add sand glass obj.
-  GenSandGlassObj(stage.Wave[1])
+  GenSandGlassObj(10)                   -- TODO:replace 10 with wave time.
 end
 
-function InitStage(stage_id)
+function InitStage()
   if (nil ~= stage_heroes_obj) then
     Good.KillObj(stage_heroes_obj)
     stage_heroes_obj = nil
   end
-  stage = GetStageData(stage_id)
-  if (nil == stage) then
-    return
-  end
   -- Save hero list and count of this stage.
-  curr_stage_id = stage_id
+  local heroes = city_hero[sel_city_id]
   stage_heroes_count = {}
-  for i = 1, #stage.Heroes do
-    local hero_config = stage.Heroes[i]
-    local hero_id = hero_config[1]
-    local hero_count = hero_config[2]
+  for hero_id = 1, MAX_HERO do
     -- Put init enemy heroes.
+    local lv = heroes[hero_id]
+    local hero_count = lv               -- Init count = lv.
     local init_pos = INIT_GAME_POS[hero_id]
     for j = 1, #init_pos do
       if (0 >= hero_count) then
         break
       end
       local pos = init_pos[j]
-      local o = GenEnemyHeroObj(hero_id, pos, GetEnemyLevel(stage_id))
+      local o = GenEnemyHeroObj(hero_id, pos, lv)
       OccupyMap[pos] = o
       AddEnemyHeroObj(o)
       hero_count = hero_count - 1
     end
     stage_heroes_count[hero_id] = hero_count
   end
-  InitNextWave()
 end
 
 function IsGameOver()
