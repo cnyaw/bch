@@ -113,7 +113,6 @@ CurrKillEnemy = {0, 0, 0, 0, 0, 0}
 
 OccupyMap = {}
 
-HeroMenu = nil
 SelHero = nil
 local hero_menu = nil
 
@@ -124,6 +123,8 @@ function ConvertRedPos(pos)
 end
 
 function GetCombatPower()
+  return 0
+  --[[
   local p = 0
   for hero_id = 1, #HeroMenu do
     local menu = HeroMenu[hero_id]
@@ -134,6 +135,7 @@ function GetCombatPower()
   end
   max_combat_power = math.max(max_combat_power, p)
   return p
+  ]]--
 end
 
 function GetFormatTimeStr(ticks)
@@ -161,49 +163,6 @@ function GetXyFromPos(pos)
   local x = col * TILE_W - TILE_W/2 + 8
   local y = row * TILE_H - TILE_H/2 + 8
   return x, y
-end
-
-function ResetHeroMenu()
-  HeroMenu = {}
-  for hero_id = 1, MAX_HERO do
-    local menu = {}
-    if (1 == hero_id) then
-      menu.lv = 1
-      menu.max_count = 1
-    else
-      menu.lv = 0
-      menu.max_count = -1               -- 0 means unlockable.
-    end
-    HeroMenu[hero_id] = menu
-  end
-end
-
-if (nil == HeroMenu) then
-  ResetHeroMenu()
-end
-
-function InitHeroMenu(menu, hero_id)
-  local hero = HeroData[hero_id]
-  menu.gen_cd = GetLevelCdValue(menu.lv, hero.GenCd)
-  menu.put_cost = GetLevelValue(menu.lv, hero.PutCost)
-  menu.upgrade_cost = GetLevelValue(menu.lv, hero.UpgradeCost)
-  menu.count = 0
-  menu.cd = 0
-  local x = HERO_MENU_OFFSET_X + (hero_id - 1) * HERO_MENU_W
-  local y = HERO_MENU_OFFSET_Y
-  local dummy = Good.GenDummy(-1)
-  Good.SetPos(dummy, x, y)
-  local cd_obj = GenColorObj(dummy, HERO_MENU_W - 4, HERO_MENU_H, HERO_MENU_DISABLE_COLOR)
-  Good.SetPos(cd_obj, 2, 2)
-  menu.cd_obj = cd_obj
-  local piece_obj = GenHeroPieceObj(dummy, hero.Face, true, '')
-  Good.SetAlpha(piece_obj, 128)
-  Good.SetPos(piece_obj, (HERO_MENU_W - TILE_W) / 2, (HERO_MENU_H - TILE_H) / 2)
-  SetTextObjColor(piece_obj, hero.Color)
-  menu.o = piece_obj
-  menu.dummy = dummy
-  menu.info_obj = nil
-  menu.read_only = false
 end
 
 function UpdateHeroMenuItemInfo(menu)
@@ -240,7 +199,7 @@ end
 
 function UpdateHeroMenuState_i(HeroMenu)
   local IsInGame = InGame()
-  for  i = 1, #HeroMenu do
+  for  i = 1, MAX_HERO do
     local menu = HeroMenu[i]
     if (coin_count < menu.put_cost or menu.count >= menu.max_count) then
       Good.SetAlpha(menu.o, 128)
@@ -267,11 +226,12 @@ function UpdateHeroMenuState_i(HeroMenu)
 end
 
 function UpdateHeroMenuSel()
-  --UpdateHeroMenuState_i(HeroMenu)
+  UpdateHeroMenuState_i(GetHeroMenu())
 end
 
 function UpdateHeroMenuCd()
-  for i = 1, #HeroMenu do
+  local HeroMenu = GetHeroMenu()
+  for i = 1, MAX_HERO do
     local menu = HeroMenu[i]
     if (0 < menu.cd) then
       menu.cd = menu.cd - 1
@@ -311,7 +271,7 @@ function ResetGame()
   for i = 1, MAX_HERO do
     CurrKillEnemy[i] = 0
   end
-  ResetHeroMenu()
+  --ResetHeroMenu()
   reset_count = reset_count + 1
 end
 
@@ -554,4 +514,13 @@ function GenHeroMenu(city_id, read_only)
     HeroMenu[hero_id] = menu
   end
   UpdateHeroMenuState_i(HeroMenu)
+  return HeroMenu
+end
+
+function InitHeroMenu(city_id)
+  return GenHeroMenu(city_id, true)
+end
+
+function GetHeroMenu()
+  return Good.GetParam(hero_menu)
 end

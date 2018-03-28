@@ -13,6 +13,7 @@ local coin_tex_id = 13
 local curr_sel_city = nil
 local anim_sel_city_obj = nil
 local action_btn_panel = nil
+my_sel_city_id = nil
 sel_city_id = nil
 
 CityData = {
@@ -205,6 +206,7 @@ function SelActionBtn(mx, my)
       local o = Good.GetChild(action_btn_panel, i)
       local x, y = Good.GetPos(o)
       if (PtInRect(mx - px, my - py, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
+        my_sel_city_id = GetCityId(curr_sel_city)
         sel_city_id = GetCityId(o)
         Good.GenObj(-1, game_lvl_id)
         return false

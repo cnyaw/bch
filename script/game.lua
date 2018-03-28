@@ -24,8 +24,6 @@ local king_obj = nil
 local next_wave_heroes = {}
 local next_wave_pos = 0
 
-local stage = nil
-
 local menu_obj = nil
 local reset_timeout = nil
 local reset_timer = RESET_WAIT_TIME
@@ -48,9 +46,9 @@ Game.OnCreate = function(param)
   InitNextWave()
   -- Hero menu.
   SelHero = nil
+  local HeroMenu = InitHeroMenu(my_sel_city_id)
   for hero_id = 1, MAX_HERO do
     local menu = HeroMenu[hero_id]
-    InitHeroMenu(menu, hero_id)
     -- Put init my heroes.
     local hero_count = menu.max_count
     local init_pos = INIT_GAME_POS[hero_id]
@@ -376,6 +374,7 @@ function KillSelHero(hero_id)
   if (king_hero_id == hero_id) then
     return
   end
+  local HeroMenu = GetHeroMenu()
   local menu = HeroMenu[hero_id]
   menu.count = menu.count - 1
   UpdateHeroMenuItemInfo(menu)
@@ -387,6 +386,7 @@ function PutHero(x, y, mw, mh)
   if (nil == SelHero) then
     return
   end
+  local HeroMenu = GetHeroMenu()
   local menu = HeroMenu[SelHero]
   if (0 >= menu.cd and coin_count >= menu.put_cost and menu.count < menu.max_count) then
     if (PtInRect(x, y, MAP_X, MAP_Y, MAP_X + mw, MAP_Y + 5 * TILE_H)) then
@@ -414,6 +414,7 @@ end
 function SelHeroMenu(x, y)
   local IsInGame = InGame()
   local NewSelHero = 1 + math.floor((x - HERO_MENU_OFFSET_X) / HERO_MENU_W)
+  local HeroMenu = GetHeroMenu()
   local menu = HeroMenu[NewSelHero]
   if (PtInRect(x, y, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y + HERO_MENU_H - 26, HERO_MENU_OFFSET_X + HERO_MENU_W * MAX_HERO, WND_H)) then
     if (coin_count >= menu.upgrade_cost) then
@@ -425,7 +426,7 @@ function SelHeroMenu(x, y)
       menu.put_cost = GetLevelValue(menu.lv, hero.PutCost)
       menu.gen_cd = GetLevelCdValue(menu.lv, hero.GenCd)
       UpdateHeroMenuItemInfo(menu)
-      if (NewSelHero ~= #HeroMenu) then
+      if (NewSelHero ~= MAX_HERO) then
         menu = HeroMenu[NewSelHero + 1]
         if (0 >= menu.max_count) then
           menu.max_count = 0        -- unlock to set count to 1.  
