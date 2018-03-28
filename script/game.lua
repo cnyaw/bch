@@ -66,7 +66,7 @@ Game.OnCreate = function(param)
     end
     UpdateHeroMenuItemInfo(menu)
   end
-  UpdateCoinCountObj(true)
+  UpdateCoinCountObj()
   UpdateHeroMenuSel()
   -- Init stage.
   param.step = OnGamePlaying
@@ -213,7 +213,7 @@ function AddCoin(coin)
   coin_count = coin_count + coin
   curr_total_coin_count = curr_total_coin_count + coin
   total_coin_count = total_coin_count + coin
-  UpdateCoinCountObj(InGame())
+  UpdateCoinCountObj()
   UpdateHeroMenuSel()
 end
 
@@ -419,7 +419,7 @@ function PutHero(x, y, mw, mh)
     if (-1 ~= AddMyHero(SelHero, pos, menu.lv)) then
       menu.cd = menu.gen_cd
       coin_count = coin_count - HeroMenu[SelHero].put_cost
-      UpdateCoinCountObj(InGame())
+      UpdateCoinCountObj()
       menu.count = menu.count + 1
       UpdateHeroMenuItemInfo(menu)
       if (coin_count < menu.put_cost or menu.count >= menu.max_count) then
@@ -451,7 +451,7 @@ function SelHeroMenu(x, y)
           UpdateHeroMenuItemInfo(menu)
         end
       end
-      UpdateCoinCountObj(IsInGame)
+      UpdateCoinCountObj()
       if (IsInGame) then
         UpgradeHeroOnField(NewSelHero)
       end
@@ -500,9 +500,10 @@ function ShowGameOver(param, msg, clr)
   p.lvl_param = param
 end
 
-function UpdateCoinCountObj(ShowStage)
+function UpdateCoinCountObj()
   if (nil ~= coin_obj) then
     Good.KillObj(coin_obj)
+    coin_obj = nil
   end
   if (nil == hud_obj) then
     hud_obj = Good.GenDummy(-1)
@@ -513,20 +514,6 @@ function UpdateCoinCountObj(ShowStage)
   Good.SetScale(o, scale, scale)
   o = Good.GenTextObj(coin_obj, string.format('%d', coin_count), TILE_W/2)
   Good.SetPos(o, TILE_W/2, 0)
-  local combat_obj = Good.GenObj(coin_obj, combat_tex_id)
-  local x = (WND_W - TILE_W/2)/4
-  Good.SetPos(combat_obj, x, 0)
-  Good.SetScale(combat_obj, scale, scale)
-  o = Good.GenTextObj(coin_obj, string.format('%d', GetCombatPower()), TILE_W/2)
-  Good.SetPos(o, x + TILE_W/2, 0)
-  if (ShowStage) then
-    local castle_obj = Good.GenObj(coin_obj, castle_tex_id)
-    local x = (WND_W - TILE_W/2)/2
-    Good.SetPos(castle_obj, x, 0)
-    Good.SetScale(castle_obj, scale, scale)
-    o = Good.GenTextObj(coin_obj, string.format('%d', curr_stage_id), TILE_W/2)
-    Good.SetPos(o, x + TILE_W/2, 0)
-  end
 end
 
 function UpdateStage()

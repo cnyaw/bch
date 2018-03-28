@@ -221,7 +221,7 @@ Map = {}
 Map.OnCreate = function(param)
   -- Coin info.
   hud_obj = nil
-  UpdateCoinCountObj(false)
+  UpdateCoinCountObj()
   -- Init.
   curr_sel_city = nil
   anim_sel_city_obj = nil
