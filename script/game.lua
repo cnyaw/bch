@@ -64,7 +64,7 @@ Game.OnCreate = function(param)
       menu.count = menu.count + 1
       hero_count = hero_count - 1
     end
-    UpdateHeroMenuInfo(menu)
+    UpdateHeroMenuItemInfo(menu)
   end
   UpdateCoinCountObj(true)
   UpdateHeroMenuSel()
@@ -397,7 +397,7 @@ function KillSelHero(hero_id)
   end
   local menu = HeroMenu[hero_id]
   menu.count = menu.count - 1
-  UpdateHeroMenuInfo(menu)
+  UpdateHeroMenuItemInfo(menu)
   UpdateHeroMenuSel()
 end
 
@@ -421,7 +421,7 @@ function PutHero(x, y, mw, mh)
       coin_count = coin_count - HeroMenu[SelHero].put_cost
       UpdateCoinCountObj(InGame())
       menu.count = menu.count + 1
-      UpdateHeroMenuInfo(menu)
+      UpdateHeroMenuItemInfo(menu)
       if (coin_count < menu.put_cost or menu.count >= menu.max_count) then
         SelHero = nil
       end
@@ -443,12 +443,12 @@ function SelHeroMenu(x, y)
       menu.upgrade_cost = GetLevelValue(menu.lv, hero.UpgradeCost)
       menu.put_cost = GetLevelValue(menu.lv, hero.PutCost)
       menu.gen_cd = GetLevelCdValue(menu.lv, hero.GenCd)
-      UpdateHeroMenuInfo(menu)
+      UpdateHeroMenuItemInfo(menu)
       if (NewSelHero ~= #HeroMenu) then
         menu = HeroMenu[NewSelHero + 1]
         if (0 >= menu.max_count) then
           menu.max_count = 0        -- unlock to set count to 1.  
-          UpdateHeroMenuInfo(menu)
+          UpdateHeroMenuItemInfo(menu)
         end
       end
       UpdateCoinCountObj(IsInGame)

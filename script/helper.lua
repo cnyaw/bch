@@ -207,7 +207,7 @@ function InitHeroMenu(menu, hero_id)
   menu.read_only = false
 end
 
-function UpdateHeroMenuInfo(menu)
+function UpdateHeroMenuItemInfo(menu)
   if (nil ~= menu.info_obj) then
     Good.KillObj(menu.info_obj)
     menu.info_obj = nil
@@ -508,6 +508,33 @@ function GetHeroCombatPower(city_id)
   return p
 end
 
+function GenHeroMenuItem(hero_id, lv)
+  local hero = HeroData[hero_id]
+  local x = HERO_MENU_OFFSET_X + (hero_id - 1) * HERO_MENU_W
+  local y = HERO_MENU_OFFSET_Y
+  local dummy = Good.GenDummy(hero_menu)
+  Good.SetPos(dummy, x, y)
+  local menu = {}
+  menu.lv = lv
+  menu.gen_cd = GetLevelCdValue(menu.lv, hero.GenCd)
+  menu.put_cost = GetLevelValue(menu.lv, hero.PutCost)
+  menu.upgrade_cost = GetLevelValue(menu.lv, hero.UpgradeCost)
+  menu.count = 0
+  menu.max_count = math.min(menu.lv, hero.MaxCount)
+  menu.cd = 0
+  local cd_obj = GenColorObj(dummy, HERO_MENU_W - 4, HERO_MENU_H, HERO_MENU_DISABLE_COLOR)
+  Good.SetPos(cd_obj, 2, 2)
+  menu.cd_obj = cd_obj
+  local piece_obj = GenHeroPieceObj(dummy, hero.Face, true, '')
+  Good.SetAlpha(piece_obj, 128)
+  Good.SetPos(piece_obj, (HERO_MENU_W - TILE_W) / 2, (HERO_MENU_H - TILE_H) / 2)
+  SetTextObjColor(piece_obj, hero.Color)
+  menu.o = piece_obj
+  menu.dummy = dummy
+  menu.info_obj = nil
+  return menu
+end
+
 function GenHeroMenu(city_id, read_only)
   if (nil ~= hero_menu) then
     Good.KillObj(hero_menu)
@@ -518,36 +545,14 @@ function GenHeroMenu(city_id, read_only)
   local HeroMenu = Good.GetParam(hero_menu)
   local max_count = {}
   for hero_id = 1, MAX_HERO do
-    local hero = HeroData[hero_id]
-    local x = HERO_MENU_OFFSET_X + (hero_id - 1) * HERO_MENU_W
-    local y = HERO_MENU_OFFSET_Y
-    local dummy = Good.GenDummy(hero_menu)
-    Good.SetPos(dummy, x, y)
-    local menu = {}
-    menu.lv = heroes[hero_id]
-    menu.gen_cd = GetLevelCdValue(menu.lv, hero.GenCd)
-    menu.put_cost = GetLevelValue(menu.lv, hero.PutCost)
-    menu.upgrade_cost = GetLevelValue(menu.lv, hero.UpgradeCost)
-    menu.count = 0
-    menu.max_count = math.min(menu.lv, hero.MaxCount)
+    local menu = GenHeroMenuItem(hero_id, heroes[hero_id])
+    menu.read_only = read_only
     max_count[hero_id] = menu.max_count
     if (1 < hero_id and 0 == max_count[hero_id - 1]) then
       menu.max_count = -1
     end
-    menu.cd = 0
-    local cd_obj = GenColorObj(dummy, HERO_MENU_W - 4, HERO_MENU_H, HERO_MENU_DISABLE_COLOR)
-    Good.SetPos(cd_obj, 2, 2)
-    menu.cd_obj = cd_obj
-    local piece_obj = GenHeroPieceObj(dummy, hero.Face, true, '')
-    Good.SetAlpha(piece_obj, 128)
-    Good.SetPos(piece_obj, (HERO_MENU_W - TILE_W) / 2, (HERO_MENU_H - TILE_H) / 2)
-    SetTextObjColor(piece_obj, hero.Color)
-    menu.o = piece_obj
-    menu.dummy = dummy
-    menu.read_only = read_only
-    menu.info_obj = nil
+    UpdateHeroMenuItemInfo(menu)
     HeroMenu[hero_id] = menu
-    UpdateHeroMenuInfo(menu)
   end
   UpdateHeroMenuState_i(HeroMenu)
 end

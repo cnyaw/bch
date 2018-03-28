@@ -8,7 +8,6 @@ local game_lvl_id = 0
 local map_obj_id = 41
 local dummy_group_id = 42
 local battle_tex_id = 14
-local hero_menu_button_tex_id = 3
 local coin_tex_id = 13
 
 local curr_sel_city = nil
@@ -59,6 +58,7 @@ function SetSelCity(o)
 
   if (nil ~= anim_sel_city_obj) then
     Good.KillObj(anim_sel_city_obj)
+    anim_sel_city_obj = nil
   end
   anim_sel_city_obj = GenColorObj(-1, 32, 32, 0x80ff0000, 'AnimSelCity')
   Good.SetPos(anim_sel_city_obj, Good.GetScreenPos(o))
@@ -174,7 +174,7 @@ function GenActionBtnPanel()
   local l,t,w,h = Good.GetDim(map_obj_id)
   action_btn_panel = Good.GenDummy(-1)
   local panel = GenColorObj(action_btn_panel, w, h, 0xa0000000)
-  Good.SetPos(action_btn_panel, x, y)
+  Good.SetPos(panel, x, y)
   local id = GetCityId(curr_sel_city)
   local links = CityData[id]
   for i = 1, #links do
