@@ -314,6 +314,12 @@ function OnMapPlaying(param)
 
   local mx, my = Input.GetMousePos()
 
+  -- End of round.
+  if (PtInRect(mx, my, WND_W - 40, 0, WND_W, 40)) then
+    SetNextTurn(param)
+    return
+  end
+
   -- Click on hero menu.
   if (PtInRect(mx, my, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * MAX_HERO, WND_H)) then
     local is_upgrade, menu = SelHeroMenu(mx, my)

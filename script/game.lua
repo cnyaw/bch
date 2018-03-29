@@ -303,7 +303,7 @@ function InitNextWave()
       if (0 < hero_count) then
         rand_count = rand_count - hero_count
         if (0 >= rand_count) then
-          local o = GenEnemyHeroObj(hero_id, NEXT_WAVE_POS[pos], heroes[hero_id] + 2)
+          local o = GenEnemyHeroObj(hero_id, NEXT_WAVE_POS[pos], heroes[hero_id] + 1)
           table.insert(next_wave_heroes, o)
           InitNextWaveHero(o)
           pos = pos + 1
@@ -330,7 +330,7 @@ function GenInitEnemyHeroes(hero_id, lv)
       break
     end
     local pos = init_pos[j]
-    local o = GenEnemyHeroObj(hero_id, pos, lv + 2)
+    local o = GenEnemyHeroObj(hero_id, pos, lv + 1)
     OccupyMap[pos] = o
     AddEnemyHeroObj(o)
     hero_count = hero_count - 1
