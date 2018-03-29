@@ -271,7 +271,6 @@ function ResetGame()
   for i = 1, MAX_HERO do
     CurrKillEnemy[i] = 0
   end
-  --ResetHeroMenu()
   reset_count = reset_count + 1
 end
 
@@ -474,6 +473,7 @@ function GenHeroMenuItem(hero_id, lv)
   local dummy = Good.GenDummy(hero_menu)
   Good.SetPos(dummy, x, y)
   local menu = {}
+  menu.hero_id = hero_id
   menu.lv = lv
   menu.gen_cd = GetLevelCdValue(menu.lv, hero.GenCd)
   menu.put_cost = GetLevelValue(menu.lv, hero.PutCost)
@@ -517,7 +517,7 @@ function GenHeroMenu(city_id, read_only)
   return HeroMenu
 end
 
-function InitHeroMenu(city_id)
+function GenGameHeroMenu(city_id)
   return GenHeroMenu(city_id, true)
 end
 

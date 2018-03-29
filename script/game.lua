@@ -12,7 +12,6 @@ local sand_glass_tex_id = 17
 local castle_tex_id = 26
 local menu_id = 28
 local king_hero_id = 50
-local game_lvl_id = 0
 
 hud_obj = nil
 local coin_obj = nil
@@ -28,6 +27,20 @@ local next_wave_pos = 0
 local menu_obj = nil
 local reset_timeout = nil
 local reset_timer = RESET_WAIT_TIME
+
+function GenInitMyHeroes(menu)
+  local hero_count = menu.max_count
+  local init_pos = INIT_GAME_POS[menu.hero_id]
+  for j = 1, #init_pos do
+    if (0 >= hero_count) then
+      break
+    end
+    local pos = ConvertRedPos(init_pos[j])
+    AddMyHero(menu.hero_id, pos, menu.lv)
+    menu.count = menu.count + 1
+    hero_count = hero_count - 1
+  end
+end
 
 Game = {}
 
@@ -48,21 +61,10 @@ Game.OnCreate = function(param)
   InitNextWave()
   -- Hero menu.
   SelHero = nil
-  local HeroMenu = InitHeroMenu(my_sel_city_id)
+  local HeroMenu = GenGameHeroMenu(my_sel_city_id)
   for hero_id = 1, MAX_HERO do
     local menu = HeroMenu[hero_id]
-    -- Put init my heroes.
-    local hero_count = menu.max_count
-    local init_pos = INIT_GAME_POS[hero_id]
-    for j = 1, #init_pos do
-      if (0 >= hero_count) then
-        break
-      end
-      local pos = ConvertRedPos(init_pos[j])
-      AddMyHero(hero_id, pos, menu.lv)
-      menu.count = menu.count + 1
-      hero_count = hero_count - 1
-    end
+    GenInitMyHeroes(menu)
     UpdateHeroMenuItemInfo(menu)
   end
   UpdateCoinCountObj()
@@ -232,7 +234,7 @@ function PrepareSelectableHeroes(heroes, selectable_hero)
   return remain_hero_count
 end
 
-function AddStageNextHeroInfo()
+function GenStageNextHeroInfo()
   if (nil == hud_obj) then
     hud_obj = Good.GenDummy(-1)
   end
@@ -315,9 +317,25 @@ function InitNextWave()
     end
   end
   -- Gen stage heroes info.
-  AddStageNextHeroInfo()
+  GenStageNextHeroInfo()
   -- Add sand glass obj.
   GenSandGlassObj(10)                   -- TODO:replace 10 with wave time.
+end
+
+function GenInitEnemyHeroes(hero_id, lv)
+  local hero_count = lv                 -- Init count = lv.
+  local init_pos = INIT_GAME_POS[hero_id]
+  for j = 1, #init_pos do
+    if (0 >= hero_count) then
+      break
+    end
+    local pos = init_pos[j]
+    local o = GenEnemyHeroObj(hero_id, pos, lv)
+    OccupyMap[pos] = o
+    AddEnemyHeroObj(o)
+    hero_count = hero_count - 1
+  end
+  return hero_count
 end
 
 function InitStage()
@@ -329,21 +347,8 @@ function InitStage()
   local heroes = city_hero[sel_city_id]
   stage_heroes_count = {}
   for hero_id = 1, MAX_HERO do
-    -- Put init enemy heroes.
     local lv = heroes[hero_id]
-    local hero_count = lv               -- Init count = lv.
-    local init_pos = INIT_GAME_POS[hero_id]
-    for j = 1, #init_pos do
-      if (0 >= hero_count) then
-        break
-      end
-      local pos = init_pos[j]
-      local o = GenEnemyHeroObj(hero_id, pos, lv)
-      OccupyMap[pos] = o
-      AddEnemyHeroObj(o)
-      hero_count = hero_count - 1
-    end
-    stage_heroes_count[hero_id] = hero_count
+    stage_heroes_count[hero_id] = GenInitEnemyHeroes(hero_id, lv)
   end
 end
 
