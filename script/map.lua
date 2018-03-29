@@ -349,21 +349,24 @@ function TimeExpired(param, timer)
 end
 
 function UpgradeHero()
-  local city_id = GetFirstPlayerCityId(curr_player_idx)
-  local heroes = city_hero[city_id]
-  for i = MAX_HERO, 1, -1 do
-    local lv = heroes[i]
-    if (0 < lv or (1 < i and 0 ~= heroes[i - 1])) then
-      local cost = GetLevelValue(lv, HeroData[i].UpgradeCost)
-      if (cost < players_coin[curr_player_idx]) then
-        players_coin[curr_player_idx] = players_coin[curr_player_idx] - cost
-        heroes[i] = heroes[i] + 1
-        UpdateCityInfo(GetObjByCityId(city_id))
-        return true
+  local cities = GetCurrPlayerCityIdList()
+  Shuffle(cities)
+  for j = 1, #cities do
+    local city_id = cities[j]
+    local heroes = city_hero[city_id]
+    for i = MAX_HERO, 1, -1 do
+      local lv = heroes[i]
+      if (0 < lv or (1 < i and 0 ~= heroes[i - 1])) then
+        local cost = GetLevelValue(lv, HeroData[i].UpgradeCost)
+        if (cost < players_coin[curr_player_idx]) then
+          players_coin[curr_player_idx] = players_coin[curr_player_idx] - cost
+          heroes[i] = heroes[i] + 1
+          UpdateCityInfo(GetObjByCityId(city_id))
+          break
+        end
       end
     end
   end
-  return false
 end
 
 function InvadeNearCity(empty_city)
@@ -398,10 +401,9 @@ function OnMapAiPlaying(param)
     return
   end
 
+  UpgradeHero()
   if (not InvadeNearCity(true)) then
-    if (not UpgradeHero()) then
-      InvadeNearCity(false)
-    end
+    InvadeNearCity(false)
   end
 
   SetNextTurn(param)

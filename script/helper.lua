@@ -346,14 +346,24 @@ function MyTurn()
   return my_player_idx == curr_player_idx
 end
 
-function GetFirstCurrPlayerCityId()
+function GetCurrPlayerCityIdList()
+  local cities = {}
   local id = players[curr_player_idx]
   for i = 1, MAX_CITY do
     if (id == city_owner[i]) then
-      return i
+      table.insert(cities, i)
     end
   end
-  return -1
+  return cities
+end
+
+function GetFirstCurrPlayerCityId()
+  local cities = GetCurrPlayerCityIdList()
+  if (0 == #cities) then
+    return -1
+  else
+    return cities[1]
+  end
 end
 
 function GetFirstPlayerCityId(idx)
