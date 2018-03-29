@@ -419,32 +419,13 @@ function PutHero(x, y, mw, mh)
 end
 
 function SelHeroMenu(x, y)
-  local IsInGame = InGame()
+  local is_upgrade = false
   local NewSelHero = 1 + math.floor((x - HERO_MENU_OFFSET_X) / HERO_MENU_W)
   local HeroMenu = GetHeroMenu()
   local menu = HeroMenu[NewSelHero]
   if (PtInRect(x, y, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y + HERO_MENU_H - 26, HERO_MENU_OFFSET_X + HERO_MENU_W * MAX_HERO, WND_H)) then
-    if (coin_count >= menu.upgrade_cost) then
-      coin_count = coin_count - menu.upgrade_cost
-      local hero = HeroData[NewSelHero]
-      menu.lv = menu.lv + 1
-      menu.max_count = math.min(hero.MaxCount, menu.max_count + 1)
-      menu.upgrade_cost = GetLevelValue(menu.lv, hero.UpgradeCost)
-      menu.put_cost = GetLevelValue(menu.lv, hero.PutCost)
-      menu.gen_cd = GetLevelCdValue(menu.lv, hero.GenCd)
-      UpdateHeroMenuItemInfo(menu)
-      if (NewSelHero ~= MAX_HERO) then
-        menu = HeroMenu[NewSelHero + 1]
-        if (0 >= menu.max_count) then
-          menu.max_count = 0        -- unlock to set count to 1.  
-          UpdateHeroMenuItemInfo(menu)
-        end
-      end
-      UpdateCoinCountObj()
-      if (IsInGame) then
-        UpgradeHeroOnField(NewSelHero)
-      end
-      SaveGame()
+    if (not menu.read_only and coin_count >= menu.upgrade_cost) then
+      is_upgrade = true
     end
   else
     if (NewSelHero == SelHero) then
@@ -456,6 +437,7 @@ function SelHeroMenu(x, y)
     SelHero = NewSelHero
   end
   UpdateHeroMenuSel()
+  return is_upgrade, menu
 end
 
 function ShowGameMenu()

@@ -316,7 +316,10 @@ function OnMapPlaying(param)
 
   -- Click on hero menu.
   if (PtInRect(mx, my, HERO_MENU_OFFSET_X, HERO_MENU_OFFSET_Y, HERO_MENU_OFFSET_X + HERO_MENU_W * MAX_HERO, WND_H)) then
-    --SelHeroMenu(mx, my)
+    local is_upgrade, menu = SelHeroMenu(mx, my)
+    if (is_upgrade) then
+      UpgradeMyHero(menu)
+    end
     return
   end
 
@@ -402,4 +405,27 @@ function OnMapAiPlaying(param)
   end
 
   SetNextTurn(param)
+end
+
+function UpgradeMyHero(menu)
+  coin_count = coin_count - menu.upgrade_cost
+  local hero = HeroData[menu.hero_id]
+  menu.lv = menu.lv + 1
+  menu.max_count = math.min(hero.MaxCount, menu.max_count + 1)
+  menu.upgrade_cost = GetLevelValue(menu.lv, hero.UpgradeCost)
+  menu.put_cost = GetLevelValue(menu.lv, hero.PutCost)
+  menu.gen_cd = GetLevelCdValue(menu.lv, hero.GenCd)
+  UpdateHeroMenuItemInfo(menu)
+  if (menu.hero_id ~= MAX_HERO) then
+    local next_menu = GetHeroMenu()[menu.hero_id + 1]
+    if (0 >= next_menu.max_count) then
+      next_menu.max_count = 0           -- Unlock to set count to 1.
+      UpdateHeroMenuItemInfo(next_menu)
+    end
+  end
+  UpdateCoinCountObj()
+  local heroes = city_hero[GetCityId(curr_sel_city)]
+  heroes[menu.hero_id] = heroes[menu.hero_id] + 1
+  UpdateCityInfo(curr_sel_city)
+  SaveGame()
 end

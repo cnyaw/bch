@@ -573,19 +573,3 @@ function UpdateHeroHpObj(param)
     Good.SetDim(param.hp_obj, 0, 0, (param.hp / param.max_hp) * (TILE_W - 4), 3)
   end
 end
-
-function UpgradeHeroOnField(hero_id)
-  local hero = HeroData[hero_id]
-  for i = 1, #MyHeroes do
-    local o = MyHeroes[i]
-    if (IsHeroAlive(o)) then
-      local param = Good.GetParam(o)
-      if (hero_id == param.hero_id) then
-        local new_hero = GenHeroObj(hero_id, param.pos, MY_HP_COLOR, true, param.lv + 1)
-        AddAnimHpObj(new_hero, 'LvUp', 0xff00ff00, 0xff007f00, 'AnimHealHpObj')
-        Good.KillObj(o)
-        MyHeroes[i] = new_hero
-      end
-    end
-  end
-end
