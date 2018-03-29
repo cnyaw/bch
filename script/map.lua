@@ -377,20 +377,23 @@ end
 
 function InvadeNearCity(empty_city)
   local player_id = players[curr_player_idx]
-  local curr_city_id = GetCityId(curr_sel_city)
-  local hero_combat_power = GetHeroCombatPower(curr_city_id)
-  local near_city = CityData[curr_city_id]
-  for i = 1, #near_city do
-    local near_city_id = near_city[i]
-    local near_player_id = city_owner[near_city_id]
-    if (near_player_id ~= player_id) then
-      local target_combat_power = GetHeroCombatPower(near_city_id)
-      if ((empty_city and 0 == near_player_id) or hero_combat_power > target_combat_power) then
-        if (math.random(hero_combat_power + target_combat_power) > target_combat_power) then
-          city_owner[near_city_id] = player_id
-          UpdateCityInfo(GetObjByCityId(near_city_id))
+  local cities = GetCurrPlayerCityIdList()
+  for j = 1, #cities do
+    local curr_city_id = cities[j]
+    local hero_combat_power = GetHeroCombatPower(curr_city_id)
+    local near_city = CityData[curr_city_id]
+    for i = 1, #near_city do
+      local near_city_id = near_city[i]
+      local near_player_id = city_owner[near_city_id]
+      if (near_player_id ~= player_id) then
+        local target_combat_power = GetHeroCombatPower(near_city_id)
+        if ((empty_city and 0 == near_player_id) or (not empty_city and hero_combat_power > target_combat_power)) then
+          if (math.random(hero_combat_power + target_combat_power) > target_combat_power) then
+            city_owner[near_city_id] = player_id
+            UpdateCityInfo(GetObjByCityId(near_city_id))
+          end
+          return true
         end
-        return true
       end
     end
   end
