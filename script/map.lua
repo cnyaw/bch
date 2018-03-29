@@ -427,5 +427,6 @@ function UpgradeMyHero(menu)
   local heroes = city_hero[GetCityId(curr_sel_city)]
   heroes[menu.hero_id] = heroes[menu.hero_id] + 1
   UpdateCityInfo(curr_sel_city)
+  UpdateHeroMenuSel()
   SaveGame()
 end
