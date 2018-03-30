@@ -354,47 +354,71 @@ function TimeExpired(param, timer)
   end
 end
 
-function UpgradeHero()
-  local cities = GetCurrPlayerCityIdList()
-  Shuffle(cities)
-  for j = 1, #cities do
-    local city_id = cities[j]
-    local heroes = city_hero[city_id]
-    for i = MAX_HERO, 1, -1 do
-      local lv = heroes[i]
-      if (0 < lv or (1 < i and 0 ~= heroes[i - 1])) then
-        local cost = GetLevelValue(lv, HeroData[i].UpgradeCost)
-        if (cost < players_coin[curr_player_idx]) then
-          players_coin[curr_player_idx] = players_coin[curr_player_idx] - cost
-          heroes[i] = heroes[i] + 1
-          UpdateCityInfo(GetObjByCityId(city_id))
-          break
-        end
+function UpgradeHero(city_id)
+  local heroes = city_hero[city_id]
+  for i = MAX_HERO, 1, -1 do
+    local lv = heroes[i]
+    if (0 < lv or (1 < i and 0 ~= heroes[i - 1])) then
+      local cost = GetLevelValue(lv, HeroData[i].UpgradeCost)
+      if (cost < players_coin[curr_player_idx]) then
+        players_coin[curr_player_idx] = players_coin[curr_player_idx] - cost
+        heroes[i] = heroes[i] + 1
+        UpdateCityInfo(GetObjByCityId(city_id))
+        break
       end
     end
   end
 end
 
-function InvadeNearCity(empty_city)
-  local player_id = players[curr_player_idx]
+function UpgradeCityHero()
   local cities = GetCurrPlayerCityIdList()
-  for j = 1, #cities do
-    local curr_city_id = cities[j]
-    local hero_combat_power = GetHeroCombatPower(curr_city_id)
-    local near_city = CityData[curr_city_id]
-    for i = 1, #near_city do
-      local near_city_id = near_city[i]
-      local near_player_id = city_owner[near_city_id]
-      if (near_player_id ~= player_id) then
-        local target_combat_power = GetHeroCombatPower(near_city_id)
-        if ((empty_city and 0 == near_player_id) or (not empty_city and hero_combat_power > target_combat_power)) then
-          if (math.random(hero_combat_power + target_combat_power) > target_combat_power) then
-            city_owner[near_city_id] = player_id
-            UpdateCityInfo(GetObjByCityId(near_city_id))
-          end
-          return true
+  Shuffle(cities)
+  for i = 1, #cities do
+    UpgradeHero(cities[i])
+  end
+end
+
+function InvadeNearEmptyCity(city_id)
+  local near_city = CityData[city_id]
+  for i = 1, #near_city do
+    local near_city_id = near_city[i]
+    if (0 == city_owner[near_city_id]) then
+      city_owner[near_city_id] = players[curr_player_idx]
+      UpdateCityInfo(GetObjByCityId(near_city_id))
+      return true
+    end
+  end
+  return false
+end
+
+function InvadeNearCityFrom(city_id)
+  local player_id = players[curr_player_idx]
+  local hero_combat_power = GetHeroCombatPower(city_id)
+  local near_city = CityData[city_id]
+  for i = 1, #near_city do
+    local near_city_id = near_city[i]
+    local near_player_id = city_owner[near_city_id]
+    if (near_player_id ~= player_id) then
+      local target_combat_power = GetHeroCombatPower(near_city_id)
+      if (hero_combat_power > target_combat_power) then
+        if (math.random(hero_combat_power + target_combat_power) > target_combat_power) then
+          city_owner[near_city_id] = player_id
+          UpdateCityInfo(GetObjByCityId(near_city_id))
         end
+        return true
       end
+    end
+  end
+  return false
+end
+
+function InvadeNearCity()
+  local cities = GetCurrPlayerCityIdList()
+  Shuffle(cities)
+  for i = 1, #cities do
+    local city_id = cities[i]
+    if (InvadeNearEmptyCity(city_id) or InvadeNearCityFrom(city_id)) then
+      return true
     end
   end
   return false
@@ -410,10 +434,8 @@ function OnMapAiPlaying(param)
     return
   end
 
-  UpgradeHero()
-  if (not InvadeNearCity(true)) then
-    InvadeNearCity(false)
-  end
+  UpgradeCityHero()
+  InvadeNearCity()
 
   SetNextTurn(param)
 end
