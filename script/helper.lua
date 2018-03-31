@@ -407,10 +407,13 @@ end
 function GetHarvestOfRound()
   for i = 1, MAX_CITY do
     if (0 < city_owner[i]) then
-      local coin = 100 + GetHeroCombatPower(i)
+      local coin = GetHeroCombatPower(i)
       local player_idx = GetPlayerIdx(city_owner[i])
       players_coin[player_idx] = players_coin[player_idx] + coin
     end
+  end
+  for i = 1, MAX_PLAYER do
+    players_coin[i] = players_coin[i] + INIT_COIN_COUNT
   end
 end
 
