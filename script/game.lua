@@ -164,10 +164,14 @@ function CheckGameOver()
     return
   end
   if (IsGameComplete()) then
-    ShowGameOver(param, 'Stage Clear', 0xff00137f)
+    if (AllCityClear(sel_city_id)) then
+      ShowGameOver(param, 'Victory', 0xff00137f)
+    else
+      ShowGameOver(param, 'You Win', 0xff00137f)
+    end
     param.step = OnGameOverEnter
   elseif (IsGameOver()) then
-    ShowGameOver(param, 'Game Over', 0xff500000)
+    ShowGameOver(param, 'You Fail', 0xff500000)
     param.step = OnGameOverEnter
   end
 end

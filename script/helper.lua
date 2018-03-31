@@ -537,3 +537,13 @@ end
 function GetHeroMenu()
   return Good.GetParam(hero_menu)
 end
+
+function AllCityClear(skip_city_id)
+  local my_player_id = players[my_player_idx]
+  for i = 1, MAX_CITY do
+    if (skip_city_id ~= i and city_owner[i] ~= my_player_id) then
+      return false
+    end
+  end
+  return true
+end
