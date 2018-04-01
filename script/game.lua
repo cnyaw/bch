@@ -15,7 +15,6 @@ local king_hero_id = 50
 
 hud_obj = nil
 local coin_obj = nil
-local anim_game_over_obj = nil
 
 local stage_heroes_count = {}
 local stage_heroes_obj = nil
@@ -156,22 +155,18 @@ end
 
 function CheckGameOver()
   local param = Good.GetParam(Good.GetLevelId())
-  if (IsGameOver() or IsGameComplete()) then
-    CloseGameMenu()
-    param.step = OnGamePlaying
-  end
-  if (OnGamePlaying ~= param.step) then
+  if (nil ~= anim_game_over_obj) then
     return
   end
   if (IsGameComplete()) then
     if (AllCityClear(sel_city_id)) then
-      ShowGameOver(param, 'Victory', 0xff00137f)
+      ShowGameOver(param, OnGameOver, 'Victory', 0xff00137f)
     else
-      ShowGameOver(param, 'You Win', 0xff00137f)
+      ShowGameOver(param, OnGameOver, 'You Win', 0xff00137f)
     end
     param.step = OnGameOverEnter
   elseif (IsGameOver()) then
-    ShowGameOver(param, 'You Fail', 0xff500000)
+    ShowGameOver(param, OnGameOver, 'You Fail', 0xff500000)
     param.step = OnGameOverEnter
   end
 end
@@ -462,19 +457,6 @@ function ShowGameMenu()
   -- Statistics.
   UpdateStatistics()
   return o
-end
-
-function ShowGameOver(param, msg, clr)
-  if (nil ~= anim_game_over_obj) then
-    return
-  end
-  anim_game_over_obj = GenColorObj(-1, WND_W, WND_H + 10, clr, 'AnimGameOver')
-  local s = Good.GenTextObj(anim_game_over_obj, msg, 64)
-  local slen = GetTextObjWidth(s)
-  Good.SetPos(s, (WND_W - slen)/2, 3/7 * WND_H)
-  Good.SetPos(anim_game_over_obj, 0, -WND_H)
-  local p = Good.GetParam(anim_game_over_obj)
-  p.lvl_param = param
 end
 
 function UpdateCoinCountObj()

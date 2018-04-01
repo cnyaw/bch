@@ -13,6 +13,7 @@ local coin_tex_id = 13
 local curr_sel_city = nil
 local anim_sel_city_obj = nil
 local action_btn_panel = nil
+local check_game_over_flag = true
 my_sel_city_id = nil
 sel_city_id = nil
 
@@ -228,6 +229,8 @@ Map.OnCreate = function(param)
   anim_sel_city_obj = nil
   stage_info_obj = nil
   action_btn_panel = nil
+  anim_game_over_obj = nil
+  check_game_over_flag = true
   GenCityLinks()
   GenCityInfo()
   local o = GetObjByCityId(GetFirstCurrPlayerCityId())
@@ -438,6 +441,23 @@ function OnMapAiPlaying(param)
   InvadeNearCity()
 
   SetNextTurn(param)
+
+  if (check_game_over_flag and MyCityAllClear()) then
+    ShowGameOver(param, OnMapGameOver, 'Game Over', 0xff500000)
+    param.step = OnGameOverEnter
+    check_game_over_flag = false
+    return
+  end
+end
+
+function OnMapGameOver(param)
+  if (Input.IsKeyPressed(Input.ESCAPE) or Input.IsKeyPressed(Input.LBUTTON)) then
+    if (nil ~= anim_game_over_obj) then
+      Good.KillObj(anim_game_over_obj)
+      anim_game_over_obj = nil
+    end
+    param.step = OnMapAiPlaying
+  end
 end
 
 function UpgradeMyHero(menu)

@@ -18,7 +18,7 @@ end
 
 function AcEndGameOver(param)
   Good.SetScript(param._id, '')
-  param.lvl_param.step = OnGameOver
+  param.lvl_param.step = param.next_step
 end
 
 function AcKillAnimObj(param)

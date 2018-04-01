@@ -16,6 +16,7 @@ MAX_CITY = 24
 MAX_HERO = 6
 
 local game_lvl_id = 0
+local hero_menu_button_tex_id = 3
 
 Graphics.SetAntiAlias(1)                -- Enable anti alias.
 
@@ -31,7 +32,7 @@ HERO_MENU_OFFSET_Y = WND_H - HERO_MENU_H
 
 max_stage_id = 1
 max_max_stage_id = 1
-local hero_menu_button_tex_id = 3
+anim_game_over_obj = nil
 
 city_owner = nil
 
@@ -546,4 +547,28 @@ function AllCityClear(skip_city_id)
     end
   end
   return true
+end
+
+function MyCityAllClear()
+  local my_player_id = players[my_player_idx]
+  for i = 1, MAX_CITY do
+    if (city_owner[i] == my_player_id) then
+      return false
+    end
+  end
+  return true
+end
+
+function ShowGameOver(param, next_step, msg, clr)
+  if (nil ~= anim_game_over_obj) then
+    return
+  end
+  anim_game_over_obj = GenColorObj(-1, WND_W, WND_H + 10, clr, 'AnimGameOver')
+  local s = Good.GenTextObj(anim_game_over_obj, msg, 64)
+  local slen = GetTextObjWidth(s)
+  Good.SetPos(s, (WND_W - slen)/2, 3/7 * WND_H)
+  Good.SetPos(anim_game_over_obj, 0, -WND_H)
+  local p = Good.GetParam(anim_game_over_obj)
+  p.lvl_param = param
+  p.next_step = next_step
 end
