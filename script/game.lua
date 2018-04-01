@@ -22,6 +22,8 @@ local king_obj = nil
 
 local next_wave_heroes = {}
 local next_wave_pos = 0
+local wave_time = 0
+local wave_hero_count = 0
 
 local menu_obj = nil
 local reset_timeout = nil
@@ -291,7 +293,7 @@ function InitNextWave()
   local pos = 1
   local select_count = 0
   local try_count = 100
-  while 0 < remain_hero_count and select_count < 3 do -- TODO:replace 3 with wave hero_count.
+  while 0 < remain_hero_count and select_count < wave_hero_count do
     try_count = try_count - 1
     if (0 >= try_count) then
       break
@@ -318,7 +320,7 @@ function InitNextWave()
   -- Gen stage heroes info.
   GenStageNextHeroInfo()
   -- Add sand glass obj.
-  GenSandGlassObj(10)                   -- TODO:replace 10 with wave time.
+  GenSandGlassObj(wave_time)
 end
 
 function GenInitEnemyHeroes(hero_id, lv)
@@ -344,6 +346,12 @@ function InitStage()
   end
   -- Save hero list and count of this stage.
   local heroes = city_hero[sel_city_id]
+  local total_hero_count = 0
+  for i = 1, MAX_HERO do
+    total_hero_count = total_hero_count + heroes[i]
+  end
+  wave_time = math.max(5, 10 - math.floor(total_hero_count / 10))
+  wave_hero_count = math.min(9, 2 + math.floor(total_hero_count / 10))
   stage_heroes_count = {}
   for hero_id = 1, MAX_HERO do
     local lv = heroes[hero_id]
