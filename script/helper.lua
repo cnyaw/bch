@@ -75,6 +75,7 @@ players = nil                           -- Player ID.
 players_coin = nil
 my_player_idx = nil
 curr_player_idx = nil
+curr_round = 1
 
 function ResetPlayers()
   players = {}
@@ -265,6 +266,7 @@ function ResetGame()
   coin_count = INIT_COIN_COUNT
   curr_total_coin_count = 0
   max_stage_id = 1
+  curr_round = 1
   ResetCityOwner()
   ResetCityHero()
   ResetPlayers()
@@ -279,6 +281,7 @@ LoadGame()
 
 function SaveGame()
   local outf = io.open(SAV_FILE_NAME, "w")
+  outf:write(string.format('curr_round=%d\n', curr_round))
   outf:write(string.format('reset_count=%d\n', reset_count))
   outf:write(string.format('coin_count=%d\n', coin_count))
   outf:write(string.format('max_stage_id=%d\n', max_stage_id))
@@ -431,6 +434,7 @@ function NextTurn()
   end
   if (GetFirstPlayerIdx() == curr_player_idx) then
     GetHarvestOfRound()
+    curr_round = curr_round + 1
   end
 end
 

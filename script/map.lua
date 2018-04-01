@@ -9,6 +9,7 @@ local map_obj_id = 41
 local dummy_group_id = 42
 local battle_tex_id = 14
 local coin_tex_id = 13
+local round_obj_id = 46
 
 local curr_sel_city = nil
 local anim_sel_city_obj = nil
@@ -231,6 +232,7 @@ Map.OnCreate = function(param)
   action_btn_panel = nil
   anim_game_over_obj = nil
   check_game_over_flag = true
+  UpdateRoundInfo()
   GenCityLinks()
   GenCityInfo()
   local o = GetObjByCityId(GetFirstCurrPlayerCityId())
@@ -279,8 +281,16 @@ function SetPlayingStep(param)
   end
 end
 
+function UpdateRoundInfo()
+  Good.KillAllChild(round_obj_id)
+  local s = Good.GenTextObj(round_obj_id, string.format('%d', curr_round), TILE_W/2)
+  local w = GetTextObjWidth(s)
+  Good.SetPos(s, -w - TILE_W/2, 0)
+end
+
 function SetNextTurn(param)
   NextTurn()
+  UpdateRoundInfo()
   local o = GetObjByCityId(GetFirstCurrPlayerCityId())
   SetSelCity(o)
   SetPlayingStep(param)

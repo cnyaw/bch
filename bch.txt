@@ -289,6 +289,7 @@ y=80
 dim=0 0 32 32
 
 [object46]
+name=round
 texture=45
 x=368
 dim=0 0 32 32
