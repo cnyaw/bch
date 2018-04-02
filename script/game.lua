@@ -163,6 +163,7 @@ function CheckGameOver()
   if (IsGameComplete()) then
     if (AllCityClear(sel_city_id)) then
       ShowGameOver(param, OnGameOver, 'Victory', 0xff00137f)
+      victory_count = victory_count + 1
     else
       ShowGameOver(param, OnGameOver, 'You Win', 0xff00137f)
     end
@@ -566,4 +567,11 @@ function UpdateStatistics()
   s_play_time_obj = Good.GenTextObj(s_max, GetFormatTimeStr(total_play_time), SMALL_STAT_TEXT_SIZE)
   SetTextObjColor(s_play_time_obj, TextColor)
   Good.SetPos(s_play_time_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + OFFSET_1
+  local s_victory_obj = Good.GenTextObj(s_max, string.format('Victory: %d', victory_count), SMALL_STAT_TEXT_SIZE)
+  Good.SetPos(s_victory_obj, 0, TILE_W/2 * offset)
+  offset = offset + OFFSET_1
+  local s_gameover_obj = Good.GenTextObj(s_max, string.format('Game over: %d', game_over_count), SMALL_STAT_TEXT_SIZE)
+  Good.SetPos(s_gameover_obj, 0, TILE_W/2 * offset)
+  offset = offset + OFFSET_1
 end

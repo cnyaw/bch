@@ -105,6 +105,8 @@ total_coin_count = 0
 total_play_time = 0
 curr_play_time = 0
 reset_count = 0
+victory_count = 0
+game_over_count = 0
 
 glass_speed = 1
 
@@ -283,6 +285,8 @@ function SaveGame()
   local outf = io.open(SAV_FILE_NAME, "w")
   outf:write(string.format('curr_round=%d\n', curr_round))
   outf:write(string.format('reset_count=%d\n', reset_count))
+  outf:write(string.format('victory_count=%d\n', victory_count))
+  outf:write(string.format('game_over_count=%d\n', game_over_count))
   outf:write(string.format('coin_count=%d\n', coin_count))
   outf:write(string.format('max_stage_id=%d\n', max_stage_id))
   outf:write(string.format('max_max_stage_id=%d\n', max_max_stage_id))

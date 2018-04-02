@@ -219,6 +219,19 @@ function SelActionBtn(mx, my)
   return false
 end
 
+function GetCheckGameOverFlag()
+  if (not check_game_over_flag) then
+    return check_game_over_flag
+  end
+  local my_player_id = players[my_player_idx]
+  for i = 1, MAX_CITY do
+    if (my_player_id == city_owner[i]) then
+      return true                       -- At least own a city, so need to check game over.
+    end
+  end
+  return false                          -- Own one city, so no need to check game over.
+end
+
 Map = {}
 
 Map.OnCreate = function(param)
@@ -231,7 +244,7 @@ Map.OnCreate = function(param)
   stage_info_obj = nil
   action_btn_panel = nil
   anim_game_over_obj = nil
-  check_game_over_flag = true
+  check_game_over_flag = GetCheckGameOverFlag()
   UpdateRoundInfo()
   GenCityLinks()
   GenCityInfo()
@@ -454,6 +467,7 @@ function OnMapAiPlaying(param)
 
   if (check_game_over_flag and MyCityAllClear()) then
     ShowGameOver(param, OnMapGameOver, 'Game Over', 0xff500000)
+    game_over_count = game_over_count + 1
     param.step = OnGameOverEnter
     check_game_over_flag = false
     return
