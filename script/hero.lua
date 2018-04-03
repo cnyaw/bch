@@ -14,6 +14,7 @@ local MY_HP_COLOR = 0xf000ff00
 
 local MyHeroes = {}
 local EnemyHeroes = {}
+local set_next_wave_hero_count = nil
 
 local board_id = 2
 local chess_tex_id = 18
@@ -455,6 +456,14 @@ function SetHeroIdle(param)
   param.k = nil
 end
 
+function InitSetNextWaveHero()
+  set_next_wave_hero_count = 0
+end
+
+function GetSetNextWaveHeroCount()
+  return set_next_wave_hero_count
+end
+
 function SetNextWaveHero(o, next_wave_pos)
   local param = Good.GetParam(o)
   param.pos = param.pos + next_wave_pos
@@ -479,6 +488,7 @@ function SetNextWaveHero(o, next_wave_pos)
   OccupyMap[param.pos] = param._id
   param.dist = math.max(1, GetManhattanDistByPos(param.pos, orig_pos))
   Good.SetScript(param._id, 'AnimHeroBeginNextWave')
+  set_next_wave_hero_count = set_next_wave_hero_count + 1
 end
 
 function SetHeroBeginNextWave(param)
@@ -486,6 +496,7 @@ function SetHeroBeginNextWave(param)
   Good.SetScript(param._id, 'Hero')
   param.step = OnHeroIdle
   param.k = nil
+  set_next_wave_hero_count = set_next_wave_hero_count - 1
 end
 
 function SetHeroWaitNextWave(param)

@@ -65,6 +65,7 @@ Game.OnCreate = function(param)
   next_wave_heroes = {}
   InitStage()
   InitNextWave()
+  InitSetNextWaveHero()
   -- Hero menu.
   SelHero = nil
   local HeroMenu = GenGameHeroMenu(my_sel_city_id)
@@ -376,15 +377,15 @@ function IsGameComplete()
   if (0 < #next_wave_heroes) then
     return false
   end
-  local remain_hero_count = 0
-  for hero_id, hero_count in pairs(stage_heroes_count) do
-    remain_hero_count = remain_hero_count + hero_count
-  end
-  if (0 < remain_hero_count) then
+  if (0 < GetSetNextWaveHeroCount()) then
     return false
   end
-  local enemy_count = GetEnemyHeroCount()
-  if (0 < enemy_count) then
+  for hero_id, hero_count in pairs(stage_heroes_count) do
+    if (0 < hero_count) then
+      return false
+    end
+  end
+  if (0 < GetEnemyHeroCount()) then
     return false
   end
   return true
