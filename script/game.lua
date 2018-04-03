@@ -167,6 +167,8 @@ function CheckGameOver()
     return
   end
   if (IsGameComplete()) then
+    invade_stage_count = invade_stage_count + 1
+    max_invade_stage_count = math.max(max_invade_stage_count, invade_stage_count)
     if (AllCityClear(sel_city_id)) then
       ShowGameOver(param, OnGameOver, 'Victory', 0xff00137f)
       victory_count = victory_count + 1
@@ -542,12 +544,12 @@ function GenStatsInfo(dummy)
   local max_stage_obj = Good.GenObj(s_max, castle_tex_id, '')
   Good.SetScale(max_stage_obj, scale, scale)
   Good.SetPos(max_stage_obj, 0, TILE_W/2 * offset)
-  local s_max_stage_obj = Good.GenTextObj(s_max, string.format('%d', max_stage_id), STAT_TEXT_SIZE)
-  Good.SetPos(s_max_stage_obj, TILE_W, TILE_W/2 * offset)
+  local s_invade_stage_obj = Good.GenTextObj(s_max, string.format('%d', invade_stage_count), STAT_TEXT_SIZE)
+  Good.SetPos(s_invade_stage_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_1
-  s_max_stage_obj = Good.GenTextObj(s_max, string.format('%d', max_max_stage_id), SMALL_STAT_TEXT_SIZE)
-  SetTextObjColor(s_max_stage_obj, STATS_TEXT_COLOR)
-  Good.SetPos(s_max_stage_obj, TILE_W, TILE_W/2 * offset)
+  s_invade_stage_obj = Good.GenTextObj(s_max, string.format('%d', max_invade_stage_count), SMALL_STAT_TEXT_SIZE)
+  SetTextObjColor(s_invade_stage_obj, STATS_TEXT_COLOR)
+  Good.SetPos(s_invade_stage_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_2
   local max_combat_obj = Good.GenObj(s_max, combat_tex_id, '')
   Good.SetScale(max_combat_obj, scale, scale)

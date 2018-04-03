@@ -30,8 +30,8 @@ HERO_MENU_W, HERO_MENU_H = 65, 2.2 * TILE_H
 HERO_MENU_OFFSET_X = (WND_W - 6 * HERO_MENU_W) / 2
 HERO_MENU_OFFSET_Y = WND_H - HERO_MENU_H
 
-max_stage_id = 1
-max_max_stage_id = 1
+invade_stage_count = 0
+max_invade_stage_count = 0
 anim_game_over_obj = nil
 
 city_owner = nil
@@ -268,7 +268,7 @@ end
 function ResetGame()
   coin_count = INIT_COIN_COUNT
   curr_total_coin_count = 0
-  max_stage_id = 1
+  invade_stage_count = 1
   curr_round = 1
   ResetCityOwner()
   ResetCityHero()
@@ -290,8 +290,8 @@ function SaveGame()
   outf:write(string.format('victory_min_round=%d\n', victory_min_round))
   outf:write(string.format('game_over_count=%d\n', game_over_count))
   outf:write(string.format('coin_count=%d\n', coin_count))
-  outf:write(string.format('max_stage_id=%d\n', max_stage_id))
-  outf:write(string.format('max_max_stage_id=%d\n', max_max_stage_id))
+  outf:write(string.format('invade_stage_count=%d\n', invade_stage_count))
+  outf:write(string.format('max_invade_stage_count=%d\n', max_invade_stage_count))
   outf:write(string.format('max_combat_power=%d\n', max_combat_power))
   outf:write(string.format('curr_total_coin_count=%d\n', curr_total_coin_count))
   outf:write(string.format('total_coin_count=%d\n', total_coin_count))
