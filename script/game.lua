@@ -170,6 +170,11 @@ function CheckGameOver()
     if (AllCityClear(sel_city_id)) then
       ShowGameOver(param, OnGameOver, 'Victory', 0xff00137f)
       victory_count = victory_count + 1
+      if (0 < victory_min_round) then
+        victory_min_round = math.min(victory_min_round, curr_round)
+      else
+        victory_min_round = curr_round
+      end
     else
       ShowGameOver(param, OnGameOver, 'You Win', 0xff00137f)
     end
@@ -577,6 +582,9 @@ function GenStatsInfo(dummy)
   offset = offset + STATS_OFFSET_1
   local s_victory_obj = Good.GenTextObj(s_max, string.format('Victory: %d', victory_count), SMALL_STAT_TEXT_SIZE)
   Good.SetPos(s_victory_obj, 0, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_1
+  local s_victory_min_round_obj = Good.GenTextObj(s_max, string.format('Victory min round: %d', victory_min_round), SMALL_STAT_TEXT_SIZE)
+  Good.SetPos(s_victory_min_round_obj, 0, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_1
   local s_gameover_obj = Good.GenTextObj(s_max, string.format('Game over: %d', game_over_count), SMALL_STAT_TEXT_SIZE)
   Good.SetPos(s_gameover_obj, 0, TILE_W/2 * offset)
