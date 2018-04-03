@@ -454,6 +454,7 @@ function OnMapAiPlaying(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
     ShowGameMenu()
     param.step = OnMapMenu
+    return
   end
 
   if (not TimeExpired(param, 40)) then
