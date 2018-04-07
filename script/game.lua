@@ -109,7 +109,7 @@ end
 function HandleResetGame(btn_reset)
   if (nil == reset_timeout) then
     reset_timeout = Good.GenTextObj(btn_reset, 'Push again to reset', TILE_H/3)
-    Good.SetPos(reset_timeout, 0, -TILE_H/2)
+    Good.SetPos(reset_timeout, 0, TILE_H)
     reset_timer = RESET_WAIT_TIME
     return
   end
