@@ -16,7 +16,6 @@ levels=19 39 0 22
 4=./script/game.lua
 5=./script/hero.lua
 12=./script/anim.lua
-16=./script/stage.lua
 36=./script/title.lua
 40=./script/map.lua
 
