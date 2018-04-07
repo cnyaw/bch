@@ -2,7 +2,7 @@
 version=0.3
 name=Battle Chess
 window=400 640
-texs=13 17 18 21 3 15 26 1 31 32 20 38 14 45
+texs=13 17 18 21 3 15 26 1 31 32 20 38 14 45 44 48
 levels=19 39 0 22
 
 [scripts]
@@ -74,6 +74,14 @@ fileName=./res/battle.png
 [tex45]
 name=round
 fileName=./res/round.png
+
+[tex44]
+name=win
+fileName=./res/win.png
+
+[tex48]
+name=fail
+fileName=./res/fail.png
 
 [level19]
 name=title

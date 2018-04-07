@@ -17,6 +17,8 @@ local sand_glass_tex_id = 17
 local castle_tex_id = 26
 local menu_id = 28
 local king_hero_id = 50
+local win_tex_id = 44
+local fail_tex_id = 48
 
 hud_obj = nil
 local coin_obj = nil
@@ -582,13 +584,20 @@ function GenStatsInfo(dummy)
   SetTextObjColor(s_play_time_obj, STATS_TEXT_COLOR)
   Good.SetPos(s_play_time_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_1
-  local s_victory_obj = Good.GenTextObj(s_max, string.format('Victory: %d', victory_count), SMALL_STAT_TEXT_SIZE)
-  Good.SetPos(s_victory_obj, 0, TILE_W/2 * offset)
+  local victory_obj = Good.GenObj(s_max, win_tex_id, '')
+  Good.SetScale(victory_obj, scale, scale)
+  Good.SetPos(victory_obj, 4, TILE_W/2 * offset)
+  local s_victory_obj = Good.GenTextObj(s_max, string.format('%d', victory_count), STAT_TEXT_SIZE)
+  Good.SetPos(s_victory_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_1
-  local s_victory_min_round_obj = Good.GenTextObj(s_max, string.format('Victory min round: %d', victory_min_round), SMALL_STAT_TEXT_SIZE)
-  Good.SetPos(s_victory_min_round_obj, 0, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_1
-  local s_gameover_obj = Good.GenTextObj(s_max, string.format('Game over: %d', game_over_count), SMALL_STAT_TEXT_SIZE)
-  Good.SetPos(s_gameover_obj, 0, TILE_W/2 * offset)
+  local s_victory_min_round_obj = Good.GenTextObj(s_max, string.format('%d', victory_min_round), SMALL_STAT_TEXT_SIZE)
+  SetTextObjColor(s_victory_min_round_obj, STATS_TEXT_COLOR)
+  Good.SetPos(s_victory_min_round_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_2
+  local game_over_obj = Good.GenObj(s_max, fail_tex_id, '')
+  Good.SetScale(game_over_obj, scale, scale)
+  Good.SetPos(game_over_obj, 4, TILE_W/2 * offset)
+  local s_gameover_obj = Good.GenTextObj(s_max, string.format('%d', game_over_count), STAT_TEXT_SIZE)
+  Good.SetPos(s_gameover_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_1
 end
