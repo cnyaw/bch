@@ -267,7 +267,10 @@ end
 LoadGame()
 
 function SaveGame()
-  max_combat_power = math.max(max_combat_power, GetMyPlayerTotalCombatPower())
+  local my_city_count = GetPlayerCityCount(GetMyPlayerId())
+  if (0 ~= my_city_count and MAX_CITY ~= my_city_count) then
+    max_combat_power = math.max(max_combat_power, GetMyPlayerTotalCombatPower()) -- Update only when not victiry or game over.
+  end
   local outf = io.open(SAV_FILE_NAME, "w")
   outf:write(string.format('curr_round=%d\n', curr_round))
   outf:write(string.format('reset_count=%d\n', reset_count))
@@ -401,7 +404,7 @@ function GetPlayerTotalCombatPower(id)
 end
 
 function GetMyPlayerTotalCombatPower()
-  return GetPlayerTotalCombatPower(players[my_player_idx])
+  return GetPlayerTotalCombatPower(GetMyPlayerId())
 end
 
 function GetPlayerIdx(id)
@@ -549,19 +552,9 @@ function GetHeroMenu()
 end
 
 function AllCityClear(skip_city_id)
-  local my_player_id = players[my_player_idx]
+  local my_player_id = GetMyPlayerId()
   for i = 1, MAX_CITY do
     if (skip_city_id ~= i and city_owner[i] ~= my_player_id) then
-      return false
-    end
-  end
-  return true
-end
-
-function MyCityAllClear()
-  local my_player_id = players[my_player_idx]
-  for i = 1, MAX_CITY do
-    if (city_owner[i] == my_player_id) then
       return false
     end
   end

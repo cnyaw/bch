@@ -223,13 +223,7 @@ function GetCheckGameOverFlag()
   if (not check_game_over_flag) then
     return check_game_over_flag
   end
-  local my_player_id = players[my_player_idx]
-  for i = 1, MAX_CITY do
-    if (my_player_id == city_owner[i]) then
-      return true                       -- At least own a city, so need to check game over.
-    end
-  end
-  return false                          -- Own one city, so no need to check game over.
+  return 0 < GetPlayerCityCount(GetMyPlayerId()) -- At least own a city, so need to check game over.
 end
 
 Map = {}
@@ -466,7 +460,7 @@ function OnMapAiPlaying(param)
 
   SetNextTurn(param)
 
-  if (check_game_over_flag and MyCityAllClear()) then
+  if (check_game_over_flag and 0 == GetPlayerCityCount(GetMyPlayerId())) then
     ShowGameOver(param, OnMapGameOver, 'Game Over', 0xff500000)
     game_over_count = game_over_count + 1
     param.step = OnGameOverEnter
