@@ -11,6 +11,7 @@ local dummy_group_id = 42
 local battle_tex_id = 14
 local coin_tex_id = 13
 local round_obj_id = 46
+local upgrade_tex_id = 16
 
 local curr_sel_city = nil
 local anim_sel_city_obj = nil
@@ -421,7 +422,9 @@ function UpgradeHero(city_id)
       if (cost < players_coin[curr_player_idx]) then
         players_coin[curr_player_idx] = players_coin[curr_player_idx] - cost
         heroes[i] = heroes[i] + 1
-        UpdateCityInfo(GetObjByCityId(city_id))
+        local o = GetObjByCityId(city_id)
+        UpdateCityInfo(o)
+        AddUpgradeObj(o)
         break
       end
     end
@@ -517,6 +520,11 @@ function OnMapGameOver(param)
   end
 end
 
+function AddUpgradeObj(id)
+  local o = Good.GenObj(-1, upgrade_tex_id, 'AnimFlyingUpObj')
+  Good.SetPos(o, Good.GetPos(id))
+end
+
 function UpgradeMyHero(menu)
   coin_count = coin_count - menu.upgrade_cost
   local hero = HeroData[menu.hero_id]
@@ -538,5 +546,6 @@ function UpgradeMyHero(menu)
   heroes[menu.hero_id] = heroes[menu.hero_id] + 1
   UpdateCityInfo(curr_sel_city)
   UpdateHeroMenuSel()
+  AddUpgradeObj(curr_sel_city)
   SaveGame()
 end
