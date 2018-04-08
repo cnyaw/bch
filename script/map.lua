@@ -1,3 +1,4 @@
+local PLAYER_LABLE_W = 60
 local CITY_LABLE_W = 40
 local CITY_LABLE_H = 16
 local CITY_LABLE_TEXT_SIZE = 15
@@ -15,6 +16,7 @@ local curr_sel_city = nil
 local anim_sel_city_obj = nil
 local action_btn_panel = nil
 local check_game_over_flag = true
+local players_info_obj = nil
 my_sel_city_id = nil
 sel_city_id = nil
 
@@ -238,8 +240,10 @@ Map.OnCreate = function(param)
   stage_info_obj = nil
   action_btn_panel = nil
   anim_game_over_obj = nil
+  players_info_obj = nil
   check_game_over_flag = GetCheckGameOverFlag()
   UpdateRoundInfo()
+  UpdatePlayersInfo()
   GenCityLinks()
   GenCityInfo()
   local o = GetObjByCityId(GetFirstCurrPlayerCityId())
@@ -288,6 +292,35 @@ function SetPlayingStep(param)
   end
 end
 
+function UpdatePlayersInfo()
+  if (nil ~= players_info_obj) then
+    Good.KillObj(players_info_obj)
+    players_info_obj = nil
+  end
+  players_info_obj = Good.GenDummy(-1)
+  local active_players = {}
+  for i = 1, MAX_PLAYER do
+    local city_count = GetPlayerCityCount(i)
+    if (0 < city_count) then
+      active_players[i] = GetPlayerTotalCombatPower(i)
+    end
+  end
+  local x, y = 0, TILE_H/2 + 6
+  for player_id, combat_power in pairs(active_players) do
+    local color = GetPlayerColor(player_id)
+    local o = GenColorObj(players_info_obj, PLAYER_LABLE_W, CITY_LABLE_H, color)
+    Good.SetPos(o, x, y)
+    local s = Good.GenTextObj(o, string.format('%d', combat_power), CITY_LABLE_TEXT_SIZE)
+    local w = GetTextObjWidth(s)
+    Good.SetPos(s, (PLAYER_LABLE_W - w)/2, (CITY_LABLE_H - CITY_LABLE_TEXT_SIZE)/2)
+    x = x + 1.2 * PLAYER_LABLE_W
+    if (WND_W <= x + 1.2 * PLAYER_LABLE_W) then
+      x = 0
+      y = y + TILE_H/2
+    end
+  end
+end
+
 function UpdateRoundInfo()
   Good.KillAllChild(round_obj_id)
   local s = Good.GenTextObj(round_obj_id, string.format('%d', curr_round), TILE_W/2)
@@ -301,6 +334,7 @@ function SetNextTurn(param)
   local o = GetObjByCityId(GetFirstCurrPlayerCityId())
   SetSelCity(o)
   SetPlayingStep(param)
+  UpdatePlayersInfo()
 end
 
 function OnActionPanel(param)
@@ -345,6 +379,7 @@ function OnMapPlaying(param)
     local is_upgrade, menu = SelHeroMenu(mx, my)
     if (is_upgrade) then
       UpgradeMyHero(menu)
+      UpdatePlayersInfo()
     end
     return
   end

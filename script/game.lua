@@ -366,8 +366,8 @@ function InitStage()
   for i = 1, MAX_HERO do
     total_hero_count = total_hero_count + heroes[i]
   end
-  wave_time = math.max(5, 10 - math.floor(total_hero_count / 15))
-  wave_hero_count = math.min(9, 2 + math.floor(total_hero_count / 15))
+  wave_time = math.max(5, 10 - math.floor(total_hero_count / 20))
+  wave_hero_count = math.min(9, 2 + math.floor(total_hero_count / 20))
   stage_heroes_count = {}
   for hero_id = 1, MAX_HERO do
     local lv = heroes[hero_id]
