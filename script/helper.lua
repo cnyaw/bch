@@ -127,22 +127,6 @@ function ConvertRedPos(pos)
   return (MAP_W - col - 1) + MAP_W * (MAP_H - row - 1)
 end
 
-function GetCombatPower()
-  return 0
-  --[[
-  local p = 0
-  for hero_id = 1, #HeroMenu do
-    local menu = HeroMenu[hero_id]
-    if (0 < menu.max_count) then
-      local hero = HeroData[hero_id]
-      p = p + menu.max_count * GetLevelValue(menu.lv, hero.Atk)
-    end
-  end
-  max_combat_power = math.max(max_combat_power, p)
-  return p
-  ]]--
-end
-
 function GetFormatTimeStr(ticks)
   local play_time = math.floor(ticks / 60)
   local sec = play_time % 60
@@ -283,6 +267,7 @@ end
 LoadGame()
 
 function SaveGame()
+  max_combat_power = math.max(max_combat_power, GetMyPlayerTotalCombatPower())
   local outf = io.open(SAV_FILE_NAME, "w")
   outf:write(string.format('curr_round=%d\n', curr_round))
   outf:write(string.format('reset_count=%d\n', reset_count))
@@ -403,6 +388,20 @@ function GetFirstPlayerIdx()
     end
   end
   return -1
+end
+
+function GetPlayerTotalCombatPower(id)
+  local combat_power = 0
+  for i = 1, MAX_CITY do
+    if (id == city_owner[i]) then
+      combat_power = combat_power + GetHeroCombatPower(i)
+    end
+  end
+  return combat_power
+end
+
+function GetMyPlayerTotalCombatPower()
+  return GetPlayerTotalCombatPower(players[my_player_idx])
 end
 
 function GetPlayerIdx(id)

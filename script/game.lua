@@ -366,8 +366,8 @@ function InitStage()
   for i = 1, MAX_HERO do
     total_hero_count = total_hero_count + heroes[i]
   end
-  wave_time = math.max(5, 10 - math.floor(total_hero_count / 10))
-  wave_hero_count = math.min(9, 2 + math.floor(total_hero_count / 10))
+  wave_time = math.max(5, 10 - math.floor(total_hero_count / 15))
+  wave_hero_count = math.min(9, 2 + math.floor(total_hero_count / 15))
   stage_heroes_count = {}
   for hero_id = 1, MAX_HERO do
     local lv = heroes[hero_id]
@@ -556,7 +556,7 @@ function GenStatsInfo(dummy)
   local max_combat_obj = Good.GenObj(s_max, combat_tex_id, '')
   Good.SetScale(max_combat_obj, scale, scale)
   Good.SetPos(max_combat_obj, 0, TILE_W/2 * offset)
-  local s_max_combat_obj = Good.GenTextObj(s_max, string.format('%d', GetCombatPower()), STAT_TEXT_SIZE)
+  local s_max_combat_obj = Good.GenTextObj(s_max, string.format('%d', GetMyPlayerTotalCombatPower()), STAT_TEXT_SIZE)
   Good.SetPos(s_max_combat_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_1
   s_max_combat_obj = Good.GenTextObj(s_max, string.format('%d', max_combat_power), SMALL_STAT_TEXT_SIZE)
