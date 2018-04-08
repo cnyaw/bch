@@ -302,11 +302,14 @@ function UpdatePlayersInfo()
   for i = 1, MAX_PLAYER do
     local city_count = GetPlayerCityCount(i)
     if (0 < city_count) then
-      active_players[i] = GetPlayerTotalCombatPower(i)
+      table.insert(active_players, {i, GetPlayerTotalCombatPower(i)})
     end
   end
+  table.sort(active_players, function(a,b) return a[2] > b[2] end)
   local x, y = 0, TILE_H/2 + 6
-  for player_id, combat_power in pairs(active_players) do
+  for i = 1, #active_players do
+    local player_id = active_players[i][1]
+    local combat_power = active_players[i][2]
     local color = GetPlayerColor(player_id)
     local o = GenColorObj(players_info_obj, PLAYER_LABLE_W, CITY_LABLE_H, color)
     Good.SetPos(o, x, y)
