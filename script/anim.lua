@@ -289,19 +289,3 @@ AnimFlyingUpObj.OnStep = function(param)
     ArStepAnimator(param, param.k)
   end
 end
-
-AnimFlyCoinObj = {}
-
-AnimFlyCoinObj.OnStep = function(param)
-  if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
-    ArAddMoveTo(loop1, 'Pos', 0.8, 0, 0).ease = ArEaseOut
-    ArAddCall(loop1, 'AcKillAnimObj', 0)
-    local loop2 = ArAddLoop(nil)
-    local scale = (TILE_W/2) / 32
-    ArAddMoveTo(loop2, 'Scale', 0.8, scale, scale)
-    param.k = ArAddAnimator({loop1, loop2})
-  else
-    ArStepAnimator(param, param.k)
-  end
-end
