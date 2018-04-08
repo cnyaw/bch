@@ -52,6 +52,15 @@ function AcUpdateTimeLabel(param)
   end
 end
 
+function AcInvadeCity(param)
+  if (param.is_win) then
+    local target_city_id = param.target_city_id
+    city_owner[target_city_id] = param.player_id
+    UpdateCityInfo(GetObjByCityId(target_city_id))
+  end
+  Good.KillObj(param._id)
+end
+
 --
 -- Animator.
 --
@@ -284,6 +293,24 @@ AnimFlyingUpObj.OnStep = function(param)
     ArAddMoveBy(loop1, 'Pos', 0.4, 0, -TILE_H).ease = ArEaseOut
     ArAddMoveTo(loop1, 'Alpha', .2, 0)
     ArAddCall(loop1, 'AcKillAnimObj', 0)
+    param.k = ArAddAnimator({loop1})
+  else
+    ArStepAnimator(param, param.k)
+  end
+end
+
+AnimInvadeCity = {}
+
+AnimInvadeCity.OnStep = function(param)
+  if (nil == param.k) then
+    local this_city = GetObjByCityId(param.city_id)
+    local x, y = Good.GetPos(this_city)
+    Good.SetPos(param._id, x, y)
+    local target_city = GetObjByCityId(param.target_city_id)
+    local tx, ty = Good.GetPos(target_city)
+    local loop1 = ArAddLoop(nil)
+    ArAddMoveTo(loop1, 'Pos', 0.3, tx, ty).ease = ArEaseInOut
+    ArAddCall(loop1, 'AcInvadeCity', 0)
     param.k = ArAddAnimator({loop1})
   else
     ArStepAnimator(param, param.k)

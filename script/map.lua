@@ -439,13 +439,21 @@ function UpgradeCityHero()
   end
 end
 
+function GenInvadeCityAnimObj(player_id, city_id, target_city_id, is_win)
+  local o = Good.GenObj(-1, battle_tex_id, 'AnimInvadeCity')
+  local param = Good.GetParam(o)
+  param.player_id = player_id
+  param.city_id = city_id
+  param.target_city_id = target_city_id
+  param.is_win = is_win
+end
+
 function InvadeNearEmptyCity(city_id)
   local near_city = CityData[city_id]
   for i = 1, #near_city do
     local near_city_id = near_city[i]
     if (0 == city_owner[near_city_id]) then
-      city_owner[near_city_id] = players[curr_player_idx]
-      UpdateCityInfo(GetObjByCityId(near_city_id))
+      GenInvadeCityAnimObj(players[curr_player_idx], city_id, near_city_id, true)
       return true
     end
   end
@@ -462,10 +470,8 @@ function InvadeNearCityFrom(city_id)
     if (near_player_id ~= player_id) then
       local target_combat_power = GetHeroCombatPower(near_city_id)
       if (hero_combat_power > target_combat_power) then
-        if (math.random(hero_combat_power + target_combat_power) > target_combat_power) then
-          city_owner[near_city_id] = player_id
-          UpdateCityInfo(GetObjByCityId(near_city_id))
-        end
+        local is_win = math.random(hero_combat_power + target_combat_power) > target_combat_power
+        GenInvadeCityAnimObj(player_id, city_id, near_city_id, is_win)
         return true
       end
     end
