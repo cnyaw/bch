@@ -31,7 +31,7 @@ HERO_MENU_OFFSET_X = (WND_W - 6 * HERO_MENU_W) / 2
 HERO_MENU_OFFSET_Y = WND_H - HERO_MENU_H
 
 invade_stage_count = 0
-max_invade_stage_count = 0
+total_invade_stage_count = 0
 anim_game_over_obj = nil
 
 city_owner = nil
@@ -279,7 +279,7 @@ function SaveGame()
   outf:write(string.format('game_over_count=%d\n', game_over_count))
   outf:write(string.format('coin_count=%d\n', coin_count))
   outf:write(string.format('invade_stage_count=%d\n', invade_stage_count))
-  outf:write(string.format('max_invade_stage_count=%d\n', max_invade_stage_count))
+  outf:write(string.format('total_invade_stage_count=%d\n', total_invade_stage_count))
   outf:write(string.format('max_combat_power=%d\n', max_combat_power))
   outf:write(string.format('curr_total_coin_count=%d\n', curr_total_coin_count))
   outf:write(string.format('total_coin_count=%d\n', total_coin_count))

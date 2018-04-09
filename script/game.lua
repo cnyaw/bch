@@ -170,7 +170,7 @@ function CheckGameOver()
   end
   if (IsGameComplete()) then
     invade_stage_count = invade_stage_count + 1
-    max_invade_stage_count = math.max(max_invade_stage_count, invade_stage_count)
+    total_invade_stage_count = total_invade_stage_count + 1
     if (AllCityClear(sel_city_id)) then
       ShowGameOver(param, OnGameOver, 'Victory', 0xff00137f)
       victory_count = victory_count + 1
@@ -367,7 +367,7 @@ function InitStage()
     total_hero_count = total_hero_count + heroes[i]
   end
   wave_time = math.max(5, 10 - math.floor(total_hero_count / 20))
-  wave_hero_count = math.min(9, 2 + math.floor(total_hero_count / 20))
+  wave_hero_count = math.min(9, 2 + math.floor(total_hero_count / 15))
   stage_heroes_count = {}
   for hero_id = 1, MAX_HERO do
     local lv = heroes[hero_id]
@@ -549,7 +549,7 @@ function GenStatsInfo(dummy)
   local s_invade_stage_obj = Good.GenTextObj(s_max, string.format('%d', invade_stage_count), STAT_TEXT_SIZE)
   Good.SetPos(s_invade_stage_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_1
-  s_invade_stage_obj = Good.GenTextObj(s_max, string.format('%d', max_invade_stage_count), SMALL_STAT_TEXT_SIZE)
+  s_invade_stage_obj = Good.GenTextObj(s_max, string.format('%d', total_invade_stage_count), SMALL_STAT_TEXT_SIZE)
   SetTextObjColor(s_invade_stage_obj, STATS_TEXT_COLOR)
   Good.SetPos(s_invade_stage_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_2
