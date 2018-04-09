@@ -424,7 +424,7 @@ function UpgradeHero(city_id)
         heroes[i] = heroes[i] + 1
         local o = GetObjByCityId(city_id)
         UpdateCityInfo(o)
-        AddUpgradeObj(o)
+        GenUpgradeAnimObj(o)
         break
       end
     end
@@ -534,7 +534,7 @@ function OnMapGameOver(param)
   end
 end
 
-function AddUpgradeObj(id)
+function GenUpgradeAnimObj(id)
   local o = Good.GenObj(-1, upgrade_tex_id, 'AnimFlyingUpObj')
   Good.SetPos(o, Good.GetPos(id))
 end
@@ -560,6 +560,6 @@ function UpgradeMyHero(menu)
   heroes[menu.hero_id] = heroes[menu.hero_id] + 1
   UpdateCityInfo(curr_sel_city)
   UpdateHeroMenuSel()
-  AddUpgradeObj(curr_sel_city)
+  GenUpgradeAnimObj(curr_sel_city)
   SaveGame()
 end
