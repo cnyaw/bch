@@ -460,10 +460,16 @@ function InvadeNearEmptyCity(city_id)
   return false
 end
 
+function GetInvadeNearCityList(city_id)
+  local near_city = {unpack(CityData[city_id])} -- Clone.
+  Shuffle(near_city)
+  return near_city
+end
+
 function InvadeNearCityFrom(city_id)
   local player_id = players[curr_player_idx]
   local hero_combat_power = GetHeroCombatPower(city_id)
-  local near_city = CityData[city_id]
+  local near_city = GetInvadeNearCityList(city_id)
   for i = 1, #near_city do
     local near_city_id = near_city[i]
     local near_player_id = city_owner[near_city_id]
