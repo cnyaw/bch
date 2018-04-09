@@ -303,9 +303,6 @@ AnimInvadeCity = {}
 
 AnimInvadeCity.OnStep = function(param)
   if (nil == param.k) then
-    local this_city = GetObjByCityId(param.city_id)
-    local x, y = Good.GetPos(this_city)
-    Good.SetPos(param._id, x, y)
     local target_city = GetObjByCityId(param.target_city_id)
     local tx, ty = Good.GetPos(target_city)
     local loop1 = ArAddLoop(nil)

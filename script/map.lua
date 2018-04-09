@@ -440,10 +440,12 @@ function UpgradeCityHero()
 end
 
 function GenInvadeCityAnimObj(player_id, city_id, target_city_id, is_win)
+  local city_obj = GetObjByCityId(city_id)
+  local x, y = Good.GetPos(city_obj)
   local o = Good.GenObj(-1, battle_tex_id, 'AnimInvadeCity')
+  Good.SetPos(o, x, y)
   local param = Good.GetParam(o)
   param.player_id = player_id
-  param.city_id = city_id
   param.target_city_id = target_city_id
   param.is_win = is_win
 end
