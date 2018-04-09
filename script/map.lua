@@ -114,7 +114,7 @@ function IsLinkExist(links, a, b)
   return false
 end
 
-function GetObjByCityId(id)
+function GetCityObjById(id)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
@@ -160,7 +160,7 @@ function GenCityLinks()
       if (not IsLinkExist(gened_links, id, idTarget)) then
         table.insert(gened_links, string.format('%d-%d', id, idTarget))
         table.insert(gened_links, string.format('%d-%d', idTarget, id))
-        GenCityLink(o, GetObjByCityId(idTarget))
+        GenCityLink(o, GetCityObjById(idTarget))
       end
     end
   end
@@ -168,7 +168,7 @@ end
 
 function GenActionBtn(id, tex_id)
   local x, y = Good.GetPos(action_btn_panel)
-  local ox, oy = Good.GetPos(GetObjByCityId(id))
+  local ox, oy = Good.GetPos(GetCityObjById(id))
   local o = Good.GenObj(action_btn_panel, tex_id)
   Good.SetPos(o, ox - x, oy - y)
   Good.SetName(o, tostring(id))
@@ -247,12 +247,12 @@ Map.OnCreate = function(param)
   UpdatePlayersInfo()
   GenCityLinks()
   GenCityInfo()
-  local o = GetObjByCityId(GetFirstCurrPlayerCityId())
+  local o = GetCityObjById(GetFirstCurrPlayerCityId())
   SetSelCity(o)
   SetPlayingStep(param)
 end
 
-function AddHarvestCoinObj(id)
+function GenHarvestCoinAnimObj(id)
   local o = Good.GenObj(-1, coin_tex_id, 'AnimFlyingUpObj')
   Good.SetPos(o, Good.GetPos(id))
 end
@@ -260,7 +260,7 @@ end
 function GetCityHarvest()
   for i = 1, MAX_CITY do
     if (GetMyPlayerId() == city_owner[i]) then
-      AddHarvestCoinObj(GetObjByCityId(i))
+      GenHarvestCoinAnimObj(GetCityObjById(i))
     end
   end
   AddCoin(players_coin[my_player_idx])
@@ -335,7 +335,7 @@ end
 function SetNextTurn(param)
   NextTurn()
   UpdateRoundInfo()
-  local o = GetObjByCityId(GetFirstCurrPlayerCityId())
+  local o = GetCityObjById(GetFirstCurrPlayerCityId())
   SetSelCity(o)
   SetPlayingStep(param)
   UpdatePlayersInfo()
@@ -422,7 +422,7 @@ function UpgradeHero(city_id)
       if (cost < players_coin[curr_player_idx]) then
         players_coin[curr_player_idx] = players_coin[curr_player_idx] - cost
         heroes[i] = heroes[i] + 1
-        local o = GetObjByCityId(city_id)
+        local o = GetCityObjById(city_id)
         UpdateCityInfo(o)
         GenUpgradeAnimObj(o)
         break
@@ -440,7 +440,7 @@ function UpgradeCityHero()
 end
 
 function GenInvadeCityAnimObj(player_id, city_id, target_city_id, is_win)
-  local city_obj = GetObjByCityId(city_id)
+  local city_obj = GetCityObjById(city_id)
   local x, y = Good.GetPos(city_obj)
   local o = Good.GenObj(-1, battle_tex_id, 'AnimInvadeCity')
   Good.SetPos(o, x, y)

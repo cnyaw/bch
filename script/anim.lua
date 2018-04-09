@@ -56,7 +56,7 @@ function AcInvadeCity(param)
   if (param.is_win) then
     local target_city_id = param.target_city_id
     city_owner[target_city_id] = param.player_id
-    UpdateCityInfo(GetObjByCityId(target_city_id))
+    UpdateCityInfo(GetCityObjById(target_city_id))
   end
   Good.KillObj(param._id)
 end
@@ -303,7 +303,7 @@ AnimInvadeCity = {}
 
 AnimInvadeCity.OnStep = function(param)
   if (nil == param.k) then
-    local target_city = GetObjByCityId(param.target_city_id)
+    local target_city = GetCityObjById(param.target_city_id)
     local tx, ty = Good.GetPos(target_city)
     local loop1 = ArAddLoop(nil)
     ArAddMoveTo(loop1, 'Pos', 0.3, tx, ty).ease = ArEaseInOut
