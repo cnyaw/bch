@@ -59,6 +59,18 @@ function AcInvadeCity(param)
     UpdateCityInfo(GetCityObjById(target_city_id))
   end
   Good.KillObj(param._id)
+  local lvl_param = Good.GetParam(Good.GetLevelId())
+  lvl_param.step = OnMapAiPlayingNextTurn
+end
+
+function AcUpgradeCity(param)
+  Good.KillObj(param._id)
+  local lvl_param = Good.GetParam(Good.GetLevelId())
+  if (MyTurn()) then
+    lvl_param.step = OnMapPlaying
+  else
+    lvl_param.step = OnMapAiPlaying
+  end
 end
 
 --
@@ -308,6 +320,20 @@ AnimInvadeCity.OnStep = function(param)
     local loop1 = ArAddLoop(nil)
     ArAddMoveTo(loop1, 'Pos', 0.3, tx, ty).ease = ArEaseInOut
     ArAddCall(loop1, 'AcInvadeCity', 0)
+    param.k = ArAddAnimator({loop1})
+  else
+    ArStepAnimator(param, param.k)
+  end
+end
+
+AnimUpgradeCity = {}
+
+AnimUpgradeCity.OnStep = function(param)
+  if (nil == param.k) then
+    local loop1 = ArAddLoop(nil)
+    ArAddMoveBy(loop1, 'Pos', 0.4, 0, -TILE_H).ease = ArEaseOut
+    ArAddMoveTo(loop1, 'Alpha', .2, 0)
+    ArAddCall(loop1, 'AcUpgradeCity', 0)
     param.k = ArAddAnimator({loop1})
   else
     ArStepAnimator(param, param.k)

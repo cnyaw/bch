@@ -398,21 +398,6 @@ function OnMapPlaying(param)
   end
 end
 
-function TimeExpired(param, timer)
-  if (nil == param.timer) then
-    param.timer = timer
-    return false
-  else
-    param.timer = param.timer - 1
-    if (0 < param.timer) then
-      return false
-    else
-      param.timer = nil
-      return true
-    end
-  end
-end
-
 function UpgradeHero(city_id)
   local heroes = city_hero[city_id]
   for i = MAX_HERO, 1, -1 do
@@ -425,18 +410,22 @@ function UpgradeHero(city_id)
         local o = GetCityObjById(city_id)
         UpdateCityInfo(o)
         GenUpgradeAnimObj(o)
-        break
+        return true
       end
     end
   end
+  return false
 end
 
 function UpgradeCityHero()
   local cities = GetCurrPlayerCityIdList()
   Shuffle(cities)
   for i = 1, #cities do
-    UpgradeHero(cities[i])
+    if (UpgradeHero(cities[i])) then
+      return true
+    end
   end
+  return false
 end
 
 function GenInvadeCityAnimObj(player_id, city_id, target_city_id, is_win)
@@ -506,12 +495,23 @@ function OnMapAiPlaying(param)
     return
   end
 
-  if (not TimeExpired(param, 40)) then
+  if (UpgradeCityHero()) then
+    param.step = OnMapAiPlayingWaitAnim
     return
   end
 
-  UpgradeCityHero()
-  InvadeNearCity()
+  if (InvadeNearCity()) then
+    param.step = OnMapAiPlayingWaitAnim
+    return
+  end
+
+  OnMapAiPlayingNextTurn(param)
+end
+
+function OnMapAiPlayingNextTurn(param)
+  if (Input.IsKeyPressed(Input.ESCAPE)) then
+    -- NOP.
+  end
 
   SetNextTurn(param)
 
@@ -521,6 +521,12 @@ function OnMapAiPlaying(param)
     param.step = OnGameOverEnter
     check_game_over_flag = false
     return
+  end
+end
+
+function OnMapAiPlayingWaitAnim(param)
+  if (Input.IsKeyPressed(Input.ESCAPE)) then
+    -- NOP.
   end
 end
 
@@ -535,7 +541,7 @@ function OnMapGameOver(param)
 end
 
 function GenUpgradeAnimObj(id)
-  local o = Good.GenObj(-1, upgrade_tex_id, 'AnimFlyingUpObj')
+  local o = Good.GenObj(-1, upgrade_tex_id, 'AnimUpgradeCity')
   Good.SetPos(o, Good.GetPos(id))
 end
 
