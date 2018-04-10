@@ -301,6 +301,7 @@ function UpdatePlayersInfo()
     players_info_obj = nil
   end
   players_info_obj = Good.GenDummy(-1)
+  Good.AddChild(-1, players_info_obj, 0) -- Change zorder to topmost.
   local active_players = {}
   for i = 1, MAX_PLAYER do
     local city_count = GetPlayerCityCount(i)
