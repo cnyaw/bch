@@ -279,6 +279,8 @@ function OnMapMenu(param)
   local NextStep
   if (MyTurn()) then
     NextStep = OnMapPlaying
+  elseif (nil ~= param.ai_step) then
+    NextStep = param.ai_step
   else
     NextStep = OnMapAiPlaying
   end
@@ -363,6 +365,7 @@ function OnMapPlaying(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
     ShowGameMenu()
     param.step = OnMapMenu
+    param.ai_step = nil
     return
   end
 
@@ -492,6 +495,7 @@ function OnMapAiPlaying(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
     ShowGameMenu()
     param.step = OnMapMenu
+    param.ai_step = OnMapAiPlaying
     return
   end
 
@@ -510,7 +514,10 @@ end
 
 function OnMapAiPlayingNextTurn(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
-    -- NOP.
+    ShowGameMenu()
+    param.step = OnMapMenu
+    param.ai_step = OnMapAiPlayingNextTurn
+    return
   end
 
   SetNextTurn(param)
@@ -526,7 +533,10 @@ end
 
 function OnMapAiPlayingWaitAnim(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
-    -- NOP.
+    ShowGameMenu()
+    param.step = OnMapMenu
+    param.ai_step = nil
+    return
   end
 end
 

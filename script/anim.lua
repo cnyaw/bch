@@ -60,7 +60,9 @@ function AcInvadeCity(param)
   end
   Good.KillObj(param._id)
   local lvl_param = Good.GetParam(Good.GetLevelId())
-  lvl_param.step = OnMapAiPlayingNextTurn
+  if (OnMapMenu ~= lvl_param.step) then
+    lvl_param.step = OnMapAiPlayingNextTurn
+  end
 end
 
 function AcUpgradeCity(param)
@@ -68,7 +70,7 @@ function AcUpgradeCity(param)
   local lvl_param = Good.GetParam(Good.GetLevelId())
   if (MyTurn()) then
     lvl_param.step = OnMapPlaying
-  else
+  elseif (OnMapMenu ~= lvl_param.step) then
     lvl_param.step = OnMapAiPlaying
   end
 end
