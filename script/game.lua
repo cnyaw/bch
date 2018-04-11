@@ -179,6 +179,7 @@ function CheckGameOver()
       else
         victory_min_round = curr_round
       end
+      param.p = Stge.RunScript('_pon')
     else
       ShowGameOver(param, OnGameOver, 'You Win', 0xff00137f)
     end
@@ -222,6 +223,10 @@ function OnGameOver(param)
     end
     NextTurn()
     SaveGame()
+    if (nil ~= param.p) then
+      Stge.KillTask(param.p)
+      param.p = nil
+    end
     Good.GenObj(-1, map_lvl_id)
     return
   end
@@ -366,8 +371,8 @@ function InitStage()
   for i = 1, MAX_HERO do
     total_hero_count = total_hero_count + heroes[i]
   end
-  wave_time = math.max(5, 10 - math.floor(total_hero_count / 20))
-  wave_hero_count = math.min(9, 2 + math.floor(total_hero_count / 15))
+  wave_time = math.max(5, 10 - math.floor(total_hero_count / 15))
+  wave_hero_count = math.min(9, 2 + math.floor(total_hero_count / 10))
   stage_heroes_count = {}
   for hero_id = 1, MAX_HERO do
     local lv = heroes[hero_id]
@@ -600,4 +605,14 @@ function GenStatsInfo(dummy)
   local s_gameover_obj = Good.GenTextObj(s_max, string.format('%d', game_over_count), STAT_TEXT_SIZE)
   Good.SetPos(s_gameover_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_1
+end
+
+Game.OnNewParticle = function(param, particle)
+  local o = Good.GenObj(-1, win_tex_id)
+  Good.SetScale(o, 0.25, 0.25)
+  Stge.BindParticle(particle, o)
+end
+
+Game.OnKillParticle = function(param, particle)
+  Good.KillObj(Stge.GetParticleBind(particle))
 end

@@ -19,6 +19,9 @@ levels=19 39 0 22
 36=./script/title.lua
 40=./script/map.lua
 
+[stges]
+49=./script/particle.stge
+
 [tex13]
 name=coin
 fileName=./res/coin.png

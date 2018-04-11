@@ -1,0 +1,25 @@
+script _pon
+  speed(100)
+  repeat(-1)
+    direction(10,add)
+    fire(pon)
+    sleep(0)
+  end
+end
+
+script pon
+  sleep(rand(1,2))
+  option(rand(40))
+    fork(pon2)
+  end
+end
+
+script pon2
+  direction(rand(360))
+  speed(100)
+  repeat(12)
+    direction(30,add)
+    fire()
+  end
+  clear()
+end
