@@ -338,10 +338,14 @@ end
 function SetNextTurn(param)
   NextTurn()
   UpdateRoundInfo()
-  local o = GetCityObjById(GetFirstCurrPlayerCityId())
-  SetSelCity(o)
   SetPlayingStep(param)
   UpdatePlayersInfo()
+  if (MyTurn()) then
+    if (GetMyPlayerId() ~= city_owner[GetCityId(curr_sel_city)]) then
+      local o = GetCityObjById(GetFirstCurrPlayerCityId())
+      SetSelCity(o)
+    end
+  end
 end
 
 function OnActionPanel(param)
@@ -457,7 +461,7 @@ end
 
 function GetInvadeNearCityList(city_id)
   local near_city = {unpack(CityData[city_id])} -- Clone.
-  Shuffle(near_city)
+  table.sort(near_city, function(a,b) return GetHeroCombatPower(a) > GetHeroCombatPower(b) end)
   return near_city
 end
 
@@ -482,10 +486,16 @@ end
 
 function InvadeNearCity()
   local cities = GetCurrPlayerCityIdList()
-  Shuffle(cities)
+  table.sort(cities, function(a,b) return GetHeroCombatPower(a) > GetHeroCombatPower(b) end)
   for i = 1, #cities do
     local city_id = cities[i]
-    if (InvadeNearEmptyCity(city_id) or InvadeNearCityFrom(city_id)) then
+    if (InvadeNearEmptyCity(city_id)) then
+      return true
+    end
+  end
+  for i = 1, #cities do
+    local city_id = cities[i]
+    if (InvadeNearCityFrom(city_id)) then
       return true
     end
   end
@@ -498,6 +508,13 @@ function OnMapAiPlaying(param)
     param.step = OnMapMenu
     param.ai_step = OnMapAiPlaying
     return
+  end
+
+  if (Input.IsKeyPressed(Input.LBUTTON)) then
+    local mx, my = Input.GetMousePos()
+    if (PtInObj(mx, my, map_obj_id)) then
+      SelCity(mx, my)
+    end
   end
 
   if (UpgradeCityHero()) then
@@ -521,6 +538,13 @@ function OnMapAiPlayingNextTurn(param)
     return
   end
 
+  if (Input.IsKeyPressed(Input.LBUTTON)) then
+    local mx, my = Input.GetMousePos()
+    if (PtInObj(mx, my, map_obj_id)) then
+      SelCity(mx, my)
+    end
+  end
+
   SetNextTurn(param)
 
   if (check_game_over_flag and 0 == GetPlayerCityCount(GetMyPlayerId())) then
@@ -538,6 +562,13 @@ function OnMapAiPlayingWaitAnim(param)
     param.step = OnMapMenu
     param.ai_step = nil
     return
+  end
+
+  if (Input.IsKeyPressed(Input.LBUTTON)) then
+    local mx, my = Input.GetMousePos()
+    if (PtInObj(mx, my, map_obj_id)) then
+      SelCity(mx, my)
+    end
   end
 end
 
