@@ -76,6 +76,7 @@ players_coin = nil
 my_player_idx = nil
 curr_player_idx = nil
 curr_round = 1
+check_game_over_flag = true
 
 function ResetPlayers()
   players = {}
@@ -262,6 +263,7 @@ function ResetGame()
     CurrKillEnemy[i] = 0
   end
   reset_count = reset_count + 1
+  check_game_over_flag = true
 end
 
 LoadGame()

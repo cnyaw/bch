@@ -16,7 +16,6 @@ local upgrade_tex_id = 16
 local curr_sel_city = nil
 local anim_sel_city_obj = nil
 local action_btn_panel = nil
-local check_game_over_flag = true
 local players_info_obj = nil
 my_sel_city_id = nil
 sel_city_id = nil
