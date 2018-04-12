@@ -221,13 +221,6 @@ function SelActionBtn(mx, my)
   return false
 end
 
-function GetCheckGameOverFlag()
-  if (not check_game_over_flag) then
-    return check_game_over_flag
-  end
-  return 0 < GetPlayerCityCount(GetMyPlayerId()) -- At least own a city, so need to check game over.
-end
-
 Map = {}
 
 Map.OnCreate = function(param)

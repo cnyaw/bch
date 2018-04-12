@@ -7,24 +7,34 @@ local HERO_UPGRADE_DISABLE_COLOR = 0xff505050
 local HERO_MENU_DISABLE_COLOR = 0xff808080
 local HERO_MENU_DESEL_COLOR = 0xff4c8000
 local HERO_MENU_SEL_COLOR = 0xff8cff00
-local INIT_COIN_COUNT = 200
+local INIT_COIN_COUNT = 500
 local PLAYER_COLOR = {
   0xffFF0000, 0xffFF6A00, 0xffB6FF00, 0xff00FF21, 0xff7F6A00,
   0xff267F00, 0xff00FFFF, 0xffFFD800, 0xffFF00DC, 0xff7F0037}
+TILE_W, TILE_H = 44, 44
+local STAT_TEXT_SIZE = TILE_H/2
+local SMALL_STAT_TEXT_SIZE = TILE_H/3
+local STATS_TEXT_COLOR = 0xffa0a0a0
+local STATS_OFFSET_1 = 1.05
+local STATS_OFFSET_2 = 0.65
 MAX_PLAYER = 10
 MAX_CITY = 24
 MAX_HERO = 6
 
 local game_lvl_id = 0
 local hero_menu_button_tex_id = 3
+local castle_tex_id = 26
+local combat_tex_id = 15
+local coin_tex_id = 13
+local sand_glass_tex_id = 17
+local win_tex_id = 44
+local fail_tex_id = 48
 
 Graphics.SetAntiAlias(1)                -- Enable anti alias.
 
 WND_W, WND_H = Good.GetWindowSize()
-
 MAP_X, MAP_Y = 0, 0
 MAP_W, MAP_H = 9, 10
-TILE_W, TILE_H = 44, 44
 
 HERO_MENU_W, HERO_MENU_H = 65, 2.2 * TILE_H
 HERO_MENU_OFFSET_X = (WND_W - 6 * HERO_MENU_W) / 2
@@ -426,8 +436,12 @@ function GetHarvestOfRound()
       players_coin[player_idx] = players_coin[player_idx] + coin
     end
   end
+  local extra_coin = INIT_COIN_COUNT
+  if (0 == (curr_round % 10)) then
+    extra_coin = extra_coin + INIT_COIN_COUNT
+  end
   for i = 1, MAX_PLAYER do
-    players_coin[i] = players_coin[i] + INIT_COIN_COUNT
+    players_coin[i] = players_coin[i] + extra_coin
   end
 end
 
@@ -443,8 +457,8 @@ function NextTurn()
     end
   end
   if (GetFirstPlayerIdx() == curr_player_idx) then
-    GetHarvestOfRound()
     curr_round = curr_round + 1
+    GetHarvestOfRound()
   end
 end
 
@@ -575,4 +589,93 @@ function ShowGameOver(param, next_step, msg, clr)
   local p = Good.GetParam(anim_game_over_obj)
   p.lvl_param = param
   p.next_step = next_step
+end
+
+function GenKillsInfo(dummy)
+  local s_kill = Good.GenTextObj(dummy, 'Kill', STAT_TEXT_SIZE)
+  Good.SetPos(s_kill, 0, TILE_H/2)
+  local offset = 1.4
+  for hero_id = 1, MAX_HERO do
+    local hero_obj = GenHeroPieceObj(s_kill, HeroData[hero_id].Face, false, '')
+    Good.SetScale(hero_obj, 0.5, 0.5)
+    Good.SetPos(hero_obj, 0, TILE_W/2 * offset)
+    local hero_count = Good.GenTextObj(s_kill, string.format('%d', CurrKillEnemy[hero_id]), STAT_TEXT_SIZE)
+    Good.SetPos(hero_count, TILE_W, TILE_W/2 * offset)
+    offset = offset + STATS_OFFSET_1
+    hero_count = Good.GenTextObj(s_kill, string.format('%d', TotalKillEnemy[hero_id]), SMALL_STAT_TEXT_SIZE)
+    SetTextObjColor(hero_count, STATS_TEXT_COLOR)
+    Good.SetPos(hero_count, TILE_W, TILE_W/2 * offset)
+    offset = offset + STATS_OFFSET_2
+  end
+end
+
+function GenStatsInfo(dummy)
+  local s_max = Good.GenTextObj(dummy, string.format('Stats (%d)', reset_count), STAT_TEXT_SIZE)
+  Good.SetPos(s_max, 3 * TILE_W, TILE_H/2)
+  local offset = 1.4
+  local scale = (TILE_W/2) / 32
+  local max_stage_obj = Good.GenObj(s_max, castle_tex_id, '')
+  Good.SetScale(max_stage_obj, scale, scale)
+  Good.SetPos(max_stage_obj, 0, TILE_W/2 * offset)
+  local s_invade_stage_obj = Good.GenTextObj(s_max, string.format('%d', invade_stage_count), STAT_TEXT_SIZE)
+  Good.SetPos(s_invade_stage_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_1
+  s_invade_stage_obj = Good.GenTextObj(s_max, string.format('%d', total_invade_stage_count), SMALL_STAT_TEXT_SIZE)
+  SetTextObjColor(s_invade_stage_obj, STATS_TEXT_COLOR)
+  Good.SetPos(s_invade_stage_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_2
+  local max_combat_obj = Good.GenObj(s_max, combat_tex_id, '')
+  Good.SetScale(max_combat_obj, scale, scale)
+  Good.SetPos(max_combat_obj, 0, TILE_W/2 * offset)
+  local s_max_combat_obj = Good.GenTextObj(s_max, string.format('%d', GetMyPlayerTotalCombatPower()), STAT_TEXT_SIZE)
+  Good.SetPos(s_max_combat_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_1
+  s_max_combat_obj = Good.GenTextObj(s_max, string.format('%d', max_combat_power), SMALL_STAT_TEXT_SIZE)
+  SetTextObjColor(s_max_combat_obj, STATS_TEXT_COLOR)
+  Good.SetPos(s_max_combat_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_2
+  local max_coin_obj = Good.GenObj(s_max, coin_tex_id, '')
+  Good.SetScale(max_coin_obj, scale, scale)
+  Good.SetPos(max_coin_obj, 0, TILE_W/2 * offset)
+  local s_total_coin_obj = Good.GenTextObj(s_max, string.format('%d', curr_total_coin_count), STAT_TEXT_SIZE)
+  Good.SetPos(s_total_coin_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_1
+  s_total_coin_obj = Good.GenTextObj(s_max, string.format('%d', total_coin_count), SMALL_STAT_TEXT_SIZE)
+  SetTextObjColor(s_total_coin_obj, STATS_TEXT_COLOR)
+  Good.SetPos(s_total_coin_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_2
+  scale = (TILE_W/2)/45
+  local play_time_obj = Good.GenObj(s_max, sand_glass_tex_id, '')
+  Good.SetScale(play_time_obj, scale, scale)
+  Good.SetPos(play_time_obj, 4, TILE_W/2 * offset)
+  local s_play_time_obj = Good.GenTextObj(s_max, GetFormatTimeStr(curr_play_time), STAT_TEXT_SIZE)
+  Good.SetPos(s_play_time_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_1
+  s_play_time_obj = Good.GenTextObj(s_max, GetFormatTimeStr(total_play_time), SMALL_STAT_TEXT_SIZE)
+  SetTextObjColor(s_play_time_obj, STATS_TEXT_COLOR)
+  Good.SetPos(s_play_time_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_1
+  local victory_obj = Good.GenObj(s_max, win_tex_id, '')
+  Good.SetScale(victory_obj, scale, scale)
+  Good.SetPos(victory_obj, 4, TILE_W/2 * offset)
+  local s_victory_obj = Good.GenTextObj(s_max, string.format('%d', victory_count), STAT_TEXT_SIZE)
+  Good.SetPos(s_victory_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_1
+  local s_victory_min_round_obj = Good.GenTextObj(s_max, string.format('%d', victory_min_round), SMALL_STAT_TEXT_SIZE)
+  SetTextObjColor(s_victory_min_round_obj, STATS_TEXT_COLOR)
+  Good.SetPos(s_victory_min_round_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_2
+  local game_over_obj = Good.GenObj(s_max, fail_tex_id, '')
+  Good.SetScale(game_over_obj, scale, scale)
+  Good.SetPos(game_over_obj, 4, TILE_W/2 * offset)
+  local s_gameover_obj = Good.GenTextObj(s_max, string.format('%d', game_over_count), STAT_TEXT_SIZE)
+  Good.SetPos(s_gameover_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_1
+end
+
+function GetCheckGameOverFlag()
+  if (not check_game_over_flag) then
+    return check_game_over_flag
+  end
+  return 0 < GetPlayerCityCount(GetMyPlayerId()) -- At least own a city, so need to check game over.
 end
