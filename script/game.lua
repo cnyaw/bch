@@ -109,6 +109,7 @@ function HandleResetGame(btn_reset)
   ResetGame()
   SaveGame()
   Good.GenObj(-1, map_lvl_id)
+  reset_timeout = nil
 end
 
 function HandleGameMenu(param, next_step)
