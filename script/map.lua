@@ -384,6 +384,7 @@ function OnMapPlaying(param)
     if (is_upgrade) then
       UpgradeMyHero(menu)
       UpdatePlayersInfo()
+      param.step = OnMapAiPlayingWaitAnim
     end
     return
   end
