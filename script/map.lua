@@ -468,7 +468,8 @@ function InvadeNearCityFrom(city_id)
     if (near_player_id ~= player_id) then
       local target_combat_power = GetHeroCombatPower(near_city_id)
       if (hero_combat_power > target_combat_power) then
-        local is_win = math.random(hero_combat_power + target_combat_power) > target_combat_power
+        local total_weight = hero_combat_power + target_combat_power
+        local is_win = math.random(total_weight) > target_combat_power/2
         GenInvadeCityAnimObj(player_id, city_id, near_city_id, is_win)
         return true
       end
