@@ -320,7 +320,8 @@ AnimInvadeCity.OnStep = function(param)
     local target_city = GetCityObjById(param.target_city_id)
     local tx, ty = Good.GetPos(target_city)
     local loop1 = ArAddLoop(nil)
-    ArAddMoveTo(loop1, 'Pos', 0.3, tx, ty).ease = ArEaseInOut
+    ArAddMoveTo(loop1, 'Pos', 0.4, tx, ty).ease = ArEaseInOut
+    ArAddMoveTo(loop1, 'Alpha', 0.2, 0)
     ArAddCall(loop1, 'AcInvadeCity', 0)
     param.k = ArAddAnimator({loop1})
   else
@@ -334,7 +335,7 @@ AnimUpgradeCity.OnStep = function(param)
   if (nil == param.k) then
     local loop1 = ArAddLoop(nil)
     ArAddMoveBy(loop1, 'Pos', 0.4, 0, -TILE_H).ease = ArEaseOut
-    ArAddMoveTo(loop1, 'Alpha', .2, 0)
+    ArAddMoveTo(loop1, 'Alpha', 0.2, 0)
     ArAddCall(loop1, 'AcUpgradeCity', 0)
     param.k = ArAddAnimator({loop1})
   else
