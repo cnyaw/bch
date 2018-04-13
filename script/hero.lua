@@ -18,6 +18,7 @@ local set_next_wave_hero_count = nil
 
 local board_id = 2
 local chess_tex_id = 18
+local paralysis_obj_id = 25
 
 local COLOR_RED = 0
 local COLOR_BLACK = 1
@@ -39,7 +40,10 @@ Hero.OnStep = function(param)
     param.paralysis_time = param.paralysis_time - 1
     if (0 >= param.paralysis_time) then
       Good.SetBgColor(param._id, 0xffffffff)
-      Good.KillObj(Good.FindChild(param._id, 'paralysis'))
+      if (nil ~= param.paralysis_obj) then
+        Good.KillObj(param.paralysis_obj)
+        param.paralysis_obj = nil
+      end
     end
   else
     param.step(param)
@@ -186,11 +190,12 @@ function ApplyParalysisBuffEffect(target, effect)
   local target_id = target._id
   target.paralysis_time = target.paralysis_time + effect.Duration + 3 * math.min(40, target.lv)
   Good.SetBgColor(target_id, 0xffffd800)
-  if (-1 == Good.FindChild(target_id, 'paralysis')) then
-    local o = Good.GenObj(target_id, 25) -- Attach a paralysis effect obj to target.
+  if (nil == target.paralysis_obj) then
+    local o = Good.GenObj(target_id, paralysis_obj_id) -- Attach a paralysis effect obj to target.
     Good.SetAnchor(o, 0.5, 0.5)
     local l,t,w,h = Good.GetDim(o)
     Good.SetPos(o, (TILE_W - w)/2, (TILE_H - h)/2)
+    target.paralysis_obj = o
   end
 end
 
