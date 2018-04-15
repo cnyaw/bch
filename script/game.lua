@@ -352,6 +352,12 @@ function GenInitEnemyHeroes(hero_id, lv)
   return hero_count
 end
 
+function CalcWaveTime(hero_count)
+  local wave_time = math.max(5, 10 - math.floor(hero_count / 16))
+  local wave_hero_count = math.min(9, 2 + math.floor(hero_count / (10 + 2 * math.log10(hero_count))))
+  return wave_time, wave_hero_count
+end
+
 function InitStage()
   if (nil ~= stage_heroes_obj) then
     Good.KillObj(stage_heroes_obj)
@@ -363,8 +369,7 @@ function InitStage()
   for i = 1, MAX_HERO do
     total_hero_count = total_hero_count + heroes[i]
   end
-  wave_time = math.max(5, 10 - math.floor(total_hero_count / 10))
-  wave_hero_count = math.min(9, 2 + math.floor(total_hero_count / 10))
+  wave_time, wave_hero_count = CalcWaveTime(total_hero_count)
   stage_heroes_count = {}
   for hero_id = 1, MAX_HERO do
     local lv = heroes[hero_id]
