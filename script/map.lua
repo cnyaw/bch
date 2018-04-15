@@ -418,9 +418,17 @@ function UpgradeHero(city_id)
   return false
 end
 
+function SortCities(cities)
+  if (0 == (curr_player_idx % 2)) then
+    table.sort(cities, function(a,b) return GetHeroCombatPower(a) > GetHeroCombatPower(b) end)
+  else
+    Shuffle(cities)
+  end
+end
+
 function UpgradeCityHero()
   local cities = GetCurrPlayerCityIdList()
-  Shuffle(cities)
+  SortCities(cities)
   for i = 1, #cities do
     if (UpgradeHero(cities[i])) then
       return true
@@ -480,7 +488,7 @@ end
 
 function InvadeNearCity()
   local cities = GetCurrPlayerCityIdList()
-  table.sort(cities, function(a,b) return GetHeroCombatPower(a) > GetHeroCombatPower(b) end)
+  SortCities(cities)
   for i = 1, #cities do
     local city_id = cities[i]
     if (InvadeNearEmptyCity(city_id)) then
