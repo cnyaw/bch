@@ -263,7 +263,7 @@ end
 function ResetGame()
   coin_count = INIT_COIN_COUNT
   curr_total_coin_count = 0
-  invade_stage_count = 1
+  invade_stage_count = 0
   curr_round = 1
   ResetCityOwner()
   ResetCityHero()
