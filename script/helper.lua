@@ -301,10 +301,24 @@ function SaveGame()
   outf:write(string.format('total_coin_count=%d\n', total_coin_count))
   outf:write(string.format('curr_play_time=%d\n', curr_play_time))
   outf:write(string.format('total_play_time=%d\n', total_play_time))
-  for hero_id = 1, MAX_HERO do
-    outf:write(string.format('CurrKillEnemy[%d]=%d\n', hero_id, CurrKillEnemy[hero_id]))
-    outf:write(string.format('TotalKillEnemy[%d]=%d\n', hero_id, TotalKillEnemy[hero_id]))
+  outf:write(string.format('CurrKillEnemy={'))
+  for i = 1, MAX_HERO do
+    if (MAX_HERO == i) then
+      outf:write(string.format('%d', CurrKillEnemy[i]))
+    else
+      outf:write(string.format('%d,', CurrKillEnemy[i]))
+    end
   end
+  outf:write(string.format('}\n'))
+  outf:write(string.format('TotalKillEnemy={'))
+  for i = 1, MAX_HERO do
+    if (MAX_HERO == i) then
+      outf:write(string.format('%d', TotalKillEnemy[i]))
+    else
+      outf:write(string.format('%d,', TotalKillEnemy[i]))
+    end
+  end
+  outf:write(string.format('}\n'))
   for i = 1, MAX_CITY do
     outf:write(string.format('city_owner[%d]=%d\n', i, city_owner[i]))
     outf:write(string.format('city_hero[%d]={', i))
