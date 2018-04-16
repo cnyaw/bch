@@ -53,7 +53,8 @@ Game.OnCreate = function(param)
   next_wave_pos = 0
   InitOccupyMap()
   InitHero()
-  king_obj = AddMyHero(king_hero_id, INIT_KING_POS, 1)
+  local king_lv = 1 + GetHeroCombatPower(my_sel_city_id) / 800
+  king_obj = AddMyHero(king_hero_id, INIT_KING_POS, king_lv)
   stage_heroes_obj = nil
   next_wave_heroes = {}
   InitStage()
@@ -353,8 +354,8 @@ function GenInitEnemyHeroes(hero_id, lv)
 end
 
 function CalcWaveTime(hero_count)
-  local wave_time = math.max(5, 10 - math.floor(hero_count / 16))
-  local wave_hero_count = math.min(9, 2 + math.floor(hero_count / (10 + 2 * math.log10(hero_count))))
+  local wave_time = math.max(5, 10 - math.floor(hero_count / 20))
+  local wave_hero_count = math.min(9, 2 + math.floor(hero_count / (10 + 2.5 * math.log10(hero_count))))
   return wave_time, wave_hero_count
 end
 
