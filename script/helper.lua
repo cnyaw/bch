@@ -278,11 +278,15 @@ end
 
 LoadGame()
 
-function SaveGame()
+function GetMaxCombatPower()
   local my_city_count = GetPlayerCityCount(GetMyPlayerId())
   if (0 ~= my_city_count and MAX_CITY ~= my_city_count) then
     max_combat_power = math.max(max_combat_power, GetMyPlayerTotalCombatPower()) -- Update only when not victiry or game over.
   end
+  return max_combat_power
+end
+
+function SaveGame()
   local outf = io.open(SAV_FILE_NAME, "w")
   outf:write(string.format('curr_round=%d\n', curr_round))
   outf:write(string.format('reset_count=%d\n', reset_count))
@@ -292,7 +296,7 @@ function SaveGame()
   outf:write(string.format('coin_count=%d\n', coin_count))
   outf:write(string.format('invade_stage_count=%d\n', invade_stage_count))
   outf:write(string.format('total_invade_stage_count=%d\n', total_invade_stage_count))
-  outf:write(string.format('max_combat_power=%d\n', max_combat_power))
+  outf:write(string.format('max_combat_power=%d\n', GetMaxCombatPower()))
   outf:write(string.format('curr_total_coin_count=%d\n', curr_total_coin_count))
   outf:write(string.format('total_coin_count=%d\n', total_coin_count))
   outf:write(string.format('curr_play_time=%d\n', curr_play_time))
@@ -637,7 +641,7 @@ function GenStatsInfo(dummy)
   local s_max_combat_obj = Good.GenTextObj(s_max, string.format('%d', GetMyPlayerTotalCombatPower()), STAT_TEXT_SIZE)
   Good.SetPos(s_max_combat_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_1
-  s_max_combat_obj = Good.GenTextObj(s_max, string.format('%d', max_combat_power), SMALL_STAT_TEXT_SIZE)
+  s_max_combat_obj = Good.GenTextObj(s_max, string.format('%d', GetMaxCombatPower()), SMALL_STAT_TEXT_SIZE)
   SetTextObjColor(s_max_combat_obj, STATS_TEXT_COLOR)
   Good.SetPos(s_max_combat_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_2

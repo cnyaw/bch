@@ -384,7 +384,7 @@ function OnMapPlaying(param)
     if (is_upgrade) then
       UpgradeMyHero(menu)
       UpdatePlayersInfo()
-      param.step = OnMapAiPlayingWaitAnim
+      param.step = OnMapWaitAnimDone
     end
     return
   end
@@ -504,6 +504,15 @@ function InvadeNearCity()
   return false
 end
 
+function CheckCitySelChange()
+  if (Input.IsKeyPressed(Input.LBUTTON)) then
+    local mx, my = Input.GetMousePos()
+    if (PtInObj(mx, my, map_obj_id)) then
+      SelCity(mx, my)
+    end
+  end
+end
+
 function OnMapAiPlaying(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
     ShowGameMenu()
@@ -512,20 +521,15 @@ function OnMapAiPlaying(param)
     return
   end
 
-  if (Input.IsKeyPressed(Input.LBUTTON)) then
-    local mx, my = Input.GetMousePos()
-    if (PtInObj(mx, my, map_obj_id)) then
-      SelCity(mx, my)
-    end
-  end
+  CheckCitySelChange()
 
   if (UpgradeCityHero()) then
-    param.step = OnMapAiPlayingWaitAnim
+    param.step = OnMapWaitAnimDone
     return
   end
 
   if (InvadeNearCity()) then
-    param.step = OnMapAiPlayingWaitAnim
+    param.step = OnMapWaitAnimDone
     return
   end
 
@@ -540,12 +544,7 @@ function OnMapAiPlayingNextTurn(param)
     return
   end
 
-  if (Input.IsKeyPressed(Input.LBUTTON)) then
-    local mx, my = Input.GetMousePos()
-    if (PtInObj(mx, my, map_obj_id)) then
-      SelCity(mx, my)
-    end
-  end
+  CheckCitySelChange()
 
   SetNextTurn(param)
 
@@ -558,7 +557,7 @@ function OnMapAiPlayingNextTurn(param)
   end
 end
 
-function OnMapAiPlayingWaitAnim(param)
+function OnMapWaitAnimDone(param)
   if (Input.IsKeyPressed(Input.ESCAPE)) then
     ShowGameMenu()
     param.step = OnMapMenu
@@ -566,12 +565,7 @@ function OnMapAiPlayingWaitAnim(param)
     return
   end
 
-  if (Input.IsKeyPressed(Input.LBUTTON)) then
-    local mx, my = Input.GetMousePos()
-    if (PtInObj(mx, my, map_obj_id)) then
-      SelCity(mx, my)
-    end
-  end
+  CheckCitySelChange()
 end
 
 function OnMapGameOver(param)
