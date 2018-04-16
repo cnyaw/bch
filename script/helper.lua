@@ -533,6 +533,14 @@ function GetHeroCombatPower(city_id)
   return p
 end
 
+function GetHeroPutCost(lv, hero_put_cost)
+  return math.min(9999, GetLevelValue(lv, hero_put_cost))
+end
+
+function GetHeroUpgradeCost(lv, hero_upgrade_cost)
+  return math.min(999999, GetLevelValue(lv, hero_upgrade_cost))
+end
+
 function GenHeroMenuItem(hero_id, lv)
   local hero = HeroData[hero_id]
   local x = HERO_MENU_OFFSET_X + (hero_id - 1) * HERO_MENU_W
@@ -543,8 +551,8 @@ function GenHeroMenuItem(hero_id, lv)
   menu.hero_id = hero_id
   menu.lv = lv
   menu.gen_cd = GetLevelCdValue(menu.lv, hero.GenCd)
-  menu.put_cost = GetLevelValue(menu.lv, hero.PutCost)
-  menu.upgrade_cost = GetLevelValue(menu.lv, hero.UpgradeCost)
+  menu.put_cost = GetHeroPutCost(menu.lv, hero.PutCost)
+  menu.upgrade_cost = GetHeroUpgradeCost(menu.lv, hero.UpgradeCost)
   menu.count = 0
   menu.max_count = math.min(menu.lv, hero.MaxCount)
   menu.cd = 0

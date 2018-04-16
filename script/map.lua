@@ -588,8 +588,8 @@ function UpgradeMyHero(menu)
   local hero = HeroData[menu.hero_id]
   menu.lv = menu.lv + 1
   menu.max_count = math.min(hero.MaxCount, menu.max_count + 1)
-  menu.upgrade_cost = GetLevelValue(menu.lv, hero.UpgradeCost)
-  menu.put_cost = GetLevelValue(menu.lv, hero.PutCost)
+  menu.put_cost = GetHeroPutCost(menu.lv, hero.PutCost)
+  menu.upgrade_cost = GetHeroUpgradeCost(menu.lv, hero.UpgradeCost)
   menu.gen_cd = GetLevelCdValue(menu.lv, hero.GenCd)
   UpdateHeroMenuItemInfo(menu)
   if (menu.hero_id ~= MAX_HERO) then
