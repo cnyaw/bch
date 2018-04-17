@@ -286,6 +286,18 @@ function GetMaxCombatPower()
   return max_combat_power
 end
 
+function WriteTable(outf, name, t)
+  outf:write(string.format('%s={', name))
+  for i = 1, #t do
+    if (#t == i) then
+      outf:write(string.format('%d', t[i]))
+    else
+      outf:write(string.format('%d,', t[i]))
+    end
+  end
+  outf:write(string.format('}\n'))
+end
+
 function SaveGame()
   local outf = io.open(SAV_FILE_NAME, "w")
   outf:write(string.format('curr_round=%d\n', curr_round))
@@ -301,41 +313,14 @@ function SaveGame()
   outf:write(string.format('total_coin_count=%d\n', total_coin_count))
   outf:write(string.format('curr_play_time=%d\n', curr_play_time))
   outf:write(string.format('total_play_time=%d\n', total_play_time))
-  outf:write(string.format('CurrKillEnemy={'))
-  for i = 1, MAX_HERO do
-    if (MAX_HERO == i) then
-      outf:write(string.format('%d', CurrKillEnemy[i]))
-    else
-      outf:write(string.format('%d,', CurrKillEnemy[i]))
-    end
-  end
-  outf:write(string.format('}\n'))
-  outf:write(string.format('TotalKillEnemy={'))
-  for i = 1, MAX_HERO do
-    if (MAX_HERO == i) then
-      outf:write(string.format('%d', TotalKillEnemy[i]))
-    else
-      outf:write(string.format('%d,', TotalKillEnemy[i]))
-    end
-  end
-  outf:write(string.format('}\n'))
+  WriteTable(outf, 'CurrKillEnemy', CurrKillEnemy)
+  WriteTable(outf, 'TotalKillEnemy', TotalKillEnemy)
+  WriteTable(outf, 'city_owner', city_owner)
   for i = 1, MAX_CITY do
-    outf:write(string.format('city_owner[%d]=%d\n', i, city_owner[i]))
-    outf:write(string.format('city_hero[%d]={', i))
-    local heroes = city_hero[i]
-    for j = 1, #heroes do
-      if (MAX_HERO == j) then
-        outf:write(string.format('%d', heroes[j]))
-      else
-        outf:write(string.format('%d,', heroes[j]))
-      end
-    end
-    outf:write(string.format('}\n'))
+    WriteTable(outf, string.format('city_hero[%d]', i), city_hero[i])
   end
-  for i = 1, MAX_PLAYER do
-    outf:write(string.format('players[%d]=%d\n', i, players[i]))
-    outf:write(string.format('players_coin[%d]=%d\n', i, players_coin[i]))
-  end
+  WriteTable(outf, 'players', players)
+  WriteTable(outf, 'players_coin', players_coin)
   outf:write(string.format('my_player_idx=%d\n', my_player_idx))
   outf:write(string.format('curr_player_idx=%d\n', curr_player_idx))
   outf:close()
