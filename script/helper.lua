@@ -124,8 +124,8 @@ glass_speed = 1
 
 max_combat_power = 0
 
-TotalKillEnemy = {0, 0, 0, 0, 0, 0}
-CurrKillEnemy = {0, 0, 0, 0, 0, 0}
+total_kill = {0, 0, 0, 0, 0, 0}
+curr_kill = {0, 0, 0, 0, 0, 0}
 
 OccupyMap = {}
 
@@ -270,7 +270,7 @@ function ResetGame()
   ResetPlayers()
   curr_play_time = 0
   for i = 1, MAX_HERO do
-    CurrKillEnemy[i] = 0
+    curr_kill[i] = 0
   end
   reset_count = reset_count + 1
   check_game_over_flag = true
@@ -313,8 +313,8 @@ function SaveGame()
   outf:write(string.format('total_coin_count=%d\n', total_coin_count))
   outf:write(string.format('curr_play_time=%d\n', curr_play_time))
   outf:write(string.format('total_play_time=%d\n', total_play_time))
-  WriteTable(outf, 'CurrKillEnemy', CurrKillEnemy)
-  WriteTable(outf, 'TotalKillEnemy', TotalKillEnemy)
+  WriteTable(outf, 'curr_kill', curr_kill)
+  WriteTable(outf, 'total_kill', total_kill)
   WriteTable(outf, 'city_owner', city_owner)
   for i = 1, MAX_CITY do
     WriteTable(outf, string.format('city_hero[%d]', i), city_hero[i])
@@ -617,10 +617,10 @@ function GenKillsInfo(dummy)
     local hero_obj = GenHeroPieceObj(s_kill, HeroData[hero_id].Face, false, '')
     Good.SetScale(hero_obj, 0.5, 0.5)
     Good.SetPos(hero_obj, 0, TILE_W/2 * offset)
-    local hero_count = Good.GenTextObj(s_kill, string.format('%d', CurrKillEnemy[hero_id]), STAT_TEXT_SIZE)
+    local hero_count = Good.GenTextObj(s_kill, string.format('%d', curr_kill[hero_id]), STAT_TEXT_SIZE)
     Good.SetPos(hero_count, TILE_W, TILE_W/2 * offset)
     offset = offset + STATS_OFFSET_1
-    hero_count = Good.GenTextObj(s_kill, string.format('%d', TotalKillEnemy[hero_id]), SMALL_STAT_TEXT_SIZE)
+    hero_count = Good.GenTextObj(s_kill, string.format('%d', total_kill[hero_id]), SMALL_STAT_TEXT_SIZE)
     SetTextObjColor(hero_count, STATS_TEXT_COLOR)
     Good.SetPos(hero_count, TILE_W, TILE_W/2 * offset)
     offset = offset + STATS_OFFSET_2
