@@ -62,6 +62,8 @@ function AcInvadeCity(param)
   local lvl_param = Good.GetParam(Good.GetLevelId())
   if (OnMapMenu ~= lvl_param.step) then
     lvl_param.step = OnMapAiPlayingNextTurn
+  else
+    lvl_param.ai_step = OnMapAiPlayingNextTurn
   end
 end
 
