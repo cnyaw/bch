@@ -262,9 +262,22 @@ end
 
 Map.OnStep = function(param)
   if (0 < players_coin[my_player_idx]) then
-    GetCityHarvest()
+    param.step = OnMapHarvest
   end
   param.step(param)
+end
+
+function OnMapHarvest(param)
+  if (nil == param.harvest_time) then
+    param.harvest_time = 50
+    GetCityHarvest()
+  elseif (0 < param.harvest_time) then
+    param.harvest_time = param.harvest_time - 1
+    if (0 == param.harvest_time) then
+      param.harvest_time = nil
+      SetPlayingStep(param)
+    end
+  end
 end
 
 function OnMapMenu(param)
