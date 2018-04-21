@@ -9,7 +9,6 @@ Android download https://play.google.com/store/apps/details?id=weilican.bch
 * 戰鬥型態有近戰型及遠距型
 * 兵種有攻擊型及輔助型
 * 每一兵種有二種技能
-* 無限關卡可以挑戰
 
 ![image](map.png)
 
