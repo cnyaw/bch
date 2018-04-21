@@ -197,15 +197,31 @@ function InGame()
   return game_lvl_id == Good.GetLevelId()
 end
 
+function IsPutHeroValid(menu)
+  return coin_count >= menu.put_cost and menu.count < menu.max_count
+end
+
+function AutoSelHero(HeroMenu)
+  if (nil == SelHero or not IsPutHeroValid(HeroMenu[SelHero])) then
+    for  i = 1, MAX_HERO do
+      if (IsPutHeroValid(HeroMenu[i])) then
+        SelHero = i
+        break
+      end
+    end
+  end
+end
+
 function UpdateHeroMenuState_i(HeroMenu)
+  AutoSelHero(HeroMenu)
   local IsInGame = InGame()
   for  i = 1, MAX_HERO do
     local menu = HeroMenu[i]
-    if (coin_count < menu.put_cost or menu.count >= menu.max_count) then
+    if (not IsPutHeroValid(menu)) then
       Good.SetAlpha(menu.o, 128)
       Good.SetBgColor(menu.cd_obj, HERO_MENU_DISABLE_COLOR)
     elseif (IsInGame) then
-      if (i == SelHero or nil == SelHero) then
+      if (i == SelHero) then
         Good.SetAlpha(menu.o, 255)
         Good.SetBgColor(menu.cd_obj, HERO_MENU_SEL_COLOR)
         SelHero = i

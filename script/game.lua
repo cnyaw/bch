@@ -403,7 +403,7 @@ function IsGameComplete()
   return true
 end
 
-function KillSelHero(hero_id)
+function KillMyHero(hero_id)
   if (king_hero_id == hero_id) then
     return
   end
@@ -421,7 +421,7 @@ function PutHero(x, y, mw, mh)
   end
   local HeroMenu = GetHeroMenu()
   local menu = HeroMenu[SelHero]
-  if (0 >= menu.cd and coin_count >= menu.put_cost and menu.count < menu.max_count) then
+  if (0 >= menu.cd and IsPutHeroValid(menu)) then
     if (PtInRect(x, y, MAP_X, MAP_Y, MAP_X + mw, MAP_Y + 5 * TILE_H)) then
       local o = GenColorObj(-1, mw, 4.5 * TILE_H, 0xffff0000, 'AnimWarnPutHero')
       Good.SetPos(o, MAP_X, MAP_Y + 5 * TILE_H)
@@ -436,7 +436,7 @@ function PutHero(x, y, mw, mh)
       UpdateCoinCountObj()
       menu.count = menu.count + 1
       UpdateHeroMenuItemInfo(menu)
-      if (coin_count < menu.put_cost or menu.count >= menu.max_count) then
+      if (not IsPutHeroValid(menu)) then
         SelHero = nil
       end
       UpdateHeroMenuSel()
@@ -456,7 +456,7 @@ function SelHeroMenu(x, y)
     if (NewSelHero == SelHero) then
       return false
     end
-    if (coin_count < menu.put_cost or menu.count >= menu.max_count) then
+    if (not IsPutHeroValid(menu)) then
       return false
     end
     SelHero = NewSelHero

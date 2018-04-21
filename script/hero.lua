@@ -443,7 +443,7 @@ function KillHero(param)
     curr_kill[param.hero_id] = curr_kill[param.hero_id] + 1
     total_kill[param.hero_id] = total_kill[param.hero_id] + 1
   else
-    KillSelHero(param.hero_id)
+    KillMyHero(param.hero_id)
   end
   OccupyMap[param.pos] = 0
   local id = param._id
