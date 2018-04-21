@@ -383,10 +383,11 @@ function OnMapPlaying(param)
     return
   end
 
+  local is_victory = IsVictory()
   local mx, my = Input.GetMousePos()
 
   -- End of round.
-  if (PtInRect(mx, my, WND_W - 40, 0, WND_W, 40)) then
+  if (not is_victory and PtInRect(mx, my, WND_W - 40, 0, WND_W, 40)) then
     SetNextTurn(param)
     return
   end
@@ -404,7 +405,7 @@ function OnMapPlaying(param)
 
   -- Click on map.
   if (PtInObj(mx, my, map_obj_id)) then
-    if (SelCity(mx, my)) then
+    if (SelCity(mx, my) and not is_victory) then
       GenActionBtnPanel()
       param.step = OnActionPanel
     end

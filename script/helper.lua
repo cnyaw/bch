@@ -713,3 +713,8 @@ function GetCheckGameOverFlag()
   end
   return 0 < GetPlayerCityCount(GetMyPlayerId()) -- At least own a city, so need to check game over.
 end
+
+function IsVictory()
+  local my_city_count = GetPlayerCityCount(GetMyPlayerId())
+  return MAX_CITY == my_city_count
+end

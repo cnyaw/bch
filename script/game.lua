@@ -214,7 +214,9 @@ function OnGameOver(param)
     if (IsGameComplete()) then
       StageClear(sel_city_id)
     end
-    NextTurn()
+    if (not IsVictory()) then
+      NextTurn()
+    end
     SaveGame()
     if (nil ~= param.p) then
       Stge.KillTask(param.p)
