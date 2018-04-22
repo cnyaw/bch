@@ -300,13 +300,7 @@ function SetPlayingStep(param)
   end
 end
 
-function UpdatePlayersInfo()
-  if (nil ~= players_info_obj) then
-    Good.KillObj(players_info_obj)
-    players_info_obj = nil
-  end
-  players_info_obj = Good.GenDummy(-1)
-  Good.AddChild(-1, players_info_obj, 0) -- Change zorder to topmost.
+function CollectPlayersInfo()
   local active_players = {}
   for i = 1, MAX_PLAYER do
     local city_count = GetPlayerCityCount(i)
@@ -315,16 +309,31 @@ function UpdatePlayersInfo()
     end
   end
   table.sort(active_players, function(a,b) return a[2] > b[2] end)
+  return active_players
+end
+
+function GenPlayerInfoObj(x, y, info)
+  local player_id = info[1]
+  local combat_power = info[2]
+  local color = GetPlayerColor(player_id)
+  local o = GenColorObj(players_info_obj, PLAYER_LABLE_W, CITY_LABLE_H, color)
+  Good.SetPos(o, x, y)
+  local s = Good.GenTextObj(o, string.format('%d', combat_power), CITY_LABLE_TEXT_SIZE)
+  local w = GetTextObjWidth(s)
+  Good.SetPos(s, (PLAYER_LABLE_W - w)/2, (CITY_LABLE_H - CITY_LABLE_TEXT_SIZE)/2)
+end
+
+function UpdatePlayersInfo()
+  if (nil ~= players_info_obj) then
+    Good.KillObj(players_info_obj)
+    players_info_obj = nil
+  end
+  players_info_obj = Good.GenDummy(-1)
+  Good.AddChild(-1, players_info_obj, 0) -- Change zorder to topmost.
+  local active_players = CollectPlayersInfo()
   local x, y = 0, TILE_H/2 + 6
   for i = 1, #active_players do
-    local player_id = active_players[i][1]
-    local combat_power = active_players[i][2]
-    local color = GetPlayerColor(player_id)
-    local o = GenColorObj(players_info_obj, PLAYER_LABLE_W, CITY_LABLE_H, color)
-    Good.SetPos(o, x, y)
-    local s = Good.GenTextObj(o, string.format('%d', combat_power), CITY_LABLE_TEXT_SIZE)
-    local w = GetTextObjWidth(s)
-    Good.SetPos(s, (PLAYER_LABLE_W - w)/2, (CITY_LABLE_H - CITY_LABLE_TEXT_SIZE)/2)
+    GenPlayerInfoObj(x, y, active_players[i])
     x = x + 1.2 * PLAYER_LABLE_W
     if (WND_W <= x + 1.2 * PLAYER_LABLE_W) then
       x = 0
