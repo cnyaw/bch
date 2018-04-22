@@ -312,18 +312,41 @@ function CollectPlayersInfo()
   return active_players
 end
 
-function GenPlayerInfoObj(x, y, info)
-  local player_id = info[1]
-  local combat_power = info[2]
+function GenPlayerInfoObj(x, y, prev_x, prev_y, player_id, combat_power)
   local color = GetPlayerColor(player_id)
   local o = GenColorObj(players_info_obj, PLAYER_LABLE_W, CITY_LABLE_H, color)
   Good.SetPos(o, x, y)
   local s = Good.GenTextObj(o, string.format('%d', combat_power), CITY_LABLE_TEXT_SIZE)
   local w = GetTextObjWidth(s)
   Good.SetPos(s, (PLAYER_LABLE_W - w)/2, (CITY_LABLE_H - CITY_LABLE_TEXT_SIZE)/2)
+  local param = Good.GetParam(o)
+  param.player_id = player_id
+  param.new_x = x
+  param.new_y = y
+  if (-1 ~= prev_x and -1 ~= prev_y and (x ~= prev_x or y ~= prev_y)) then
+    Good.SetPos(o, prev_x, prev_y)
+    Good.SetScript(o, 'AnimInfoOrder')
+  end
+end
+
+function CollectPlayersInfoPos()
+  local players_pos = {}
+  for i = 1, MAX_PLAYER do
+    players_pos[i] = {-1, -1}
+  end
+  if (nil ~= players_info_obj) then
+    local c = Good.GetChildCount(players_info_obj)
+    for i = 0, c - 1 do
+      local o = Good.GetChild(players_info_obj, i)
+      local param = Good.GetParam(o)
+      players_pos[param.player_id] = {param.new_x, param.new_y}
+    end
+  end
+  return players_pos
 end
 
 function UpdatePlayersInfo()
+  local prev_players__pos = CollectPlayersInfoPos()
   if (nil ~= players_info_obj) then
     Good.KillObj(players_info_obj)
     players_info_obj = nil
@@ -333,7 +356,11 @@ function UpdatePlayersInfo()
   local active_players = CollectPlayersInfo()
   local x, y = 0, TILE_H/2 + 6
   for i = 1, #active_players do
-    GenPlayerInfoObj(x, y, active_players[i])
+    local info = active_players[i]
+    local player_id = info[1]
+    local combat_power = info[2]
+    local prev_pos = prev_players__pos[player_id]
+    GenPlayerInfoObj(x, y, prev_pos[1], prev_pos[2], player_id, combat_power)
     x = x + 1.2 * PLAYER_LABLE_W
     if (WND_W <= x + 1.2 * PLAYER_LABLE_W) then
       x = 0

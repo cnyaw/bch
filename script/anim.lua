@@ -344,3 +344,15 @@ AnimUpgradeCity.OnStep = function(param)
     ArStepAnimator(param, param.k)
   end
 end
+
+AnimInfoOrder = {}
+
+AnimInfoOrder.OnStep = function(param)
+  if (nil == param.k) then
+    local loop1 = ArAddLoop(nil, 1)
+    ArAddMoveTo(loop1, 'Pos', 0.4, param.new_x, param.new_y).ease = ArEaseOut
+    param.k = ArAddAnimator({loop1})
+  else
+    ArStepAnimator(param, param.k)
+  end
+end
