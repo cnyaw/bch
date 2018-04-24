@@ -236,7 +236,7 @@ Map.OnCreate = function(param)
   players_info_obj = nil
   check_game_over_flag = GetCheckGameOverFlag()
   UpdateRoundInfo()
-  UpdatePlayersInfo()
+  UpdatePlayersRankInfo()
   GenCityLinks()
   GenCityInfo()
   local o = GetCityObjById(GetFirstCurrPlayerCityId())
@@ -300,7 +300,7 @@ function SetPlayingStep(param)
   end
 end
 
-function CollectPlayersInfo()
+function CollectPlayersRankInfo()
   local active_players = {}
   for i = 1, MAX_PLAYER do
     local city_count = GetPlayerCityCount(i)
@@ -312,7 +312,7 @@ function CollectPlayersInfo()
   return active_players
 end
 
-function GenPlayerInfoObj(x, y, prev_x, prev_y, player_id, combat_power)
+function GenPlayerRankObj(x, y, prev_x, prev_y, player_id, combat_power)
   local color = GetPlayerColor(player_id)
   local o = GenColorObj(players_info_obj, PLAYER_LABLE_W, CITY_LABLE_H, color)
   Good.SetPos(o, x, y)
@@ -329,7 +329,7 @@ function GenPlayerInfoObj(x, y, prev_x, prev_y, player_id, combat_power)
   end
 end
 
-function CollectPlayersInfoPos()
+function CollectPlayersRankPos()
   local players_pos = {}
   for i = 1, MAX_PLAYER do
     players_pos[i] = {-1, -1}
@@ -345,22 +345,22 @@ function CollectPlayersInfoPos()
   return players_pos
 end
 
-function UpdatePlayersInfo()
-  local prev_players__pos = CollectPlayersInfoPos()
+function UpdatePlayersRankInfo()
+  local prev_players_pos = CollectPlayersRankPos()
   if (nil ~= players_info_obj) then
     Good.KillObj(players_info_obj)
     players_info_obj = nil
   end
   players_info_obj = Good.GenDummy(-1)
   Good.AddChild(-1, players_info_obj, 0) -- Change zorder to topmost.
-  local active_players = CollectPlayersInfo()
+  local active_players = CollectPlayersRankInfo()
   local x, y = 0, TILE_H/2 + 6
   for i = 1, #active_players do
     local info = active_players[i]
     local player_id = info[1]
     local combat_power = info[2]
-    local prev_pos = prev_players__pos[player_id]
-    GenPlayerInfoObj(x, y, prev_pos[1], prev_pos[2], player_id, combat_power)
+    local prev_pos = prev_players_pos[player_id]
+    GenPlayerRankObj(x, y, prev_pos[1], prev_pos[2], player_id, combat_power)
     x = x + 1.2 * PLAYER_LABLE_W
     if (WND_W <= x + 1.2 * PLAYER_LABLE_W) then
       x = 0
@@ -380,7 +380,7 @@ function SetNextTurn(param)
   NextTurn()
   UpdateRoundInfo()
   SetPlayingStep(param)
-  UpdatePlayersInfo()
+  UpdatePlayersRankInfo()
   if (MyTurn()) then
     if (GetMyPlayerId() ~= city_owner[GetCityId(curr_sel_city)]) then
       local o = GetCityObjById(GetFirstCurrPlayerCityId())
@@ -433,7 +433,7 @@ function OnMapPlaying(param)
     local is_upgrade, menu = SelHeroMenu(mx, my)
     if (is_upgrade) then
       UpgradeMyHero(menu)
-      UpdatePlayersInfo()
+      UpdatePlayersRankInfo()
       param.step = OnMapWaitAnimDone
     end
     return
