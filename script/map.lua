@@ -12,7 +12,9 @@ local battle_tex_id = 14
 local coin_tex_id = 13
 local round_obj_id = 46
 local upgrade_tex_id = 16
+local map_tex_id = 38
 
+local map_tex_updated = false
 local curr_sel_city = nil
 local anim_sel_city_obj = nil
 local action_btn_panel = nil
@@ -130,7 +132,7 @@ function GetCityAnchor(o)
   return x + w/2, y + h/2
 end
 
-function GenCityLink(o1, o2)
+function DrawCityLink(canvas, o1, o2)
   local mx, my = Good.GetPos(map_obj_id)
   local x1, y1 = GetCityAnchor(o1)
   local x2, y2 = GetCityAnchor(o2)
@@ -138,8 +140,7 @@ function GenCityLink(o1, o2)
   local delta = 1 / (len / 8)
   local t = 0
   while (true) do
-    local o = GenColorObj(map_obj_id, 3, 3, 0xfff00000)
-    Good.SetPos(o, Lerp(x1, x2, t) - mx, Lerp(y1, y2, t) - my)
+    Graphics.FillRect(canvas, Lerp(x1, x2, t) - mx, Lerp(y1, y2, t) - my, 3, 3, 0xfff00000)
     t = t + delta
     if (1 <= t) then
       break
@@ -147,7 +148,18 @@ function GenCityLink(o1, o2)
   end
 end
 
-function GenCityLinks()
+function DrawCityLinks()
+  if (map_tex_updated) then
+    return
+  end
+
+  local tw, th = Resource.GetTexSize(map_tex_id)
+  local canvas = Graphics.GenCanvas(tw, th)
+  if (-1 >= canvas) then
+    return
+  end
+
+  Graphics.DrawImage(canvas, 0, 0, map_tex_id, 0, 0, tw, th)
   local gened_links = {}
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
@@ -159,10 +171,15 @@ function GenCityLinks()
       if (not IsLinkExist(gened_links, id, idTarget)) then
         table.insert(gened_links, string.format('%d-%d', id, idTarget))
         table.insert(gened_links, string.format('%d-%d', idTarget, id))
-        GenCityLink(o, GetCityObjById(idTarget))
+        DrawCityLink(canvas, o, GetCityObjById(idTarget))
       end
     end
   end
+
+  Resource.UpdateTex(map_tex_id, 0, 0, canvas, 0, 0, tw, th)
+  Graphics.KillCanvas(canvas)
+
+  map_tex_updated = true
 end
 
 function GenActionBtn(id, tex_id)
@@ -237,7 +254,7 @@ Map.OnCreate = function(param)
   check_game_over_flag = GetCheckGameOverFlag()
   UpdateRoundInfo()
   UpdatePlayersRankInfo()
-  GenCityLinks()
+  DrawCityLinks()
   GenCityInfo()
   local o = GetCityObjById(GetFirstCurrPlayerCityId())
   SetSelCity(o)
