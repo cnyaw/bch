@@ -12,7 +12,7 @@ local king_hero_id = 50
 local win_tex_id = 44
 
 hud_obj = nil
-local coin_obj = nil
+coin_obj = nil
 
 local stage_heroes_count = {}
 local stage_heroes_obj = nil
