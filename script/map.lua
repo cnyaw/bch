@@ -621,6 +621,7 @@ function OnMapAiPlayingNextTurn(param)
     game_over_count = game_over_count + 1
     param.step = OnGameOverEnter
     check_game_over_flag = false
+    UpdateHeroMenuSel()
     return
   end
 end

@@ -214,10 +214,11 @@ end
 
 function UpdateHeroMenuState_i(HeroMenu)
   AutoSelHero(HeroMenu)
+  local GameOver = 0 == GetPlayerCityCount(GetMyPlayerId())
   local IsInGame = InGame()
   for  i = 1, MAX_HERO do
     local menu = HeroMenu[i]
-    if (not IsPutHeroValid(menu)) then
+    if (not IsPutHeroValid(menu) or GameOver) then
       Good.SetAlpha(menu.o, 128)
       Good.SetBgColor(menu.cd_obj, HERO_MENU_DISABLE_COLOR)
     elseif (IsInGame) then
@@ -233,7 +234,7 @@ function UpdateHeroMenuState_i(HeroMenu)
     if (nil == menu.info_obj) then
       return
     end
-    if (menu.read_only or coin_count < menu.upgrade_cost) then
+    if (GameOver or menu.read_only or coin_count < menu.upgrade_cost) then
       Good.SetBgColor(menu.btn_obj, HERO_UPGRADE_DISABLE_COLOR)
     else
       Good.SetBgColor(menu.btn_obj, 0xffffffff)
