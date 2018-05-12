@@ -651,78 +651,56 @@ function GenKillsInfo(dummy)
   end
 end
 
+function AddStatsInfoItem(offset, icon, info, sinfo, scale)
+  local def_scale = (TILE_W/2) / 32
+  if (nil == scale) then
+    Good.SetScale(icon, def_scale, def_scale)
+  else
+    Good.SetScale(icon, scale, scale)
+  end
+  Good.SetPos(icon, 0, TILE_W/2 * offset)
+  Good.SetPos(info, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_1
+  if (nil ~= sinfo) then
+    SetTextObjColor(sinfo, STATS_TEXT_COLOR)
+    Good.SetPos(sinfo, TILE_W, TILE_W/2 * offset)
+    offset = offset + STATS_OFFSET_2
+  end
+  return offset
+end
+
 function GenStatsInfo(dummy)
   local s_max = Good.GenTextObj(dummy, string.format('Stats (%d)', reset_count), STAT_TEXT_SIZE)
   Good.SetPos(s_max, 3 * TILE_W, TILE_H/2)
   local offset = 1.4
-  local scale = (TILE_W/2) / 32
-  local max_stage_obj = Good.GenObj(s_max, castle_tex_id, '')
-  Good.SetScale(max_stage_obj, scale, scale)
-  Good.SetPos(max_stage_obj, 0, TILE_W/2 * offset)
+  local scale2 = (TILE_W/2)/45
+  local max_stage_obj = Good.GenObj(s_max, castle_tex_id)
   local s_invade_stage_obj = Good.GenTextObj(s_max, string.format('%d', invade_stage_count), STAT_TEXT_SIZE)
-  Good.SetPos(s_invade_stage_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_1
-  s_invade_stage_obj = Good.GenTextObj(s_max, string.format('%d', total_invade_stage_count), SMALL_STAT_TEXT_SIZE)
-  SetTextObjColor(s_invade_stage_obj, STATS_TEXT_COLOR)
-  Good.SetPos(s_invade_stage_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_2
-  local max_combat_obj = Good.GenObj(s_max, combat_tex_id, '')
-  Good.SetScale(max_combat_obj, scale, scale)
-  Good.SetPos(max_combat_obj, 0, TILE_W/2 * offset)
+  local s_invade_stage_obj2 = Good.GenTextObj(s_max, string.format('%d', total_invade_stage_count), SMALL_STAT_TEXT_SIZE)
+  offset = AddStatsInfoItem(offset, max_stage_obj, s_invade_stage_obj, s_invade_stage_obj2)
+  local max_combat_obj = Good.GenObj(s_max, combat_tex_id)
   local s_max_combat_obj = Good.GenTextObj(s_max, string.format('%d', GetMyPlayerTotalCombatPower()), STAT_TEXT_SIZE)
-  Good.SetPos(s_max_combat_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_1
-  s_max_combat_obj = Good.GenTextObj(s_max, string.format('%d', GetMaxCombatPower()), SMALL_STAT_TEXT_SIZE)
-  SetTextObjColor(s_max_combat_obj, STATS_TEXT_COLOR)
-  Good.SetPos(s_max_combat_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_2
-  local max_coin_obj = Good.GenObj(s_max, coin_tex_id, '')
-  Good.SetScale(max_coin_obj, scale, scale)
-  Good.SetPos(max_coin_obj, 0, TILE_W/2 * offset)
+  local s_max_combat_obj2 = Good.GenTextObj(s_max, string.format('%d', GetMaxCombatPower()), SMALL_STAT_TEXT_SIZE)
+  offset = AddStatsInfoItem(offset, max_combat_obj, s_max_combat_obj, s_max_combat_obj2)
+  local max_coin_obj = Good.GenObj(s_max, coin_tex_id)
   local s_total_coin_obj = Good.GenTextObj(s_max, string.format('%d', curr_total_coin_count), STAT_TEXT_SIZE)
-  Good.SetPos(s_total_coin_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_1
-  s_total_coin_obj = Good.GenTextObj(s_max, string.format('%d', total_coin_count), SMALL_STAT_TEXT_SIZE)
-  SetTextObjColor(s_total_coin_obj, STATS_TEXT_COLOR)
-  Good.SetPos(s_total_coin_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_2
-  scale = (TILE_W/2)/45
-  local play_time_obj = Good.GenObj(s_max, sand_glass_tex_id, '')
-  Good.SetScale(play_time_obj, scale, scale)
-  Good.SetPos(play_time_obj, 4, TILE_W/2 * offset)
+  local s_total_coin_obj2 = Good.GenTextObj(s_max, string.format('%d', total_coin_count), SMALL_STAT_TEXT_SIZE)
+  offset = AddStatsInfoItem(offset, max_coin_obj, s_total_coin_obj, s_total_coin_obj2)
+  local play_time_obj = Good.GenObj(s_max, sand_glass_tex_id)
   local s_play_time_obj = Good.GenTextObj(s_max, GetFormatTimeStr(curr_play_time), STAT_TEXT_SIZE)
-  Good.SetPos(s_play_time_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_1
-  s_play_time_obj = Good.GenTextObj(s_max, GetFormatTimeStr(total_play_time), SMALL_STAT_TEXT_SIZE)
-  SetTextObjColor(s_play_time_obj, STATS_TEXT_COLOR)
-  Good.SetPos(s_play_time_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_2
+  local s_play_time_obj2 = Good.GenTextObj(s_max, GetFormatTimeStr(total_play_time), SMALL_STAT_TEXT_SIZE)
+  offset = AddStatsInfoItem(offset, play_time_obj, s_play_time_obj, s_play_time_obj2, scale2)
   local round_obj = Good.GenObj(s_max, round_tex_id)
-  Good.SetScale(round_obj, 0.65, 0.65)
-  Good.SetPos(round_obj, 4, TILE_W/2 * offset)
   local s_round_obj = Good.GenTextObj(s_max, string.format('%d', curr_round), STAT_TEXT_SIZE)
-  Good.SetPos(s_round_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_1
-  s_round_obj = Good.GenTextObj(s_max, string.format('%d', total_round), SMALL_STAT_TEXT_SIZE)
-  SetTextObjColor(s_round_obj, STATS_TEXT_COLOR)
-  Good.SetPos(s_round_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_2
-  local victory_obj = Good.GenObj(s_max, win_tex_id, '')
-  Good.SetScale(victory_obj, scale, scale)
-  Good.SetPos(victory_obj, 4, TILE_W/2 * offset)
+  local s_round_obj2 = Good.GenTextObj(s_max, string.format('%d', total_round), SMALL_STAT_TEXT_SIZE)
+  offset = AddStatsInfoItem(offset, round_obj, s_round_obj, s_round_obj2)
+  local victory_obj = Good.GenObj(s_max, win_tex_id)
   local s_victory_obj = Good.GenTextObj(s_max, string.format('%d', victory_count), STAT_TEXT_SIZE)
-  Good.SetPos(s_victory_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_1
   local s_victory_min_round_obj = Good.GenTextObj(s_max, string.format('%d', victory_min_round), SMALL_STAT_TEXT_SIZE)
-  SetTextObjColor(s_victory_min_round_obj, STATS_TEXT_COLOR)
-  Good.SetPos(s_victory_min_round_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_2
-  local game_over_obj = Good.GenObj(s_max, fail_tex_id, '')
-  Good.SetScale(game_over_obj, scale, scale)
-  Good.SetPos(game_over_obj, 4, TILE_W/2 * offset)
+  offset = AddStatsInfoItem(offset, victory_obj, s_victory_obj, s_victory_min_round_obj, scale2)
+  local game_over_obj = Good.GenObj(s_max, fail_tex_id)
   local s_gameover_obj = Good.GenTextObj(s_max, string.format('%d', game_over_count), STAT_TEXT_SIZE)
-  Good.SetPos(s_gameover_obj, TILE_W, TILE_W/2 * offset)
-  offset = offset + STATS_OFFSET_1
+  offset = AddStatsInfoItem(offset, game_over_obj, s_gameover_obj, nil, scale2)
 end
 
 function GetCheckGameOverFlag()
