@@ -29,6 +29,7 @@ local coin_tex_id = 13
 local sand_glass_tex_id = 17
 local win_tex_id = 44
 local fail_tex_id = 48
+local round_tex_id = 45
 
 Graphics.SetAntiAlias(1)                -- Enable anti alias.
 
@@ -86,6 +87,7 @@ players_coin = nil
 my_player_idx = nil
 curr_player_idx = nil
 curr_round = 1
+total_round = 0
 check_game_over_flag = true
 
 function ResetPlayers()
@@ -318,6 +320,7 @@ end
 function SaveGame()
   local outf = io.open(SAV_FILE_NAME, "w")
   outf:write(string.format('curr_round=%d\n', curr_round))
+  outf:write(string.format('total_round=%d\n', total_round))
   outf:write(string.format('reset_count=%d\n', reset_count))
   outf:write(string.format('victory_count=%d\n', victory_count))
   outf:write(string.format('victory_min_round=%d\n', victory_min_round))
@@ -485,6 +488,10 @@ function NextTurn()
   end
   if (GetFirstPlayerIdx() == curr_player_idx) then
     curr_round = curr_round + 1
+    local GameOver = 0 == GetPlayerCityCount(GetMyPlayerId())
+    if (not GameOver) then
+      total_round = total_round + 1
+    end
     GetHarvestOfRound()
   end
 end
@@ -689,7 +696,17 @@ function GenStatsInfo(dummy)
   s_play_time_obj = Good.GenTextObj(s_max, GetFormatTimeStr(total_play_time), SMALL_STAT_TEXT_SIZE)
   SetTextObjColor(s_play_time_obj, STATS_TEXT_COLOR)
   Good.SetPos(s_play_time_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_2
+  local round_obj = Good.GenObj(s_max, round_tex_id)
+  Good.SetScale(round_obj, 0.65, 0.65)
+  Good.SetPos(round_obj, 4, TILE_W/2 * offset)
+  local s_round_obj = Good.GenTextObj(s_max, string.format('%d', curr_round), STAT_TEXT_SIZE)
+  Good.SetPos(s_round_obj, TILE_W, TILE_W/2 * offset)
   offset = offset + STATS_OFFSET_1
+  s_round_obj = Good.GenTextObj(s_max, string.format('%d', total_round), SMALL_STAT_TEXT_SIZE)
+  SetTextObjColor(s_round_obj, STATS_TEXT_COLOR)
+  Good.SetPos(s_round_obj, TILE_W, TILE_W/2 * offset)
+  offset = offset + STATS_OFFSET_2
   local victory_obj = Good.GenObj(s_max, win_tex_id, '')
   Good.SetScale(victory_obj, scale, scale)
   Good.SetPos(victory_obj, 4, TILE_W/2 * offset)

@@ -357,14 +357,14 @@ objects=29 30 37
 name=quit game
 bgColor=5 142 5
 x=16
-y=304
+y=320
 dim=0 0 120 40
 
 [object30]
 name=reset game
 bgColor=199 26 59
 x=160
-y=304
+y=320
 dim=0 0 120 40
 
 [object37]
@@ -373,5 +373,4 @@ sprite=255
 texture=255
 map=255
 x=16
-y=16
 
