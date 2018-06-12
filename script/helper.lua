@@ -496,10 +496,6 @@ function NextTurn()
   end
 end
 
-function Lerp(v0, v1, t)
-  return (1 - t) * v0 + t * v1
-end
-
 function GetPlayerColor(id)
   local clr = 0xff808080
   if (GetMyPlayerId() == id) then
