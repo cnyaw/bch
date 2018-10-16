@@ -86,8 +86,13 @@ function OnHeroMove(param)
   else
     -- Target is not in the skill scope, try to move close it one time one cell.
     param.pos = GetNextMoveToTargetPos(id, target_id)
+    param.step = OnHeroMoving
     Good.SetScript(id, 'AnimMoveHero')
   end
+end
+
+function OnHeroMoving(param)
+  -- Wait to move done.
 end
 
 function OnHeroCastSkill(param)
