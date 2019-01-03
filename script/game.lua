@@ -416,6 +416,15 @@ function KillMyHero(hero_id)
   UpdateHeroMenuSel()
 end
 
+function IsValidPutHeroArea(x, y, mw)
+  if (PtInRect(x, y, MAP_X, MAP_Y, MAP_X + mw, MAP_Y + 5 * TILE_H)) then
+    local o = GenColorObj(-1, mw, 4.5 * TILE_H, 0xffff0000, 'AnimWarnPutHero')
+    Good.SetPos(o, MAP_X, MAP_Y + 5 * TILE_H)
+    return false
+  end
+  return true
+end
+
 function PutHero(x, y, mw, mh)
   -- Put selected hero on the battle field.
   if (nil == SelHero) then
@@ -424,9 +433,7 @@ function PutHero(x, y, mw, mh)
   local HeroMenu = GetHeroMenu()
   local menu = HeroMenu[SelHero]
   if (0 >= menu.cd and IsPutHeroValid(menu)) then
-    if (PtInRect(x, y, MAP_X, MAP_Y, MAP_X + mw, MAP_Y + 5 * TILE_H)) then
-      local o = GenColorObj(-1, mw, 4.5 * TILE_H, 0xffff0000, 'AnimWarnPutHero')
-      Good.SetPos(o, MAP_X, MAP_Y + 5 * TILE_H)
+    if (not IsValidPutHeroArea(x, y, mw)) then
       return
     end
     local col = math.floor((x - MAP_X) / TILE_W)
