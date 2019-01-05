@@ -31,6 +31,11 @@ function AcAnimKillHero(param)
   CheckGameOver()
 end
 
+function AcSetCityColor(param)
+  param.k = nil
+  Good.SetScript(param._id, '')
+end
+
 function AcSetNextWave(param)
   UpdateStage()
   Good.KillObj(param.time_obj)
@@ -56,7 +61,10 @@ function AcInvadeCity(param)
   if (param.is_win) then
     local target_city_id = param.target_city_id
     city_owner[target_city_id] = param.player_id
-    UpdateCityInfo(GetCityObjById(target_city_id))
+    local o = GetCityObjById(target_city_id)
+    local bg = Good.GetChild(o, 0)
+    Good.GetParam(bg).new_clr = GetPlayerColor(city_owner[target_city_id])
+    Good.SetScript(bg, 'AnimSetCityColor')
   end
   Good.KillObj(param._id)
   local lvl_param = Good.GetParam(Good.GetLevelId())
@@ -351,6 +359,19 @@ AnimInfoOrder.OnStep = function(param)
   if (nil == param.k) then
     local loop1 = ArAddLoop(nil, 1)
     ArAddMoveTo(loop1, 'Pos', 0.4, param.new_x, param.new_y).ease = ArEaseOut
+    param.k = ArAddAnimator({loop1})
+  else
+    ArStepAnimator(param, param.k)
+  end
+end
+
+AnimSetCityColor = {}
+
+AnimSetCityColor.OnStep = function(param)
+  if (nil == param.k) then
+    local loop1 = ArAddLoop(nil, 1)
+    ArAddMoveTo(loop1, 'BgColor', 0.15, param.new_clr).lerp = LerpARgb
+    ArAddCall(loop1, 'AcSetCityColor', 0)
     param.k = ArAddAnimator({loop1})
   else
     ArStepAnimator(param, param.k)
