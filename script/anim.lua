@@ -158,18 +158,6 @@ AnimHealHpObj.OnStep = function(param)
   end
 end
 
-AnimSelMenuItem = {}
-
-AnimSelMenuItem.OnStep = function(param)
-  if (nil == param.k) then
-    local loop1 = ArAddLoop(nil, 1)
-    ArAddMoveTo(loop1, 'Scale', 0.2, 1, 1).ease = ArEaseOut
-    param.k = ArAddAnimator({loop1})
-  else
-    ArStepAnimator(param, param.k)
-  end
-end
-
 AnimSandGlass = {}
 
 AnimSandGlass.OnStep = function(param)
