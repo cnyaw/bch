@@ -258,11 +258,8 @@ function GenHeroObj(hero_id, pos, hp_color, red, lv)
 end
 
 function GenHeroPieceObj(parent, name, red, script)
-  if (red) then
-    return GenTexObj(parent, chess_tex_id, TILE_W, TILE_H, name * TILE_W, COLOR_RED * TILE_H, script)
-  else
-    return GenTexObj(parent, chess_tex_id, TILE_W, TILE_H, name * TILE_W, COLOR_BLACK * TILE_H, script)
-  end
+  local color = {[true]=COLOR_RED, [false]=COLOR_BLACK}
+  return GenTexObj(parent, chess_tex_id, TILE_W, TILE_H, name * TILE_W, color[red] * TILE_H, script)
 end
 
 function FindSkillTarget(param)
