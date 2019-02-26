@@ -370,6 +370,14 @@ function GetMyHeroes(o)
   return EnemyHeroes
 end
 
+function GetNextMoveOffset()
+  if (1 == math.random(1,2)) then
+    return NEXT_MOVE_OFFSET
+  else
+    return NEXT_MOVE_OFFSET_REVERT
+  end
+end
+
 function GetNextMoveToTargetPos(o, target)
   local pos1 = Good.GetParam(o).pos
   local c1, r1 = pos1 % MAP_W, math.floor(pos1 / MAP_W)
@@ -377,12 +385,7 @@ function GetNextMoveToTargetPos(o, target)
   local c2, r2 = pos2 % MAP_W, math.floor(pos2 / MAP_W)
   local MinDist = 1000
   local dir
-  local MOVE_OFFSET
-  if (1 == math.random(1,2)) then
-    MOVE_OFFSET = NEXT_MOVE_OFFSET
-  else
-    MOVE_OFFSET = NEXT_MOVE_OFFSET_REVERT
-  end
+  local MOVE_OFFSET = GetNextMoveOffset()
   for i = 1, #MOVE_OFFSET do
     local NewPos = pos1 + MOVE_OFFSET[i]
     if (0 == OccupyMap[NewPos] and 0 <= NewPos and MAP_W * MAP_H > NewPos) then
