@@ -331,12 +331,17 @@ name=fireball
 texture=1
 x=16
 y=16
+dim=0 0 18 18
 
 [object24]
 name=iceball
 texture=32
+xpivot=0.5
+ypivot=0.5
 x=64
 y=16
+script=AnimRotate
+dim=0 0 16 16
 
 [object25]
 name=paralysis
@@ -344,6 +349,7 @@ texture=31
 x=112
 y=16
 script=AnimRotate
+dim=0 0 18 18
 
 [object28]
 name=game menu
