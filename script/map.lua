@@ -68,7 +68,7 @@ function SetSelCity(o)
     anim_sel_city_obj = nil
   end
   anim_sel_city_obj = GenColorObj(-1, 32, 32, 0x80ff0000, 'AnimSelCity')
-  Good.SetPos(anim_sel_city_obj, Good.GetScreenPos(o))
+  Good.SetPos(anim_sel_city_obj, Good.GetPos(o))
 
   return false
 end
