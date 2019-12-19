@@ -10,6 +10,8 @@ Android download https://play.google.com/store/apps/details?id=weilican.bch
 * 兵種有攻擊型及輔助型
 * 每一兵種有二種技能
 
+Game play video https://www.youtube.com/watch?v=D3iNmcmt96I
+
 ![image](map.png)
 
 ![image](Screenshot.png)
