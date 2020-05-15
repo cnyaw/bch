@@ -127,28 +127,6 @@ function GetCityObjById(id)
   return -1
 end
 
-function GetCityAnchor(o)
-  local x, y = Good.GetPos(o)
-  local l,t,w,h = Good.GetDim(o)
-  return x + w/2, y + h/2
-end
-
-function DrawCityLink(canvas, o1, o2)
-  local mx, my = Good.GetPos(map_obj_id)
-  local x1, y1 = GetCityAnchor(o1)
-  local x2, y2 = GetCityAnchor(o2)
-  local len = math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
-  local delta = 1 / (len / 8)
-  local t = 0
-  while (true) do
-    Graphics.FillRect(canvas, Lerp(x1, x2, t) - mx, Lerp(y1, y2, t) - my, 3, 3, 0xfff00000)
-    t = t + delta
-    if (1 <= t) then
-      break
-    end
-  end
-end
-
 function DrawCityLinks()
   if (map_tex_updated) then
     return
@@ -161,7 +139,9 @@ function DrawCityLinks()
   end
 
   Graphics.DrawImage(canvas, 0, 0, map_tex_id, 0, 0, tw, th)
+
   local gened_links = {}
+  local mx, my = Good.GetPos(map_obj_id)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
@@ -172,7 +152,7 @@ function DrawCityLinks()
       if (not IsLinkExist(gened_links, id, idTarget)) then
         table.insert(gened_links, string.format('%d-%d', id, idTarget))
         table.insert(gened_links, string.format('%d-%d', idTarget, id))
-        DrawCityLink(canvas, o, GetCityObjById(idTarget))
+        DrawCityLink(canvas, mx, my, o, GetCityObjById(idTarget))
       end
     end
   end

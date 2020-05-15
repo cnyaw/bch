@@ -710,3 +710,24 @@ function IsVictory()
   local my_city_count = GetPlayerCityCount(GetMyPlayerId())
   return MAX_CITY == my_city_count
 end
+
+function GetCityAnchor(o)
+  local x, y = Good.GetPos(o)
+  local l,t,w,h = Good.GetDim(o)
+  return x + w/2, y + h/2
+end
+
+function DrawCityLink(canvas, mx, my, o1, o2)
+  local x1, y1 = GetCityAnchor(o1)
+  local x2, y2 = GetCityAnchor(o2)
+  local len = math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
+  local delta = 1 / (len / 8)
+  local t = 0
+  while (true) do
+    Graphics.FillRect(canvas, Lerp(x1, x2, t) - mx, Lerp(y1, y2, t) - my, 3, 3, 0xfff00000)
+    t = t + delta
+    if (1 <= t) then
+      break
+    end
+  end
+end
