@@ -20,6 +20,7 @@ local anim_sel_city_obj = nil
 local action_btn_panel = nil
 local players_info_obj = nil
 local city_obj_map = nil
+local city_obj_dummy_map = nil
 
 my_sel_city_id = nil
 sel_city_id = nil
@@ -57,20 +58,20 @@ end
 
 function SetSelCity(o)
   local id = GetCityId(o)
-  if (curr_sel_city == o) then
+  local dummy = GetCityObjDummyById(id)
+  if (curr_sel_city == dummy) then
     return GetMyPlayerId() == city_owner[id]
   end
 
   -- Sel change.
-  curr_sel_city = o
-  GenHeroMenu(id, GetMyPlayerId() ~= city_owner[id])
-
-  if (nil ~= anim_sel_city_obj) then
-    Good.KillObj(anim_sel_city_obj)
-    anim_sel_city_obj = nil
+  if (nil ~= curr_sel_city) then
+    Good.SetScript(curr_sel_city, '')
+    Good.SetScale(curr_sel_city, 1, 1)
   end
-  anim_sel_city_obj = GenColorObj(-1, 32, 32, 0x80ff0000, 'AnimSelCity')
-  Good.SetPos(anim_sel_city_obj, Good.GetPos(o))
+
+  curr_sel_city = dummy
+  Good.SetScript(curr_sel_city, 'AnimSelCity')
+  GenHeroMenu(id, GetMyPlayerId() ~= city_owner[id])
 
   return false
 end
@@ -92,6 +93,7 @@ function GenCityInfo_i(o)
   local clr = GetPlayerColor(city_owner[id])
   Good.SetBgColor(o, clr)
   local bg = GenColorObj(o, CITY_LABLE_W, CITY_LABLE_H, clr)
+  Good.SetAnchor(bg, 0.5, 0.5)
   Good.SetPos(bg, (CITY_ICON_SIZE - CITY_LABLE_W)/2, CITY_ICON_SIZE)
   local combat_power = GetHeroCombatPower(id)
   local s = Good.GenTextObj(bg, string.format('%d', combat_power), CITY_LABLE_TEXT_SIZE)
@@ -128,6 +130,17 @@ function GetCityObjById(id)
     local o = GetCityObj(i)
     if (GetCityId(o) == id) then
       return o
+    end
+  end
+  return -1
+end
+
+function GetCityObjDummyById(id)
+  local c = Good.GetChildCount(dummy_group_id)
+  for i = 0, c - 1 do
+    local o = GetCityObj(i)
+    if (GetCityId(o) == id) then
+      return city_obj_dummy_map[i]
     end
   end
   return -1
@@ -194,11 +207,24 @@ function GenActionBtnPanel()
   end
 end
 
+function InitCityObjDummyMap()
+  local m = {}
+  local c = Good.GetChildCount(dummy_group_id)
+  for i = 0, c - 1 do
+    local o = GetCityObj(i)
+    local dummy = Good.GenDummy(dummy_group_id)
+    Good.AddChild(dummy, o)
+    m[i] = dummy
+  end
+  return m
+end
+
 function InitCityObjMap()
   local m = {}
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
     local o = Good.GetChild(dummy_group_id, i)
+    Good.SetAnchor(o, 0.5, 0.5)
     m[i] = o
   end
   return m
@@ -250,6 +276,7 @@ Map.OnCreate = function(param)
   anim_game_over_obj = nil
   players_info_obj = nil
   city_obj_map = InitCityObjMap()
+  city_obj_dummy_map = InitCityObjDummyMap()
   check_game_over_flag = GetCheckGameOverFlag()
   UpdateRoundInfo()
   UpdatePlayersRankInfo()

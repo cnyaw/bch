@@ -292,8 +292,8 @@ AnimSelCity.OnStep = function(param)
   if (nil == param.k) then
     Good.SetAnchor(param._id, 0.5, 0.5)
     local loop1 = ArAddLoop(nil)
-    ArAddMoveTo(loop1, 'Scale', 0.5, 1, 1).ease = ArEaseOutElastic
     ArAddMoveTo(loop1, 'Scale', 0.1, 0.8, 0.8)
+    ArAddMoveTo(loop1, 'Scale', 0.5, 1, 1).ease = ArEaseOutElastic
     param.k = ArAddAnimator({loop1})
   else
     ArStepAnimator(param, param.k)
