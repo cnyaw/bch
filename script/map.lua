@@ -78,7 +78,7 @@ end
 function SelCity(mx, my)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
-    local o = city_obj_map[i]
+    local o = GetCityObj(i)
     local x, y = Good.GetPos(o)
     if (PtInRect(mx, my, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
       return SetSelCity(o)
@@ -102,7 +102,7 @@ end
 function GenCityInfo()
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
-    local o = city_obj_map[i]
+    local o = GetCityObj(i)
     GenCityInfo_i(o)
   end
 end
@@ -118,10 +118,14 @@ function IsLinkExist(links, a, b)
   return false
 end
 
+function GetCityObj(i)
+  return city_obj_map[i]
+end
+
 function GetCityObjById(id)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
-    local o = city_obj_map[i]
+    local o = GetCityObj(i)
     if (GetCityId(o) == id) then
       return o
     end
@@ -146,7 +150,7 @@ function DrawCityLinks()
   local mx, my = Good.GetPos(map_obj_id)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
-    local o = city_obj_map[i]
+    local o = GetCityObj(i)
     local id = GetCityId(o)
     local links = CityData[id]
     for j = 1, #links do
