@@ -19,6 +19,8 @@ local curr_sel_city = nil
 local anim_sel_city_obj = nil
 local action_btn_panel = nil
 local players_info_obj = nil
+local city_obj_map = nil
+
 my_sel_city_id = nil
 sel_city_id = nil
 
@@ -76,7 +78,7 @@ end
 function SelCity(mx, my)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
-    local o = Good.GetChild(dummy_group_id, i)
+    local o = city_obj_map[i]
     local x, y = Good.GetPos(o)
     if (PtInRect(mx, my, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
       return SetSelCity(o)
@@ -100,7 +102,7 @@ end
 function GenCityInfo()
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
-    local o = Good.GetChild(dummy_group_id, i)
+    local o = city_obj_map[i]
     GenCityInfo_i(o)
   end
 end
@@ -119,7 +121,7 @@ end
 function GetCityObjById(id)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
-    local o = Good.GetChild(dummy_group_id, i)
+    local o = city_obj_map[i]
     if (GetCityId(o) == id) then
       return o
     end
@@ -144,7 +146,7 @@ function DrawCityLinks()
   local mx, my = Good.GetPos(map_obj_id)
   local c = Good.GetChildCount(dummy_group_id)
   for i = 0, c - 1 do
-    local o = Good.GetChild(dummy_group_id, i)
+    local o = city_obj_map[i]
     local id = GetCityId(o)
     local links = CityData[id]
     for j = 1, #links do
@@ -186,6 +188,16 @@ function GenActionBtnPanel()
       GenActionBtn(idTarget, battle_tex_id)
     end
   end
+end
+
+function InitCityObjMap()
+  local m = {}
+  local c = Good.GetChildCount(dummy_group_id)
+  for i = 0, c - 1 do
+    local o = Good.GetChild(dummy_group_id, i)
+    m[i] = o
+  end
+  return m
 end
 
 function UpdateCityInfo(o)
@@ -233,6 +245,7 @@ Map.OnCreate = function(param)
   action_btn_panel = nil
   anim_game_over_obj = nil
   players_info_obj = nil
+  city_obj_map = InitCityObjMap()
   check_game_over_flag = GetCheckGameOverFlag()
   UpdateRoundInfo()
   UpdatePlayersRankInfo()
