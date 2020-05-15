@@ -62,8 +62,11 @@ function AcInvadeCity(param)
     local target_city_id = param.target_city_id
     city_owner[target_city_id] = param.player_id
     local o = GetCityObjById(target_city_id)
+    local new_clr = GetPlayerColor(city_owner[target_city_id])
+    Good.GetParam(o).new_clr = new_clr
+    Good.SetScript(o, 'AnimSetCityColor')
     local bg = Good.GetChild(o, 0)
-    Good.GetParam(bg).new_clr = GetPlayerColor(city_owner[target_city_id])
+    Good.GetParam(bg).new_clr = new_clr
     Good.SetScript(bg, 'AnimSetCityColor')
   end
   Good.KillObj(param._id)

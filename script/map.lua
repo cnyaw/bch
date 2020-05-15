@@ -88,6 +88,7 @@ end
 function GenCityInfo_i(o)
   local id = GetCityId(o)
   local clr = GetPlayerColor(city_owner[id])
+  Good.SetBgColor(o, clr)
   local bg = GenColorObj(o, CITY_LABLE_W, CITY_LABLE_H, clr)
   Good.SetPos(bg, (CITY_ICON_SIZE - CITY_LABLE_W)/2, CITY_ICON_SIZE)
   local combat_power = GetHeroCombatPower(id)
