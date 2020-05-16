@@ -197,7 +197,8 @@ function GenActionBtnPanel()
   action_btn_panel = Good.GenDummy(-1)
   local panel = GenColorObj(action_btn_panel, w, h, 0xa0000000)
   Good.SetPos(panel, x, y)
-  local id = GetCityId(curr_sel_city)
+  local o = Good.GetChild(curr_sel_city, 0)
+  local id = GetCityId(o)
   local links = CityData[id]
   for i = 1, #links do
     local idTarget = links[i]
@@ -250,7 +251,8 @@ function SelActionBtn(mx, my)
       local o = Good.GetChild(action_btn_panel, i)
       local x, y = Good.GetPos(o)
       if (PtInRect(mx - px, my - py, x - CITY_HITTEST_DELTA, y - CITY_HITTEST_DELTA, x + CITY_ICON_SIZE + CITY_HITTEST_DELTA, y + CITY_ICON_SIZE + CITY_HITTEST_DELTA)) then
-        my_sel_city_id = GetCityId(curr_sel_city)
+        local co = Good.GetChild(curr_sel_city, 0)
+        my_sel_city_id = GetCityId(co)
         sel_city_id = GetCityId(o)
         Good.GenObj(-1, game_lvl_id)
         return false
@@ -425,7 +427,7 @@ function SetNextTurn(param)
   SetPlayingStep(param)
   UpdatePlayersRankInfo()
   if (MyTurn()) then
-    if (GetMyPlayerId() ~= city_owner[GetCityId(curr_sel_city)]) then
+    if (GetMyPlayerId() ~= city_owner[GetCityId(Good.GetChild(curr_sel_city, 0))]) then
       local o = GetCityObjById(GetFirstCurrPlayerCityId())
       SetSelCity(o)
     end
@@ -694,10 +696,11 @@ function UpgradeMyHero(menu)
     end
   end
   UpdateCoinCountObj()
-  local heroes = city_hero[GetCityId(curr_sel_city)]
+  local o = Good.GetChild(curr_sel_city, 0)
+  local heroes = city_hero[GetCityId(o)]
   heroes[menu.hero_id] = heroes[menu.hero_id] + 1
-  UpdateCityInfo(curr_sel_city)
+  UpdateCityInfo(o)
   UpdateHeroMenuSel()
-  GenUpgradeAnimObj(curr_sel_city)
+  GenUpgradeAnimObj(o)
   SaveGame()
 end
