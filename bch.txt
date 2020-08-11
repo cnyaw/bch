@@ -331,6 +331,7 @@ name=fireball
 texture=1
 x=16
 y=16
+script=AnimFireBall
 dim=0 0 18 18
 
 [object24]

@@ -21,6 +21,14 @@ function AcEndGameOver(param)
   param.lvl_param.step = param.next_step
 end
 
+function AcGenSmokeObj(param)
+  local o = Good.GenObj(-1, 1, 'AnimSmokeObj')
+  Good.SetAnchor(o, .5, .5)
+  local x,y = Good.GetPos(param._id, 1)
+  Good.SetPos(o, x, y)
+  Good.AddChild(-1, o)                  -- Make topmost.
+end
+
 function AcKillAnimObj(param)
   Good.KillObj(param._id)
 end
@@ -364,6 +372,33 @@ AnimSetCityColor.OnStep = function(param)
     ArAddMoveTo(loop1, 'BgColor', 0.15, param.new_clr).lerp = LerpARgb
     ArAddCall(loop1, 'AcSetCityColor', 0)
     param.k = ArAddAnimator({loop1})
+  else
+    ArStepAnimator(param, param.k)
+  end
+end
+
+AnimFireBall = {}
+
+AnimFireBall.OnStep = function(param)
+  if (nil == param.k) then
+    local loop1 = ArAddLoop(nil)
+    ArAddCall(loop1, 'AcGenSmokeObj', .05)
+    param.k = ArAddAnimator({loop1})
+  else
+    ArStepAnimator(param, param.k)
+  end
+end
+
+AnimSmokeObj = {}
+
+AnimSmokeObj.OnStep = function(param)
+  if (nil == param.k) then
+    local loop1 = ArAddLoop(nil)
+    ArAddMoveTo(loop1, 'BgColor', .5, 0).lerp = LerpARgb
+    ArAddCall(loop1, 'AcKillAnimObj', 0)
+    local loop2 = ArAddLoop(nil)
+    ArAddMoveTo(loop2, 'Scale', .5, 0, 0)
+    param.k = ArAddAnimator({loop1, loop2})
   else
     ArStepAnimator(param, param.k)
   end
