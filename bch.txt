@@ -100,6 +100,7 @@ name=poem
 texture=20
 x=48
 y=64
+dim=0 0 279 488
 
 [object34]
 texture=18
@@ -321,6 +322,7 @@ name=board
 texture=21
 x=17
 y=112
+dim=0 0 365 409
 
 [level22]
 name=assets
