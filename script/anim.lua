@@ -106,7 +106,7 @@ AnimFlyBuffEffect.OnStep = function(param)
   local o = param._id
   local target_id = param.target_id
   if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     if (IsHeroAlive(target_id)) then
       local x1, y1 = Good.GetPos(o)
       local x2, y2 = Good.GetPos(target_id)
@@ -140,11 +140,11 @@ AnimDamageHpObj.OnStep = function(param)
     if (math.random(2) == 1) then
       dx = -1 * dx
     end
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveBy(loop1, 'Pos', 0.2, dx, -TILE_H/2).ease = ArEaseOut
     ArAddMoveBy(loop1, 'Pos', 0.35, 0, TILE_H).ease = ArEaseOutBounce
     ArAddCall(loop1, 'AcKillAnimObj', 0.3)
-    local loop2 = ArAddLoop(nil)
+    local loop2 = ArAddLoop()
     ArAddDelay(loop2, 0.75)
     ArAddMoveTo(loop2, 'Scale', 0.1, 0, 0)
     param.k = ArAddAnimator({loop1, loop2})
@@ -157,10 +157,10 @@ AnimHealHpObj = {}
 
 AnimHealHpObj.OnStep = function(param)
   if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveBy(loop1, 'Pos', 0.2, 0, -20).ease = ArEaseOut
     ArAddCall(loop1, 'AcKillAnimObj', 0.2)
-    local loop2 = ArAddLoop(nil)
+    local loop2 = ArAddLoop()
     ArAddDelay(loop2, 0.3)
     ArAddMoveTo(loop2, 'Scale', 0.1, 0, 0)
     param.k = ArAddAnimator({loop1, loop2})
@@ -191,7 +191,7 @@ AnimKillHero = {}
 
 AnimKillHero.OnStep = function(param)
   if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveTo(loop1, 'Alpha', 0.25, 0).ease = ArEaseOut
     ArAddCall(loop1, 'AcAnimKillHero', 0)
     param.k = ArAddAnimator({loop1})
@@ -205,7 +205,7 @@ AnimMoveHero = {}
 AnimMoveHero.OnStep = function(param)
   if (nil == param.k) then
     local x, y = GetXyFromPos(param.pos)
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveTo(loop1, 'Pos', HERO_MOVE_SPEED, x, y)
     ArAddCall(loop1, 'SetHeroIdle', 0)
     param.k = ArAddAnimator({loop1})
@@ -219,7 +219,7 @@ AnimHeroInitNextWave = {}
 AnimHeroInitNextWave.OnStep = function(param)
   if (nil == param.k) then
     local x, y = GetXyFromPos(param.pos)
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveTo(loop1, 'Pos', math.random(40, 60) / 60, x, y - TILE_H).ease = ArEaseOutBounce
     ArAddCall(loop1, 'SetHeroWaitNextWave', 0)
     param.k = ArAddAnimator({loop1})
@@ -233,7 +233,7 @@ AnimHeroBeginNextWave = {}
 AnimHeroBeginNextWave.OnStep = function(param)
   if (nil == param.k) then
     local x, y = GetXyFromPos(param.pos)
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveTo(loop1, 'Pos', HERO_MOVE_SPEED * param.dist, x, y)
     ArAddCall(loop1, 'SetHeroBeginNextWave', 0)
     param.k = ArAddAnimator({loop1})
@@ -246,7 +246,7 @@ AnimDamageBounce = {}
 
 AnimDamageBounce.OnStep = function(param)
   if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveBy(loop1, 'Pos', 0.1, 0, -TILE_H/4).ease = ArEaseOut
     ArAddMoveBy(loop1, 'Pos', 0.25, 0, TILE_H/4).ease = ArEaseOutBounce
     ArAddCall(loop1, 'AcEndDamageBounce', 0)
@@ -260,7 +260,7 @@ AnimWarnPutHero = {}
 
 AnimWarnPutHero.OnStep = function(param)
   if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveTo(loop1, 'Alpha', 0.4, 0)
     ArAddCall(loop1, 'AcKillAnimObj', 0)
     param.k = ArAddAnimator({loop1})
@@ -273,7 +273,7 @@ AnimGameOver = {}
 
 AnimGameOver.OnStep = function(param)
   if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveTo(loop1, 'Pos', 1.2, 0, 0).ease = ArEaseOutBounce
     ArAddCall(loop1, 'AcEndGameOver', 0)
     param.k = ArAddAnimator({loop1})
@@ -286,7 +286,7 @@ AnimRotate = {}
 
 AnimRotate.OnStep = function(param)
   if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveBy(loop1, 'Rot', 0.01, 10)
     param.k = ArAddAnimator({loop1})
   else
@@ -299,7 +299,7 @@ AnimSelCity = {}
 AnimSelCity.OnStep = function(param)
   if (nil == param.k) then
     Good.SetAnchor(param._id, 0.5, 0.5)
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveTo(loop1, 'Scale', 0.1, 0.8, 0.8)
     ArAddMoveTo(loop1, 'Scale', 0.5, 1, 1).ease = ArEaseOutElastic
     param.k = ArAddAnimator({loop1})
@@ -312,7 +312,7 @@ AnimFlyingUpObj = {}
 
 AnimFlyingUpObj.OnStep = function(param)
   if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveBy(loop1, 'Pos', 0.4, 0, -TILE_H).ease = ArEaseOut
     ArAddMoveTo(loop1, 'Alpha', .2, 0)
     ArAddCall(loop1, 'AcKillAnimObj', 0)
@@ -328,7 +328,7 @@ AnimInvadeCity.OnStep = function(param)
   if (nil == param.k) then
     local target_city = GetCityObjById(param.target_city_id)
     local tx, ty = Good.GetPos(target_city)
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveTo(loop1, 'Pos', 0.4, tx, ty).ease = ArEaseInOut
     ArAddMoveTo(loop1, 'Alpha', 0.2, 0)
     ArAddCall(loop1, 'AcInvadeCity', 0)
@@ -342,7 +342,7 @@ AnimUpgradeCity = {}
 
 AnimUpgradeCity.OnStep = function(param)
   if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveBy(loop1, 'Pos', 0.4, 0, -TILE_H).ease = ArEaseOut
     ArAddMoveTo(loop1, 'Alpha', 0.2, 0)
     ArAddCall(loop1, 'AcUpgradeCity', 0)
@@ -381,7 +381,7 @@ AnimFireBall = {}
 
 AnimFireBall.OnStep = function(param)
   if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddCall(loop1, 'AcGenSmokeObj', .05)
     param.k = ArAddAnimator({loop1})
   else
@@ -393,10 +393,10 @@ AnimSmokeObj = {}
 
 AnimSmokeObj.OnStep = function(param)
   if (nil == param.k) then
-    local loop1 = ArAddLoop(nil)
+    local loop1 = ArAddLoop()
     ArAddMoveTo(loop1, 'BgColor', .5, 0).lerp = LerpARgb
     ArAddCall(loop1, 'AcKillAnimObj', 0)
-    local loop2 = ArAddLoop(nil)
+    local loop2 = ArAddLoop()
     ArAddMoveTo(loop2, 'Scale', .5, 0, 0)
     param.k = ArAddAnimator({loop1, loop2})
   else
