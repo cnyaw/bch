@@ -205,7 +205,7 @@ end
 
 function AutoSelHero(HeroMenu)
   if (nil == SelHero or not IsPutHeroValid(HeroMenu[SelHero])) then
-    for  i = 1, MAX_HERO do
+    for i = 1, MAX_HERO do
       if (IsPutHeroValid(HeroMenu[i])) then
         SelHero = i
         break
@@ -218,7 +218,7 @@ function UpdateHeroMenuState_i(HeroMenu)
   AutoSelHero(HeroMenu)
   local GameOver = 0 == GetPlayerCityCount(GetMyPlayerId())
   local IsInGame = InGame()
-  for  i = 1, MAX_HERO do
+  for i = 1, MAX_HERO do
     local menu = HeroMenu[i]
     if (not IsPutHeroValid(menu) or GameOver) then
       Good.SetAlpha(menu.o, 128)

@@ -192,11 +192,10 @@ function GenActionBtn(id, tex_id)
 end
 
 function GenActionBtnPanel()
-  local x, y = Good.GetPos(map_obj_id)
   local l,t,w,h = Good.GetDim(map_obj_id)
   action_btn_panel = Good.GenDummy(-1)
   local panel = GenColorObj(action_btn_panel, w, h, 0xa0000000)
-  Good.SetPos(panel, x, y)
+  Good.SetPos(panel, Good.GetPos(map_obj_id))
   local o = Good.GetChild(curr_sel_city, 0)
   local id = GetCityId(o)
   local links = CityData[id]
@@ -534,9 +533,8 @@ end
 
 function GenInvadeCityAnimObj(player_id, city_id, target_city_id, is_win)
   local city_obj = GetCityObjById(city_id)
-  local x, y = Good.GetPos(city_obj)
   local o = Good.GenObj(-1, battle_tex_id, 'AnimInvadeCity')
-  Good.SetPos(o, x, y)
+  Good.SetPos(o, Good.GetPos(city_obj))
   local param = Good.GetParam(o)
   param.player_id = player_id
   param.target_city_id = target_city_id

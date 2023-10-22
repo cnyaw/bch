@@ -24,8 +24,7 @@ end
 function AcGenSmokeObj(param)
   local o = Good.GenObj(-1, 1, 'AnimSmokeObj')
   Good.SetAnchor(o, .5, .5)
-  local x,y = Good.GetPos(param._id, 1)
-  Good.SetPos(o, x, y)
+  Good.SetPos(o, Good.GetPos(param._id, 1))
   Good.AddChild(-1, o)                  -- Make topmost.
 end
 
@@ -204,9 +203,8 @@ AnimMoveHero = {}
 
 AnimMoveHero.OnStep = function(param)
   if (nil == param.k) then
-    local x, y = GetXyFromPos(param.pos)
     local loop1 = ArAddLoop()
-    ArAddMoveTo(loop1, 'Pos', HERO_MOVE_SPEED, x, y)
+    ArAddMoveTo(loop1, 'Pos', HERO_MOVE_SPEED, GetXyFromPos(param.pos))
     ArAddCall(loop1, 'SetHeroIdle', 0)
     param.k = ArAddAnimator({loop1})
   else
@@ -232,9 +230,8 @@ AnimHeroBeginNextWave = {}
 
 AnimHeroBeginNextWave.OnStep = function(param)
   if (nil == param.k) then
-    local x, y = GetXyFromPos(param.pos)
     local loop1 = ArAddLoop()
-    ArAddMoveTo(loop1, 'Pos', HERO_MOVE_SPEED * param.dist, x, y)
+    ArAddMoveTo(loop1, 'Pos', HERO_MOVE_SPEED * param.dist, GetXyFromPos(param.pos))
     ArAddCall(loop1, 'SetHeroBeginNextWave', 0)
     param.k = ArAddAnimator({loop1})
   else
@@ -327,9 +324,8 @@ AnimInvadeCity = {}
 AnimInvadeCity.OnStep = function(param)
   if (nil == param.k) then
     local target_city = GetCityObjById(param.target_city_id)
-    local tx, ty = Good.GetPos(target_city)
     local loop1 = ArAddLoop()
-    ArAddMoveTo(loop1, 'Pos', 0.4, tx, ty).ease = ArEaseInOut
+    ArAddMoveTo(loop1, 'Pos', 0.4, Good.GetPos(target_city)).ease = ArEaseInOut
     ArAddMoveTo(loop1, 'Alpha', 0.2, 0)
     ArAddCall(loop1, 'AcInvadeCity', 0)
     param.k = ArAddAnimator({loop1})

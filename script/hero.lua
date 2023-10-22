@@ -116,11 +116,11 @@ end
 function CenterTextAnchor(s)
   local c = Good.GetChildCount(s)
   local half = math.floor(c / 2)
-  for  i = 0, half do
+  for i = 0, half do
     local o = Good.GetChild(s, i)
     Good.SetAnchor(o, 1, 0.5)
   end
-  for  i = half, c do
+  for i = half, c do
     local o = Good.GetChild(s, i)
     Good.SetAnchor(o, 0, 0.5)
   end
@@ -227,8 +227,7 @@ function GenHeroObj(hero_id, pos, hp_color, red, lv)
   local hero = HeroData[hero_id]
   local dummy = Good.GenDummy(board_id)
   local o = GenHeroPieceObj(dummy, hero.Face, red, 'Hero')
-  local x, y = GetXyFromPos(pos)
-  Good.SetPos(o, x, y)
+  Good.SetPos(o, GetXyFromPos(pos))
   SetTextObjColor(o, hero.Color)
   -- Init hero.
   local param = Good.GetParam(o)
