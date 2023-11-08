@@ -396,7 +396,7 @@ function UpdatePlayersRankInfo()
     players_info_obj = nil
   end
   players_info_obj = Good.GenDummy(-1)
-  Good.AddChild(-1, players_info_obj, 0) -- Change zorder to topmost.
+  SetTopmost(players_info_obj)
   local active_players = CollectPlayersRankInfo()
   local x, y = 0, TILE_H/2 + 6
   for i = 1, #active_players do

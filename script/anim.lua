@@ -25,7 +25,7 @@ function AcGenSmokeObj(param)
   local o = Good.GenObj(-1, 1, 'AnimSmokeObj')
   Good.SetAnchor(o, .5, .5)
   Good.SetPos(o, Good.GetPos(param._id, 1))
-  Good.AddChild(-1, o)                  -- Make topmost.
+  SetTopmost(o)
 end
 
 function AcKillAnimObj(param)
